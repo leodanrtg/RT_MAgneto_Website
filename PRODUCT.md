@@ -47,7 +47,8 @@ Other differentiators the user named:
 - Confirmed: 0DTE and 90DTE expirations; Gamma, Delta, Vanna, Charm; Market Maker/dealer exposure and hedging levels; gamma magnet levels; session sentiment indicator; gamma ladder by volume and imbalance; historical max-gamma traces.
 - Platform support claims must stay exact: NinjaTrader and ATAS available, Bookmap "coming soon" only.
 - Lead capture happens through YouTube, TikTok and Telegram, plus the website itself; the site should funnel visitors to these channels and capture leads directly.
-- Open decisions: pricing and licensing model, purchase/checkout flow, trial or demo availability, the website's own lead-capture form (newsletter, PDF download gate, etc.), channel URLs, and the domain.
+- Payments: PayPal and crypto stablecoins (USDT, USDC). Payment provider for crypto, networks and checkout implementation are not yet chosen.
+- Open decisions: price amounts and licensing model, crypto payment provider and networks, trial or demo availability, the website's own lead-capture form (newsletter, PDF download gate, etc.), channel URLs, and the domain.
 
 ## Brand Commitments
 
