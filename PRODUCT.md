@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Undecided. The user asked for a "3D scrolling" site (scroll-driven 3D experience), which is a binding experience requirement, but did not name a framework or a deploy target. Both are open decisions to confirm before the first build. Working recommendation, pending approval: a static site (Astro or Vite) with Three.js for 3D and GSAP ScrollTrigger for scroll-driven motion, deployable to any static host.
+Static site with Three.js for 3D and GSAP (ScrollTrigger) for scroll-driven motion, confirmed by the user. The build tool (e.g. Vite or Astro) is delegated. No domain or hosting yet: the user still has to buy a domain, so the site must deploy to any static host.
 
 ## Users
 
@@ -30,7 +30,7 @@ The website has two jobs: **sell RT Magneto** and **educate and capture an audie
 RT Magneto loads options-derived Greeks (Gamma, Delta, Vanna and Charm) from the options markets directly onto the futures chart, mapping each options underlying onto its futures market:
 
 - Options sources: SPX, SPY, NDX, QQQ, RUT, IWM, DIA, GLD, USO.
-- Futures targets: ES, NQ, RTY, YM, GC, and a sixth market (the user wrote "GC" twice; likely CL for USO, to be confirmed).
+- Futures targets: ES, NQ, RTY, YM, GC, CL.
 
 Other differentiators the user named:
 
@@ -46,7 +46,8 @@ Other differentiators the user named:
 
 - Confirmed: 0DTE and 90DTE expirations; Gamma, Delta, Vanna, Charm; Market Maker/dealer exposure and hedging levels; gamma magnet levels; session sentiment indicator; gamma ladder by volume and imbalance; historical max-gamma traces.
 - Platform support claims must stay exact: NinjaTrader and ATAS available, Bookmap "coming soon" only.
-- Open decisions: pricing and licensing model, purchase/checkout flow, trial or demo availability, lead-capture mechanism (newsletter, PDF download gate, community), and the sixth futures market.
+- Lead capture happens through YouTube, TikTok and Telegram, plus the website itself; the site should funnel visitors to these channels and capture leads directly.
+- Open decisions: pricing and licensing model, purchase/checkout flow, trial or demo availability, the website's own lead-capture form (newsletter, PDF download gate, etc.), channel URLs, and the domain.
 
 ## Brand Commitments
 
