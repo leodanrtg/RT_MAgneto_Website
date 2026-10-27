@@ -1,16 +1,17 @@
 # Contenido educativo: cómo leer el flujo de opciones con RT Magneto
 
-Este archivo convierte el material educativo que entregó el usuario en contenido listo para la web. Todo lo que aparece aquí sale de las tres presentaciones de origen; no se añadieron resultados, cifras de rendimiento ni testimonios. Las tasas de acierto que aparecen en una de las fuentes se dejan fuera del copy a propósito (ver sección 11).
+Este archivo convierte el material educativo que entregó el usuario en contenido listo para la web. Todo lo que aparece aquí sale de las cuatro fuentes de origen; no se añadieron resultados, cifras de rendimiento ni testimonios. Las tasas de acierto que aparecen en una de las fuentes se dejan fuera del copy a propósito (ver sección 12).
 
-**Fuentes** (presentaciones en inglés, generadas con NotebookLM, solo imágenes):
+**Fuentes** (tres presentaciones en inglés generadas con NotebookLM, solo imágenes, y una conversación de ChatGPT en español):
 
 | Archivo | Tema | Diapositivas |
 |---|---|---|
 | [`source/Decoding_Options_Order_Flow.pdf`](source/Decoding_Options_Order_Flow.pdf) | Cómo leer cada "spike" de flujo de opciones: convexidad (anillo exterior) + GEX (círculo interior) | 13 |
 | [`source/Gamma_Market_Microstructure.pdf`](source/Gamma_Market_Microstructure.pdf) | Cómo ese flujo se agrega en regímenes de mercado y niveles en el gráfico: Zero Gamma, imanes de desequilibrio, sentimiento | 12 |
 | [`source/GEX_Playbook_Market_Structure_Trading.pdf`](source/GEX_Playbook_Market_Structure_Trading.pdf) | Guía práctica: opciones como "sala de máquinas" de los futuros, regímenes gravedad/aceleración, los 3 niveles clave, 4 escenarios, tipos de entrada, disciplina, Vega y Skew. Lleva la marca "Retail TraderPro" | 15 |
+| [`source/chatgpt_trading_futuros_sp500_0dte.md`](source/chatgpt_trading_futuros_sp500_0dte.md) | Conversación de ChatGPT "Trading futuros SP500 0DTE": Zero Gamma como pivote, 0DTE frente a 98DTE, fuerza relativa de Max GEX+ / Zero Gamma / Max GEX−, qué es un 0DTE, griegas, cuándo domina gamma, imán frente a soporte/resistencia | 12 respuestas |
 
-En adelante se citan como **[OF n]** (Order Flow, diapositiva n), **[GM n]** (Gamma Microstructure, diapositiva n) y **[PB n]** (GEX Playbook, diapositiva n).
+En adelante se citan como **[OF n]** (Order Flow, diapositiva n), **[GM n]** (Gamma Microstructure, diapositiva n), **[PB n]** (GEX Playbook, diapositiva n) y **[CG]** (conversación de ChatGPT, por tema). La conversación es texto generado por IA: se usa para ampliar y explicar, no como fuente de datos, y sus afirmaciones dudosas están marcadas en la sección 12.
 
 ---
 
@@ -45,6 +46,12 @@ Tres capas, de lo micro a lo macro [GM 2]:
 - **Dealers largos / cortos de gamma:** en GEX+ los dealers están largos de gamma; en GEX− están cortos de gamma. [PB 4]
 - **Vega (volatilidad implícita, IV):** el "dial de intensidad" que se superpone a la estructura GEX. [PB 14]
 - **Skew:** el sesgo direccional del mercado según el precio relativo de puts y calls. [PB 14]
+- **Gamma Flip:** otro nombre del nivel Zero Gamma; el precio donde la gamma neta de los dealers pasa de positiva a negativa (Γ neta = 0). [CG]
+- **98DTE:** vencimientos a unos 98 días; en las fuentes representan la estructura de posicionamiento más lenta, frente al flujo intradía de las 0DTE. [PB 7–10, CG] (ver sección 12 sobre 90DTE)
+- **Aceptación / rechazo:** que el precio cruce un nivel y se sostenga al otro lado (aceptación) o lo intente y vuelva rápido (rechazo). [CG]
+- **Pinning:** cuando el precio "se pega" a un strike con mucho interés abierto y gamma, sobre todo cerca del vencimiento. [CG]
+- **Call Wall / Put Wall:** strikes con mucha gamma del lado call (suelen actuar como resistencia) o del lado put (suelen actuar como soporte). [CG]
+- **Charm:** cómo cambia el delta con el paso del tiempo; la fuente lo asocia a los rebalanceos de la última parte de la sesión. [CG]
 - **MBO (Market By Order):** datos de libro de órdenes orden a orden que el playbook usa para confirmar entradas junto con el orderflow. [PB 13]
 
 ---
@@ -278,7 +285,102 @@ Nota: PRODUCT.md no lista Vega ni Skew entre las griegas que muestra RT Magneto 
 
 ---
 
-## 9. Copy listo para secciones de la landing
+## 9. Zero Gamma, 0DTE y la fuerza de cada nivel (ampliación) [CG]
+
+Esta sección amplía lo anterior con la conversación de ChatGPT. Está escrita para un trader de ES/NQ y responde preguntas que las presentaciones dejan abiertas.
+
+### Por qué las opciones mueven los futuros
+
+- Los dealers (market makers) venden opciones y no buscan dirección: neutralizan su delta comprando o vendiendo futuros.
+- La cadena es: cambia el delta de las opciones → el dealer ajusta con futuros → el futuro mueve el índice → el índice arrastra a las acciones.
+- Por eso tiene sentido operar futuros con datos de opciones: el precio refleja en parte coberturas forzadas, no solo opiniones.
+
+### Las griegas en una frase
+
+| Griega | Piensa en… | Qué controla |
+|---|---|---|
+| Delta | Dirección | El flujo inmediato en futuros |
+| Gamma | Aceleración | La velocidad de las coberturas y la volatilidad intradía |
+| Theta | El reloj | El desgaste de la prima; en 0DTE es brutal |
+| Vega | El miedo | Expansión o compresión de la volatilidad |
+| Rho | Las tasas | Casi irrelevante intradía |
+
+**Por qué gamma pesa más que delta en intradía:** delta describe dónde está el dealer ahora; gamma describe qué va a tener que hacer cuando el precio se mueva. Gamma es lo que obliga a cubrir, y explica por qué un breakout falla, por qué el precio se pega a un strike o por qué el mercado explota de repente.
+
+**GEX** agrega gamma, interés abierto y el signo de la posición del dealer. No se miran griegas aisladas sino la exposición total.
+
+### Qué son los 0DTE
+
+- Opciones que vencen el mismo día en que se operan (SPX, SPY, QQQ…).
+- Theta muy alto: la prima puede irse a cero en horas.
+- Gamma extremo: el delta cambia con movimientos pequeños, de ahí las velas explosivas intradía.
+- Efectos de mercado: pinning en strikes y movimientos bruscos cerca del cierre.
+- Riesgos reales: pérdidas del 100 % en minutos, slippage, sobreoperación y FOMO.
+
+### Zero Gamma: filtro de contexto, no gatillo
+
+- No es una señal exacta de compra o venta; es un cambio de régimen en el flujo de cobertura. Separa el comportamiento estabilizador del amplificador.
+- **Funciona mejor** en días balanceados: IV moderada, sin noticias macro, dealers dominando el flujo, régimen de gamma positiva.
+- **Funciona peor** en días macro (FOMC, CPI, NFP, discursos de la Fed, grandes resultados) y en días de gamma muy negativa, donde el precio lo atraviesa varias veces.
+- **Aceptación frente a rechazo:** no se entra por tocar el nivel. Long tras recuperar el flip y sostenerse encima; short tras perderlo y fallar al recuperarlo.
+- **Qué lo refuerza:** delta acompañando, VIX que no contradice, Volume GEX coherente con el GEX por interés abierto, VWAP, absorción en el orderflow.
+- **La hora importa:** apertura con mucho ruido; mediodía más limpio para reversión; tramo final con flujos de Charm y rebalanceo, y un flip más sensible.
+- **En 0DTE el flip se mueve durante el día**, sobre todo cerca del cierre, así que hay que seguirlo en tiempo real.
+- **Sesgo práctico:** por encima del flip, buscar compras en retrocesos; por debajo, ventas en rebotes.
+
+### 0DTE frente a 98DTE: dos horizontes
+
+| | Flip 0DTE | Flip 98DTE |
+|---|---|---|
+| Representa | El flujo y el posicionamiento del día | El posicionamiento swing / institucional |
+| Carácter | Rápido, sensible, cambiante | Lento, estructural, estable |
+| Uso | Táctica intradía | Estructura y sesgo direccional |
+
+- En días normales suele dominar el 0DTE, porque la gamma crece mucho cerca del vencimiento. En días de tendencia o macro puede dominar el 98DTE.
+- **Precio por encima de ambos flips:** sesgo alcista, estabilidad, compresión y pinning.
+- **Precio por debajo de ambos:** sesgo bajista, expansión de volatilidad, días de tendencia.
+- **Precio entre los dos:** zona de conflicto. Más chop, rupturas falsas y menos continuidad. Lo prudente es esperar a que se resuelva: recuperar el flip 0DTE y sostenerse (alcista) o perder el 98DTE y quedarse debajo (bajista).
+
+### Qué nivel respeta más el precio (0DTE)
+
+| Nivel | Mejor uso | Tipo de mercado | Regla práctica |
+|---|---|---|---|
+| **Max GEX+** | Reversión / imán | Rango, estable | "Desvanece el movimiento" |
+| **Zero Gamma** | Cambio de régimen | Transición | "Opera la aceptación" |
+| **Max GEX−** | Expansión / ruptura | Volátil | "Opera la aceleración" |
+
+Según la fuente, Max GEX+ suele ser el nivel más respetado intradía, porque la cobertura trabaja contra el movimiento. Max GEX− no es buen nivel para operar giros, porque el precio puede atravesarlo con violencia.
+
+### Imán o soporte/resistencia
+
+Esta es la aclaración más útil para la web, porque resuelve buena parte de la duda de la sección 12:
+
+- **En gamma positiva**, Max GEX+ funciona como **imán**: el precio vuelve a él porque los dealers compran cuando baja y venden cuando sube. Parece soporte o resistencia, pero es un punto de equilibrio.
+- **En gamma negativa**, los niveles dejan de ser imanes y actúan como **soporte o resistencia reales**: por debajo del nivel, resistencia; por encima, soporte. Al tocarlo hay rechazos o rupturas fuertes.
+
+> "En gamma positiva los niveles se parecen a soportes y resistencias; en gamma negativa de verdad lo son."
+
+### Cuándo manda la gamma y cuándo no
+
+| Contexto | ¿Gamma manda? |
+|---|---|
+| Día de vencimiento 0DTE | Sí |
+| Mucho interés abierto en strikes cercanos al precio | Sí |
+| GEX positivo dominante | Sí |
+| VIX bajo | Sí |
+| Evento macro | No |
+| Ruptura sostenida del flip | No |
+| Después del vencimiento | No |
+| Tendencia fuerte de marco temporal mayor | No |
+| Overnight / fuera de horario | Menos |
+
+### Lo que GEX no hace
+
+GEX no dice si el precio va a subir o bajar; dice **cómo** es probable que se mueva: en rango con GEX positivo, en tendencia con GEX negativo. Errores comunes: creer que predice dirección, ignorar el contexto macro, no esperar confirmación del precio y sobreoperar.
+
+---
+
+## 10. Copy listo para secciones de la landing
 
 Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y evita prometer resultados (ver [Product Principles](../PRODUCT.md)).
 
@@ -362,12 +464,32 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 
 - **Titular:** Cuatro escenarios. Un mapa para cada uno.
 - **Texto:** Según dónde esté el precio respecto a Zero Gamma y a los niveles GEX, cambian la entrada y los objetivos: retroceso hacia el imán, venta del rebote en aceleración, fade en el muro o impulso en el vacío.
-- **Nota:** sin porcentajes de acierto (ver sección 11).
+- **Nota:** sin porcentajes de acierto (ver sección 12).
 
 ### Sección: Disciplina
 
 - **Titular:** Saber cuándo no operar también es estructura.
 - **Texto:** Antes de cada operación: posición frente a Zero Gamma, escenario, siguiente nivel clave y confirmación en el orderflow. Y reglas claras para quedarse fuera: antes de datos macro, con GEX neutral o contradictorio, o cuando el orderflow no confirma.
+
+### Sección: Por qué las opciones mueven tu futuro
+
+- **Titular:** El precio no se mueve porque quiere.
+- **Texto:** Los dealers venden opciones y se cubren con futuros. Cada vez que el precio se mueve, tienen que comprar o vender ES y NQ. RT Magneto te muestra dónde esas coberturas frenan el precio y dónde lo aceleran.
+
+### Sección: Imán o muro
+
+- **Titular:** El mismo nivel, dos comportamientos.
+- **Texto:** En gamma positiva, Max GEX+ es un imán: el precio vuelve a él. En gamma negativa, los niveles se convierten en soporte y resistencia reales, y el precio rebota o los rompe con fuerza. Saber en qué régimen estás cambia cómo lees el nivel.
+
+### Sección: 0DTE y 98DTE
+
+- **Titular:** El día y la estructura.
+- **Texto:** El flip de las 0DTE marca el flujo del día; el de vencimientos más largos marca la estructura. Cuando el precio está por encima o por debajo de los dos, los movimientos suelen ser más limpios. Entre ambos, el mercado duda.
+
+### Sección: Zero Gamma no es un gatillo
+
+- **Titular:** No entres por tocar la línea.
+- **Texto:** Zero Gamma es un filtro de contexto. Espera a que el precio lo acepte o lo rechace, y confírmalo con el orderflow, el delta y el VIX antes de actuar.
 
 ### Sección: El método en tres pasos
 
@@ -378,7 +500,7 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 
 ---
 
-## 10. Estructura sugerida para la landing con scroll 3D
+## 11. Estructura sugerida para la landing con scroll 3D
 
 Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PRODUCT.md](../PRODUCT.md). Las ideas visuales salen de los diagramas de las fuentes.
 
@@ -386,13 +508,14 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 |---|---|---|---|
 | 1 | Hero | Precio en movimiento rodeado de puntos cian y morados que aparecen al hacer scroll | GM 1, OF 1 |
 | 2 | Operar en la niebla | Un gráfico cubierto de indicadores y niebla que se despeja al hacer scroll y deja ver soporte y resistencia | PB 2 |
-| 3 | La sala de máquinas | Un motor (opciones SPX/NDX) que transmite energía a las ruedas (futuros ES/NQ) | PB 3 |
+| 3 | La sala de máquinas | Un motor (opciones SPX/NDX) que transmite energía a las ruedas (futuros ES/NQ); los dealers aparecen como la transmisión | PB 3, CG |
 | 4 | De lo micro a lo macro | Los spikes se agrupan en un perfil de GEX por strike y después se proyectan como líneas en el gráfico | GM 2 |
 | 5 | Anatomía de un spike | El anillo exterior y el círculo interior se separan en el espacio y se vuelven a unir | GM 3, OF 2 |
 | 6 | Los cuatro arquetipos | Matriz 2×2 que se construye combinando anillos (cian/morado) y núcleos (verde/rojo) | OF 6–11, GM 4 |
 | 7 | Volatilidad antes que dirección | Contraste flecha alcista/bajista frente a radar de volatilidad | OF 12 |
 | 8 | Gravedad o aceleración | Imán (GEX+) frente a cohete (GEX−), con Zero Gamma en el centro | GM 6, PB 4, PB 12 |
-| 9 | Los 3 niveles clave | Muro, pivote y vacío como tres planos horizontales que el precio atraviesa | PB 5, GM 8, GM 9 |
+| 9 | Los 3 niveles clave | Muro, pivote y vacío como tres planos horizontales que el precio atraviesa; el plano de Max GEX+ cambia de imán a muro según el régimen | PB 5, GM 8, GM 9, CG |
+| 9b | 0DTE y 98DTE | Dos líneas de flip a distinta profundidad; el precio entre ambas tiembla, fuera de ellas fluye | CG |
 | 10 | Sentimiento | Área magenta que pasa a verde en el punto de transición | GM 10 |
 | 11 | Los 4 escenarios | Cuatro mini-gráficos animados (retroceso, rechazo, fade, impulso) | PB 6–10, PB 15 |
 | 12 | El método y la disciplina | Ciclo de operación y checklist que se marca al hacer scroll | GM 11, GM 12, PB 13 |
@@ -404,9 +527,9 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 
 ---
 
-## 11. Puntos a confirmar con el usuario antes de publicar
+## 12. Puntos a confirmar con el usuario antes de publicar
 
-1. **Contradicción de soporte/resistencia.** [GM 9] dice que el imán GEX+ actúa como *resistencia* y el GEX− como *soporte*. Pero el diagrama de [GM 2] etiqueta la resistencia como "Negative GEX magnet" y el soporte como "Positive GEX pivot". El copy de este archivo sigue [GM 9]; hay que confirmar cuál es la lectura correcta en RT Magneto.
+1. **Contradicción de soporte/resistencia (en parte resuelta).** [GM 9] dice que el imán GEX+ actúa como *resistencia* y el GEX− como *soporte*. Pero el diagrama de [GM 2] etiqueta la resistencia como "Negative GEX magnet" y el soporte como "Positive GEX pivot". [CG] lo explica según el régimen: en gamma positiva Max GEX+ es un imán, y en gamma negativa los niveles actúan como soporte o resistencia según el precio esté encima o debajo. El copy sigue esa lectura; falta confirmar que [GM 2] es solo un diagrama ilustrativo.
 2. **Lenguaje que puede sonar a promesa de resultados.** Las fuentes usan expresiones como "high-probability zones", "inevitable profit-taking targets", "ultimate, objective targets" o "mathematically validates". Este archivo las suaviza ("zonas para entrar", "sirven como objetivos", "respalda") para cumplir con no implicar resultados. Si el usuario quiere mantenerlas, conviene revisarlas junto con el aviso de riesgo.
 3. **Mercado de los ejemplos.** Los ejemplos de las fuentes son sobre el S&P 500. Confirmar si se pueden presentar como ES en la web o si conviene añadir ejemplos de NQ, RTY, YM, GC o CL.
 4. **Capturas reales.** [GM 7] y [GM 8] parecen capturas del indicador en un gráfico. Confirmar si se pueden usar como imágenes en la web y si hay capturas de NinjaTrader o ATAS en mejor resolución.
@@ -414,7 +537,15 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 6. **Origen del material.** Las presentaciones están generadas con NotebookLM y llevan su marca de agua. Confirmar si se pueden mostrar tal cual o solo como fuente interna.
 7. **Tasas de acierto del 70–80 % (y 20–30 %).** [PB 6–11, PB 15] atribuyen a cada escenario una "success rate" del 70–80 %, y del 20–30 % a las entradas de ruptura y giro. No hay datos que las respalden en el material, y PRODUCT.md prohíbe implicar resultados, así que no aparecen en el copy. Si el usuario quiere usarlas, harían falta datos verificables, metodología y un aviso de riesgo claro, y aun así es recomendable no publicarlas.
 8. **Marca "Retail TraderPro".** El GEX Playbook lleva el logo de Retail TraderPro, no de RT Magneto. Confirmar si es una marca del usuario (¿"RT" = Retail Trader?) o de un tercero, antes de reutilizar su material o mencionarla.
-9. **98DTE frente a 90DTE.** El playbook habla de niveles "98dte"; PRODUCT.md dice que RT Magneto muestra 0DTE y **90DTE**. En este archivo se tradujo como "nivel de largo plazo"; confirmar cuál es el vencimiento correcto.
+9. **98DTE frente a 90DTE.** El playbook y [CG] hablan de "98DTE"; PRODUCT.md dice que RT Magneto muestra 0DTE y **90DTE**. Con dos fuentes que dicen 98DTE, es probable que PRODUCT.md tenga la errata, pero hay que confirmarlo antes de corregirlo y de usar el número en la web.
 10. **Max GEX+ como resistencia frente a "zona de gravedad".** [PB 4–5] describe Max GEX+ como imán que atrae y provoca giros, y Max GEX− como zona de aceleración que puede romperse. Es coherente con [GM 9], pero refuerza la duda del punto 1 sobre [GM 2].
 11. **Reglas de riesgo concretas.** Los valores de [PB 13] (1 % por operación, 3 % diario, 2 posiciones, VIX > 5 %) son recomendaciones de la fuente. Confirmar si el usuario quiere publicarlos como guía educativa o dejarlos solo en materiales del curso.
 12. **Vega y Skew.** Confirmar si RT Magneto muestra IV o Skew; si no, presentarlos solo como concepto educativo.
+13. **Afirmaciones de [CG] que no deben publicarse tal cual.** La conversación es texto de IA y mezcla buenas explicaciones con frases dudosas:
+    - "El 90 % de los traders retail pierde aquí": cifra sin fuente; fuera del copy.
+    - "Sí tiene edge estadístico", "probabilidad muy alta", "movimiento violento casi seguro", "puedes generar retornos muy altos": promesas implícitas de resultado; fuera del copy.
+    - "Gamma no se puede cubrir": impreciso (se puede cubrir con otras opciones); no se usa.
+    - "Γ ∝ 1/T": simplificación; no se usa como fórmula en la web.
+    - Herramientas de terceros (SpotGamma, SqueezeMetrics, Tradytics, Thinkorswim): no se mencionan en la web.
+    - Stops y objetivos en porcentaje del "Trading System" (0,3 %–1,5 %) y estrategias de venta de prima (iron condor, credit spreads): son consejo operativo concreto; fuera del copy salvo que el usuario quiera un apartado de formación con aviso de riesgo.
+14. **Volume GEX frente a GEX por interés abierto.** [CG] dice que cuando el Volume GEX diverge del GEX por interés abierto, el posicionamiento real puede estar cambiando. Encaja con la "escalera de gamma por volumen y por desequilibrio" de PRODUCT.md; confirmar si RT Magneto muestra ambas versiones para poder explicarlo en la web.
