@@ -80,11 +80,11 @@ Captura de RT Magneto en NinjaTrader sobre ES 06-26 (gráfico de 2000 de volumen
 | **Order Flow Convexity+ (0DTE)** | Cian — *Long Gamma* | Puntos donde el flujo compra opciones (convexidad positiva): más expectativa de volatilidad. | Sección 5 [OF 3–4] |
 | **Order Flow Convexity− (0DTE)** | Azul — *Short Gamma* | Puntos donde el flujo vende opciones (convexidad negativa): rango y estancamiento. | Sección 5 [OF 3–4] |
 
-La leyenda incluye además *Major + (OI)* (azul cielo), *Major − (OI)* (rojo anaranjado) y *Net Gamma* (dorado), que no están rotulados en la captura (ver sección 13).
+La leyenda incluye además *Major + (OI)*, *Major − (OI)* y *Net Gamma*. No están rotulados en la captura y, por decisión del usuario, se omiten por ahora en la web.
 
 ### Gráfico principal: los spikes
 
-Círculos sobre las velas con un número dentro. Siguen la matriz de los cuatro arquetipos (sección 4):
+Círculos sobre las velas con un número dentro (el significado del número se omite por ahora). Siguen la matriz de los cuatro arquetipos (sección 4):
 
 - **Long Call Spike:** compra agresiva de calls (convexidad positiva + GEX+).
 - **Long Put Spike:** compra agresiva de puts (convexidad positiva + GEX−).
@@ -617,8 +617,8 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
     - Herramientas de terceros (SpotGamma, SqueezeMetrics, Tradytics, Thinkorswim): no se mencionan en la web.
     - Stops y objetivos en porcentaje del "Trading System" (0,3 %–1,5 %) y estrategias de venta de prima (iron condor, credit spreads): son consejo operativo concreto; fuera del copy salvo que el usuario quiera un apartado de formación con aviso de riesgo.
 14. **Volume GEX frente a GEX por interés abierto.** [CG] dice que cuando el Volume GEX diverge del GEX por interés abierto, el posicionamiento real puede estar cambiando. Encaja con la "escalera de gamma por volumen y por desequilibrio" de PRODUCT.md; confirmar si RT Magneto muestra ambas versiones para poder explicarlo en la web.
-15. **Rótulo "SpotGamma" en la captura.** Arriba a la izquierda del gráfico se lee "SpotGamma, SpotGamma" (nombre del indicador o de la plantilla en NinjaTrader). Antes de publicar la imagen conviene recortarla o volver a capturarla sin ese rótulo, para no mencionar a un tercero ni sugerir que RT Magneto usa sus datos. Confirmar también de dónde vienen los datos de opciones.
-16. **Elementos de la leyenda sin rótulo.** Confirmar qué muestran *Major + (OI)*, *Major − (OI)* y *Net Gamma*, y si deben aparecer en la web.
-17. **Números dentro de los spikes.** Confirmar qué indican (444, 3K, −537…): ¿contratos, prima, delta?
+15. ~~**Rótulo "SpotGamma" en la captura.**~~ **Resuelto:** el rótulo se tapó en la imagen del repo. Confirmar aparte de dónde vienen los datos de opciones, si se quiere decir en la web.
+16. ~~**Elementos de la leyenda sin rótulo** (*Major ± (OI)*, *Net Gamma*).~~ **Omitido por ahora** por decisión del usuario.
+17. ~~**Números dentro de los spikes.**~~ **Omitido por ahora** por decisión del usuario.
 18. **Niveles 90DTE.** La captura solo muestra niveles 0DTE. Confirmar cómo se ven los niveles 90DTE en el indicador para documentarlos igual.
 19. **Captura en ATAS.** Si hay una captura equivalente en ATAS, sirve para mostrar en la web las dos plataformas disponibles.
