@@ -45,6 +45,7 @@ Other differentiators the user named:
 ## Capabilities and Constraints
 
 - Confirmed: 0DTE and 90DTE expirations; Gamma, Delta, Vanna, Charm; Market Maker/dealer exposure and hedging levels; gamma magnet levels; session sentiment indicator; gamma ladder by volume and imbalance; historical max-gamma traces.
+- Expirations: RT Magneto uses **0DTE and 90DTE**. Some educational sources mention 98DTE; that refers to other expirations and appears only as cited educational context, never as a product feature.
 - Platform support claims must stay exact: NinjaTrader and ATAS available, Bookmap "coming soon" only.
 - Lead capture happens through YouTube, TikTok and Telegram, plus the website itself; the site should funnel visitors to these channels and capture leads directly.
 - Payments: PayPal and crypto stablecoins (USDT, USDC). Payment provider for crypto, networks and checkout implementation are not yet chosen.

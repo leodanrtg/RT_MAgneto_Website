@@ -47,7 +47,8 @@ Tres capas, de lo micro a lo macro [GM 2]:
 - **Vega (volatilidad implícita, IV):** el "dial de intensidad" que se superpone a la estructura GEX. [PB 14]
 - **Skew:** el sesgo direccional del mercado según el precio relativo de puts y calls. [PB 14]
 - **Gamma Flip:** otro nombre del nivel Zero Gamma; el precio donde la gamma neta de los dealers pasa de positiva a negativa (Γ neta = 0). [CG]
-- **98DTE:** vencimientos a unos 98 días; en las fuentes representan la estructura de posicionamiento más lenta, frente al flujo intradía de las 0DTE. [PB 7–10, CG] (ver sección 12 sobre 90DTE)
+- **90DTE:** el vencimiento de largo plazo que muestra **RT Magneto**, junto con 0DTE. Es el que se nombra en todo el copy sobre el producto. (confirmado por el usuario)
+- **98DTE:** vencimiento a unos 98 días que usan algunas fuentes educativas [PB 7–10, CG] para representar la estructura de posicionamiento más lenta. No es el vencimiento de RT Magneto; aparece solo como contexto educativo citado.
 - **Aceptación / rechazo:** que el precio cruce un nivel y se sostenga al otro lado (aceptación) o lo intente y vuelva rápido (rechazo). [CG]
 - **Pinning:** cuando el precio "se pega" a un strike con mucho interés abierto y gamma, sobre todo cerca del vencimiento. [CG]
 - **Call Wall / Put Wall:** strikes con mucha gamma del lado call (suelen actuar como resistencia) o del lado put (suelen actuar como soporte). [CG]
@@ -230,6 +231,8 @@ Se basan en la posición del precio respecto a Zero Gamma y a los niveles GEX+/�
 | **3. Precio en Max GEX+ (el muro)** | Largos | Fade del nivel (giro) | Zero Gamma → siguiente nivel gamma de largo plazo |
 | **4. Precio en Max GEX− (el vacío)** | Cortos | Impulso (continuación) | Siguiente nivel GEX 0DTE → siguiente nivel gamma de largo plazo |
 
+En la fuente, el "nivel de largo plazo" es un nivel 98DTE. En RT Magneto el equivalente es el nivel **90DTE**.
+
 Ejemplos de la fuente, resumidos:
 
 - **Escenario 1 [PB 7]:** ES cruza Zero Gamma en 4500, Max GEX+ en 4525. Esperar un retroceso a 4505–4508 para entrar largo.
@@ -329,6 +332,8 @@ Esta sección amplía lo anterior con la conversación de ChatGPT. Está escrita
 - **Sesgo práctico:** por encima del flip, buscar compras en retrocesos; por debajo, ventas en rebotes.
 
 ### 0DTE frente a 98DTE: dos horizontes
+
+La fuente compara el flip 0DTE con el de 98DTE. RT Magneto muestra **0DTE y 90DTE**, así que en la web la misma idea se explica con 90DTE como horizonte largo. Las cifras 98DTE se quedan como parte de la fuente citada.
 
 | | Flip 0DTE | Flip 98DTE |
 |---|---|---|
@@ -481,10 +486,10 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 - **Titular:** El mismo nivel, dos comportamientos.
 - **Texto:** En gamma positiva, Max GEX+ es un imán: el precio vuelve a él. En gamma negativa, los niveles se convierten en soporte y resistencia reales, y el precio rebota o los rompe con fuerza. Saber en qué régimen estás cambia cómo lees el nivel.
 
-### Sección: 0DTE y 98DTE
+### Sección: 0DTE y 90DTE
 
 - **Titular:** El día y la estructura.
-- **Texto:** El flip de las 0DTE marca el flujo del día; el de vencimientos más largos marca la estructura. Cuando el precio está por encima o por debajo de los dos, los movimientos suelen ser más limpios. Entre ambos, el mercado duda.
+- **Texto:** RT Magneto muestra dos horizontes: 0DTE, el flujo del día, y 90DTE, la estructura de fondo. Cuando el precio está por encima o por debajo de los dos, los movimientos suelen ser más limpios. Entre ambos, el mercado duda.
 
 ### Sección: Zero Gamma no es un gatillo
 
@@ -515,7 +520,7 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 | 7 | Volatilidad antes que dirección | Contraste flecha alcista/bajista frente a radar de volatilidad | OF 12 |
 | 8 | Gravedad o aceleración | Imán (GEX+) frente a cohete (GEX−), con Zero Gamma en el centro | GM 6, PB 4, PB 12 |
 | 9 | Los 3 niveles clave | Muro, pivote y vacío como tres planos horizontales que el precio atraviesa; el plano de Max GEX+ cambia de imán a muro según el régimen | PB 5, GM 8, GM 9, CG |
-| 9b | 0DTE y 98DTE | Dos líneas de flip a distinta profundidad; el precio entre ambas tiembla, fuera de ellas fluye | CG |
+| 9b | 0DTE y 90DTE | Dos líneas de flip a distinta profundidad (0DTE y 90DTE, los vencimientos de RT Magneto); el precio entre ambas tiembla, fuera de ellas fluye | CG, PRODUCT.md |
 | 10 | Sentimiento | Área magenta que pasa a verde en el punto de transición | GM 10 |
 | 11 | Los 4 escenarios | Cuatro mini-gráficos animados (retroceso, rechazo, fade, impulso) | PB 6–10, PB 15 |
 | 12 | El método y la disciplina | Ciclo de operación y checklist que se marca al hacer scroll | GM 11, GM 12, PB 13 |
@@ -537,7 +542,7 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 6. **Origen del material.** Las presentaciones están generadas con NotebookLM y llevan su marca de agua. Confirmar si se pueden mostrar tal cual o solo como fuente interna.
 7. **Tasas de acierto del 70–80 % (y 20–30 %).** [PB 6–11, PB 15] atribuyen a cada escenario una "success rate" del 70–80 %, y del 20–30 % a las entradas de ruptura y giro. No hay datos que las respalden en el material, y PRODUCT.md prohíbe implicar resultados, así que no aparecen en el copy. Si el usuario quiere usarlas, harían falta datos verificables, metodología y un aviso de riesgo claro, y aun así es recomendable no publicarlas.
 8. **Marca "Retail TraderPro".** El GEX Playbook lleva el logo de Retail TraderPro, no de RT Magneto. Confirmar si es una marca del usuario (¿"RT" = Retail Trader?) o de un tercero, antes de reutilizar su material o mencionarla.
-9. **98DTE frente a 90DTE.** El playbook y [CG] hablan de "98DTE"; PRODUCT.md dice que RT Magneto muestra 0DTE y **90DTE**. Con dos fuentes que dicen 98DTE, es probable que PRODUCT.md tenga la errata, pero hay que confirmarlo antes de corregirlo y de usar el número en la web.
+9. ~~**98DTE frente a 90DTE.**~~ **Resuelto:** RT Magneto usa **90DTE**. El 98DTE del playbook y de [CG] es de otros vencimientos y se mantiene solo como contexto educativo citado; el copy sobre el producto habla siempre de 0DTE y 90DTE.
 10. **Max GEX+ como resistencia frente a "zona de gravedad".** [PB 4–5] describe Max GEX+ como imán que atrae y provoca giros, y Max GEX− como zona de aceleración que puede romperse. Es coherente con [GM 9], pero refuerza la duda del punto 1 sobre [GM 2].
 11. **Reglas de riesgo concretas.** Los valores de [PB 13] (1 % por operación, 3 % diario, 2 posiciones, VIX > 5 %) son recomendaciones de la fuente. Confirmar si el usuario quiere publicarlos como guía educativa o dejarlos solo en materiales del curso.
 12. **Vega y Skew.** Confirmar si RT Magneto muestra IV o Skew; si no, presentarlos solo como concepto educativo.
