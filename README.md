@@ -32,6 +32,12 @@ Guarda en `capturas/` una imagen por capítulo en escritorio (1440×900) y móvi
 - `src/styles.css`: tokens de color (los mismos del indicador) y tipografía (Archivo, IBM Plex Mono, autoalojadas con Fontsource).
 - `public/img/`: captura del indicador recortada de `content/assets/rt-magneto-ninjatrader-anotado.png`.
 
+## Idiomas
+
+El HTML está en español. `src/i18n.js` detecta el idioma del navegador del visitante (que sigue la configuración de su país o sistema) y, si es inglés, portugués, francés, alemán o italiano, cambia los textos con `src/i18n/<idioma>.json`; si no habla ninguno de esos, muestra inglés. El selector del menú permite cambiarlo y se recuerda en ese navegador.
+
+Cada texto traducible lleva `data-i18n="clave"` (o `data-i18n-alt`, `data-i18n-aria-label`, `data-i18n-placeholder`). Para cambiar un texto, edítalo en el HTML y en `src/i18n/es.json`, y su traducción en los demás archivos. Para añadir un idioma, copia `en.json`, tradúcelo y añade el código a `LANGS` y al `<select>`.
+
 ## Accesibilidad y rendimiento
 
 - Con `prefers-reduced-motion` la escena no se anima: muestra un fotograma fijo por capítulo y los textos aparecen sin transición.

@@ -4,6 +4,7 @@ import '@fontsource/ibm-plex-mono/500.css';
 import './styles.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { detect, setLang, t } from './i18n.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,8 +13,11 @@ root.classList.add('js');
 const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const reduced = reducedQuery.matches;
 
-const yearEl = document.querySelector('[data-year]');
-if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+const setYear = () => {
+  const yearEl = document.querySelector('[data-year]');
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+};
+setYear();
 
 // ---------- Capa 3D ----------
 
@@ -84,6 +88,7 @@ function bindScenesScrubbed(SCENES) {
   window.addEventListener('load', rebuild);
   document.fonts?.ready.then(rebuild);
   window.addEventListener('resize', debounce(rebuild, 200));
+  document.addEventListener('langchange', () => requestAnimationFrame(rebuild));
 }
 
 function collectKeys(SCENES) {
@@ -284,24 +289,24 @@ function bindSignup() {
     input.setAttribute('aria-invalid', String(!ok));
     msg.classList.toggle('is-error', !ok);
     if (!ok) {
-      msg.textContent = 'Revisa el correo: falta la @ o el dominio.';
+      msg.textContent = t('js.emailInvalid');
       input.focus();
       return;
     }
     const endpoint = form.dataset.endpoint;
     if (!endpoint) {
       // Aún no hay servicio de correo conectado
-      msg.textContent = 'Gracias. El registro por correo se activará pronto; mientras tanto, únete por Telegram.';
+      msg.textContent = t('js.emailPending');
       return;
     }
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: input.value.trim() }) });
       if (!res.ok) throw new Error(String(res.status));
-      msg.textContent = 'Listo. Te escribiremos cuando abra el acceso.';
+      msg.textContent = t('js.emailOk');
       form.reset();
     } catch {
       msg.classList.add('is-error');
-      msg.textContent = 'No se pudo enviar. Vuelve a intentarlo en unos minutos.';
+      msg.textContent = t('js.emailError');
     }
   });
 }
@@ -311,6 +316,23 @@ function debounce(fn, ms) {
   return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
 
+// ---------- Idioma ----------
+
+function bindLang() {
+  document.addEventListener('langchange', () => {
+    setYear();
+    // Los textos cambian de longitud: recalcular posiciones del scroll
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  });
+  document.querySelectorAll('[data-lang]').forEach((sel) => {
+    sel.addEventListener('change', () => setLang(sel.value, { remember: true }));
+  });
+  const lang = detect();
+  if (lang !== 'es') setLang(lang);
+  else document.querySelectorAll('[data-lang]').forEach((s) => { s.value = 'es'; });
+}
+
+bindLang();
 buildMinis();
 bindReveals();
 bindNav();
