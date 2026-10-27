@@ -45,6 +45,7 @@ Other differentiators the user named:
 ## Capabilities and Constraints
 
 - Confirmed: 0DTE and 90DTE expirations; Gamma, Delta, Vanna, Charm; Market Maker/dealer exposure and hedging levels; gamma magnet levels; session sentiment indicator; gamma ladder by volume and imbalance; historical max-gamma traces.
+- Expirations: RT Magneto uses **0DTE and 90DTE**. Some educational sources mention 98DTE; that refers to other expirations and appears only as cited educational context, never as a product feature.
 - Platform support claims must stay exact: NinjaTrader and ATAS available, Bookmap "coming soon" only.
 - Lead capture happens through YouTube, TikTok and Telegram, plus the website itself; the site should funnel visitors to these channels and capture leads directly.
 - Payments: PayPal and crypto stablecoins (USDT, USDC). Payment provider for crypto, networks and checkout implementation are not yet chosen.
@@ -59,9 +60,10 @@ Other differentiators the user named:
 
 ## Evidence on Hand
 
-- Educational material in **PDF** format: three slide decks on options order flow, convexity, GEX, Zero Gamma, imbalance magnets, the sentiment indicator and a GEX trading playbook (regimes, key levels, scenarios, risk rules), stored in `content/source/`. Their content is distilled into Spanish, section-ready copy in [`content/educacion.md`](content/educacion.md), which also lists open questions to confirm before publishing. One deck states 70–80% success rates; those figures are unverified and stay out of site copy.
+- Educational material in **PDF** format: three slide decks on options order flow, convexity, GEX, Zero Gamma, imbalance magnets, the sentiment indicator and a GEX trading playbook (regimes, key levels, scenarios, risk rules), stored in `content/source/`, plus the text of a ChatGPT conversation on trading ES with 0DTE gamma (Zero Gamma as pivot, 0DTE vs 98DTE, magnet vs support/resistance) saved there as Markdown. Their content is distilled into Spanish, section-ready copy in [`content/educacion.md`](content/educacion.md), which also lists open questions to confirm before publishing. One deck states 70–80% success rates; those figures are unverified and stay out of site copy.
 - A **video** explaining how the tool works (not yet in the repo).
-- No testimonials, customer counts, performance results, screenshots, or press have been provided. Future work must not fabricate any of these, and must not imply trading results or returns.
+- One annotated NinjaTrader screenshot of RT Magneto (ES, 0DTE levels, spikes and the Options Sentiment sub-chart) in `content/assets/rt-magneto-ninjatrader-anotado.png`, documented in `content/educacion.md` section 3. A third-party label that appeared top-left has been masked out of the image.
+- No testimonials, customer counts, performance results, or press have been provided. Future work must not fabricate any of these, and must not imply trading results or returns.
 
 ## Product Principles
 
