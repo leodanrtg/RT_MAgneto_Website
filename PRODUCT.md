@@ -59,7 +59,7 @@ Other differentiators the user named:
 
 ## Evidence on Hand
 
-- Educational material in **PDF** format (not yet in the repo).
+- Educational material in **PDF** format: two slide decks on options order flow, convexity, GEX, Zero Gamma, imbalance magnets and the sentiment indicator, stored in `content/source/`. Their content is distilled into Spanish, section-ready copy in [`content/educacion.md`](content/educacion.md), which also lists open questions to confirm before publishing.
 - A **video** explaining how the tool works (not yet in the repo).
 - No testimonials, customer counts, performance results, screenshots, or press have been provided. Future work must not fabricate any of these, and must not imply trading results or returns.
 
