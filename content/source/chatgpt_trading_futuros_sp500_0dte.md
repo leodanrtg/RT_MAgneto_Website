@@ -2,7 +2,7 @@
 
 Texto de una conversación con ChatGPT que el usuario pegó en el proyecto el 2026-10-27 (el enlace compartido no se podía leer de forma automática). Se conserva tal cual, como fuente; solo se reconstruyeron las fórmulas que llegaron rotas al copiar (p. ej. "Γ_net = 0") y se marcaron las preguntas del usuario con "**Pregunta:**".
 
-Es contenido generado por IA, no material verificado. Lo que se usa en la web está filtrado en [`../educacion.md`](../educacion.md), sección 9.
+Es contenido generado por IA, no material verificado. Lo que se usa en la web está filtrado en [`../educacion.md`](../educacion.md), sección 10.
 
 ---
 

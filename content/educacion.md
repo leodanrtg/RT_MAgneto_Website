@@ -1,6 +1,6 @@
 # Contenido educativo: cómo leer el flujo de opciones con RT Magneto
 
-Este archivo convierte el material educativo que entregó el usuario en contenido listo para la web. Todo lo que aparece aquí sale de las cuatro fuentes de origen; no se añadieron resultados, cifras de rendimiento ni testimonios. Las tasas de acierto que aparecen en una de las fuentes se dejan fuera del copy a propósito (ver sección 12).
+Este archivo convierte el material educativo que entregó el usuario en contenido listo para la web. Todo lo que aparece aquí sale de las cuatro fuentes de origen y de una captura anotada del indicador; no se añadieron resultados, cifras de rendimiento ni testimonios. Las tasas de acierto que aparecen en una de las fuentes se dejan fuera del copy a propósito (ver sección 13).
 
 **Fuentes** (tres presentaciones en inglés generadas con NotebookLM, solo imágenes, y una conversación de ChatGPT en español):
 
@@ -11,7 +11,9 @@ Este archivo convierte el material educativo que entregó el usuario en contenid
 | [`source/GEX_Playbook_Market_Structure_Trading.pdf`](source/GEX_Playbook_Market_Structure_Trading.pdf) | Guía práctica: opciones como "sala de máquinas" de los futuros, regímenes gravedad/aceleración, los 3 niveles clave, 4 escenarios, tipos de entrada, disciplina, Vega y Skew. Lleva la marca "Retail TraderPro" | 15 |
 | [`source/chatgpt_trading_futuros_sp500_0dte.md`](source/chatgpt_trading_futuros_sp500_0dte.md) | Conversación de ChatGPT "Trading futuros SP500 0DTE": Zero Gamma como pivote, 0DTE frente a 98DTE, fuerza relativa de Max GEX+ / Zero Gamma / Max GEX−, qué es un 0DTE, griegas, cuándo domina gamma, imán frente a soporte/resistencia | 12 respuestas |
 
-En adelante se citan como **[OF n]** (Order Flow, diapositiva n), **[GM n]** (Gamma Microstructure, diapositiva n), **[PB n]** (GEX Playbook, diapositiva n) y **[CG]** (conversación de ChatGPT, por tema). La conversación es texto generado por IA: se usa para ampliar y explicar, no como fuente de datos, y sus afirmaciones dudosas están marcadas en la sección 12.
+La captura anotada por el usuario está en [`assets/rt-magneto-ninjatrader-anotado.png`](assets/rt-magneto-ninjatrader-anotado.png) y se cita como **[IMG]**.
+
+En adelante se citan como **[OF n]** (Order Flow, diapositiva n), **[GM n]** (Gamma Microstructure, diapositiva n), **[PB n]** (GEX Playbook, diapositiva n) y **[CG]** (conversación de ChatGPT, por tema). La conversación es texto generado por IA: se usa para ampliar y explicar, no como fuente de datos, y sus afirmaciones dudosas están marcadas en la sección 13.
 
 ---
 
@@ -57,7 +59,54 @@ Tres capas, de lo micro a lo macro [GM 2]:
 
 ---
 
-## 3. Anatomía de un spike: dos colores, una señal
+## 3. Anatomía del indicador RT Magneto [IMG]
+
+![RT Magneto en NinjaTrader, anotado](assets/rt-magneto-ninjatrader-anotado.png)
+
+Captura de RT Magneto en NinjaTrader sobre ES 06-26 (gráfico de 2000 de volumen), con cada elemento señalado por el usuario. El indicador tiene **dos partes**:
+
+1. **El gráfico principal:** niveles y puntos de colores sobre las velas del futuro.
+2. **El subgráfico "RT Options Sentiment 0DTE":** una línea/área continua que pasa de magenta a verde.
+
+### Gráfico principal: los niveles
+
+| Elemento (rótulo en la captura) | Color en la leyenda | Qué es | Dónde se explica |
+|---|---|---|---|
+| **Zero Gamma (0DTE) pivot** | Amarillo — *Pivot Level* | El nivel donde la gamma neta de los dealers cambia de signo; pivote y ancla de la sesión. | Secciones 7 y 10 [GM 8, PB 5, CG] |
+| **GEX+ (Imbalance Magnet Level 0DTE)** | Verde amarillento — *Major Call* | Imán de desequilibrio positivo: el nivel de mayor exposición gamma del lado call. En la captura queda **por encima** del precio. | Sección 7 [GM 9] |
+| **GEX− (Imbalance Magnet Level 0DTE)** | Magenta — *Major Put* | Imán de desequilibrio negativo: el nivel de mayor exposición del lado put. En la captura queda **por debajo** del precio. | Sección 7 [GM 9] |
+| **Volume GEX+ (Magnet Level 0DTE)** | Lima — *Major + (Vol)* | Nivel GEX+ calculado con el volumen del día. | Secciones 7 y 10 [GM 7, CG] |
+| **Volume GEX− (Magnet Level 0DTE)** | Rojo — *Major − (Vol)* | Nivel GEX− calculado con el volumen del día. | Secciones 7 y 10 [GM 7, CG] |
+| **Order Flow Convexity+ (0DTE)** | Cian — *Long Gamma* | Puntos donde el flujo compra opciones (convexidad positiva): más expectativa de volatilidad. | Sección 5 [OF 3–4] |
+| **Order Flow Convexity− (0DTE)** | Azul — *Short Gamma* | Puntos donde el flujo vende opciones (convexidad negativa): rango y estancamiento. | Sección 5 [OF 3–4] |
+
+La leyenda incluye además *Major + (OI)* (azul cielo), *Major − (OI)* (rojo anaranjado) y *Net Gamma* (dorado), que no están rotulados en la captura (ver sección 13).
+
+### Gráfico principal: los spikes
+
+Círculos sobre las velas con un número dentro. Siguen la matriz de los cuatro arquetipos (sección 4):
+
+- **Long Call Spike:** compra agresiva de calls (convexidad positiva + GEX+).
+- **Long Put Spike:** compra agresiva de puts (convexidad positiva + GEX−).
+- **Short Call Spikes:** venta de calls (convexidad negativa + GEX−). En la captura aparecen agrupados cerca de los máximos.
+
+### Subgráfico: RT Options Sentiment 0DTE
+
+- **Zona magenta (Negative GEX Order Flow zone):** el flujo total de opciones 0DTE está dominado por puts.
+- **Zona verde (Positive GEX Order Flow zone):** el flujo pasa a dominio de calls.
+- **Cambios de régimen:** líneas amarillas discontinuas verticales con los rótulos "Switch to PUTS" y "Switch to CALLS" marcan cuándo cambia el sentimiento.
+- **Lectura en la esquina:** porcentaje de calls frente a puts (en la captura, "CALLS 100 % / PUTS 0 %").
+
+Es el "indicador adicional de sentimiento del mercado de opciones" que describe [PRODUCT.md](../PRODUCT.md), y coincide con [GM 10].
+
+### Lo que confirma la captura
+
+- Los imanes de desequilibrio se comportan como dice [GM 9]: GEX+ encima del precio, como techo; GEX− debajo, como suelo. Esto refuerza la lectura de la sección 13, punto 1.
+- Todos los niveles rotulados son **0DTE**. La captura no muestra niveles 90DTE (ver sección 13).
+
+---
+
+## 4. Anatomía de un spike: dos colores, una señal
 
 > "Para entender el contexto, hay que leer los dos colores como uno solo." [OF 2]
 
@@ -96,7 +145,7 @@ La polaridad del GEX es el producto del lado de la posición por el tipo de opci
 
 ---
 
-## 4. Convexidad: el indicador de convicción
+## 5. Convexidad: el indicador de convicción
 
 > "Lee la convexidad en términos de volatilidad, no solo de dirección." [GM 5]
 
@@ -120,7 +169,7 @@ La polaridad del GEX es el producto del lado de la posición por el tipo de opci
 
 ---
 
-## 5. GEX: los regímenes de mercado
+## 6. GEX: los regímenes de mercado
 
 > "El GEX indica el sesgo de contrato subyacente y define el entorno del sistema." [GM 6]
 
@@ -138,7 +187,7 @@ Entre los dos regímenes está el punto **Zero Gamma**. [GM 6]
 
 ---
 
-## 6. Del dato micro al gráfico macro
+## 7. Del dato micro al gráfico macro
 
 Cuando las órdenes long/short se agregan en niveles de precio concretos, alteran la liquidez de los dealers y convierten datos de opciones invisibles en límites visibles en el gráfico. [GM 7]
 
@@ -171,7 +220,7 @@ Esto encaja con el "indicador adicional de sentimiento del mercado de opciones" 
 
 ---
 
-## 7. Aplicación: cómo usar el mapa gamma
+## 8. Aplicación: cómo usar el mapa gamma
 
 ### Ciclo de una operación [GM 11]
 
@@ -187,7 +236,7 @@ Esto encaja con el "indicador adicional de sentimiento del mercado de opciones" 
 
 ---
 
-## 8. El GEX Playbook: de la estructura a la ejecución
+## 9. El GEX Playbook: de la estructura a la ejecución
 
 Esta sección resume la tercera fuente [PB], que es la más práctica. Va de la idea general al checklist de cada operación.
 
@@ -288,7 +337,7 @@ Nota: PRODUCT.md no lista Vega ni Skew entre las griegas que muestra RT Magneto 
 
 ---
 
-## 9. Zero Gamma, 0DTE y la fuerza de cada nivel (ampliación) [CG]
+## 10. Zero Gamma, 0DTE y la fuerza de cada nivel (ampliación) [CG]
 
 Esta sección amplía lo anterior con la conversación de ChatGPT. Está escrita para un trader de ES/NQ y responde preguntas que las presentaciones dejan abiertas.
 
@@ -358,7 +407,7 @@ Según la fuente, Max GEX+ suele ser el nivel más respetado intradía, porque l
 
 ### Imán o soporte/resistencia
 
-Esta es la aclaración más útil para la web, porque resuelve buena parte de la duda de la sección 12:
+Esta es la aclaración más útil para la web, porque resuelve buena parte de la duda de la sección 13:
 
 - **En gamma positiva**, Max GEX+ funciona como **imán**: el precio vuelve a él porque los dealers compran cuando baja y venden cuando sube. Parece soporte o resistencia, pero es un punto de equilibrio.
 - **En gamma negativa**, los niveles dejan de ser imanes y actúan como **soporte o resistencia reales**: por debajo del nivel, resistencia; por encima, soporte. Al tocarlo hay rechazos o rupturas fuertes.
@@ -385,7 +434,7 @@ GEX no dice si el precio va a subir o bajar; dice **cómo** es probable que se m
 
 ---
 
-## 10. Copy listo para secciones de la landing
+## 11. Copy listo para secciones de la landing
 
 Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y evita prometer resultados (ver [Product Principles](../PRODUCT.md)).
 
@@ -395,6 +444,19 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 - **Subtítulo:** RT Magneto lleva el posicionamiento del mercado de opciones a tu gráfico de futuros: exposición gamma, convexidad, el pivote Zero Gamma y los niveles que actúan como imanes del precio.
 - **CTA primario:** Aprende a leer el flujo de opciones
 - **CTA secundario:** Ver cómo funciona
+
+### Sección: Tu gráfico, explicado
+
+- **Titular:** Todo lo que ves en el gráfico, con nombre.
+- **Texto:** RT Magneto pone dos capas sobre tu futuro. En el gráfico principal: el pivote Zero Gamma, los imanes GEX+ y GEX−, los niveles por volumen y los puntos de convexidad y los spikes del flujo de opciones. En el subgráfico: el sentimiento 0DTE, que pasa de magenta a verde cuando el flujo cambia de puts a calls.
+- **Microcopy para hotspots** (una línea por elemento al pasar el cursor o hacer scroll):
+  - *Zero Gamma:* la línea que divide la sesión.
+  - *Imán GEX+:* donde la cobertura de los dealers frena las subidas.
+  - *Imán GEX−:* el suelo, o el destino de las caídas aceleradas.
+  - *Volume GEX±:* los mismos imanes, calculados con el volumen del día.
+  - *Convexidad + / −:* quién compra y quién vende volatilidad.
+  - *Spikes:* las órdenes grandes de opciones, en el momento en que entran.
+  - *Sentimiento 0DTE:* magenta, dominan los puts; verde, dominan las calls.
 
 ### Sección: De lo micro a lo macro
 
@@ -469,7 +531,7 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 
 - **Titular:** Cuatro escenarios. Un mapa para cada uno.
 - **Texto:** Según dónde esté el precio respecto a Zero Gamma y a los niveles GEX, cambian la entrada y los objetivos: retroceso hacia el imán, venta del rebote en aceleración, fade en el muro o impulso en el vacío.
-- **Nota:** sin porcentajes de acierto (ver sección 12).
+- **Nota:** sin porcentajes de acierto (ver sección 13).
 
 ### Sección: Disciplina
 
@@ -505,7 +567,7 @@ Textos en español, ajustados a lo que dicen las fuentes. El tono es educativo y
 
 ---
 
-## 11. Estructura sugerida para la landing con scroll 3D
+## 12. Estructura sugerida para la landing con scroll 3D
 
 Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PRODUCT.md](../PRODUCT.md). Las ideas visuales salen de los diagramas de las fuentes.
 
@@ -514,6 +576,7 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 | 1 | Hero | Precio en movimiento rodeado de puntos cian y morados que aparecen al hacer scroll | GM 1, OF 1 |
 | 2 | Operar en la niebla | Un gráfico cubierto de indicadores y niebla que se despeja al hacer scroll y deja ver soporte y resistencia | PB 2 |
 | 3 | La sala de máquinas | Un motor (opciones SPX/NDX) que transmite energía a las ruedas (futuros ES/NQ); los dealers aparecen como la transmisión | PB 3, CG |
+| 3b | Tu gráfico, explicado | La captura real del indicador; al hacer scroll se iluminan uno a uno sus elementos con el microcopy de hotspots | IMG |
 | 4 | De lo micro a lo macro | Los spikes se agrupan en un perfil de GEX por strike y después se proyectan como líneas en el gráfico | GM 2 |
 | 5 | Anatomía de un spike | El anillo exterior y el círculo interior se separan en el espacio y se vuelven a unir | GM 3, OF 2 |
 | 6 | Los cuatro arquetipos | Matriz 2×2 que se construye combinando anillos (cian/morado) y núcleos (verde/rojo) | OF 6–11, GM 4 |
@@ -532,7 +595,7 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
 
 ---
 
-## 12. Puntos a confirmar con el usuario antes de publicar
+## 13. Puntos a confirmar con el usuario antes de publicar
 
 1. **Contradicción de soporte/resistencia (en parte resuelta).** [GM 9] dice que el imán GEX+ actúa como *resistencia* y el GEX− como *soporte*. Pero el diagrama de [GM 2] etiqueta la resistencia como "Negative GEX magnet" y el soporte como "Positive GEX pivot". [CG] lo explica según el régimen: en gamma positiva Max GEX+ es un imán, y en gamma negativa los niveles actúan como soporte o resistencia según el precio esté encima o debajo. El copy sigue esa lectura; falta confirmar que [GM 2] es solo un diagrama ilustrativo.
 2. **Lenguaje que puede sonar a promesa de resultados.** Las fuentes usan expresiones como "high-probability zones", "inevitable profit-taking targets", "ultimate, objective targets" o "mathematically validates". Este archivo las suaviza ("zonas para entrar", "sirven como objetivos", "respalda") para cumplir con no implicar resultados. Si el usuario quiere mantenerlas, conviene revisarlas junto con el aviso de riesgo.
@@ -554,3 +617,8 @@ Propuesta de orden narrativo, siguiendo el principio "educar para vender" de [PR
     - Herramientas de terceros (SpotGamma, SqueezeMetrics, Tradytics, Thinkorswim): no se mencionan en la web.
     - Stops y objetivos en porcentaje del "Trading System" (0,3 %–1,5 %) y estrategias de venta de prima (iron condor, credit spreads): son consejo operativo concreto; fuera del copy salvo que el usuario quiera un apartado de formación con aviso de riesgo.
 14. **Volume GEX frente a GEX por interés abierto.** [CG] dice que cuando el Volume GEX diverge del GEX por interés abierto, el posicionamiento real puede estar cambiando. Encaja con la "escalera de gamma por volumen y por desequilibrio" de PRODUCT.md; confirmar si RT Magneto muestra ambas versiones para poder explicarlo en la web.
+15. **Rótulo "SpotGamma" en la captura.** Arriba a la izquierda del gráfico se lee "SpotGamma, SpotGamma" (nombre del indicador o de la plantilla en NinjaTrader). Antes de publicar la imagen conviene recortarla o volver a capturarla sin ese rótulo, para no mencionar a un tercero ni sugerir que RT Magneto usa sus datos. Confirmar también de dónde vienen los datos de opciones.
+16. **Elementos de la leyenda sin rótulo.** Confirmar qué muestran *Major + (OI)*, *Major − (OI)* y *Net Gamma*, y si deben aparecer en la web.
+17. **Números dentro de los spikes.** Confirmar qué indican (444, 3K, −537…): ¿contratos, prima, delta?
+18. **Niveles 90DTE.** La captura solo muestra niveles 0DTE. Confirmar cómo se ven los niveles 90DTE en el indicador para documentarlos igual.
+19. **Captura en ATAS.** Si hay una captura equivalente en ATAS, sirve para mostrar en la web las dos plataformas disponibles.

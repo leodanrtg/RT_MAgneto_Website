@@ -62,7 +62,8 @@ Other differentiators the user named:
 
 - Educational material in **PDF** format: three slide decks on options order flow, convexity, GEX, Zero Gamma, imbalance magnets, the sentiment indicator and a GEX trading playbook (regimes, key levels, scenarios, risk rules), stored in `content/source/`, plus the text of a ChatGPT conversation on trading ES with 0DTE gamma (Zero Gamma as pivot, 0DTE vs 98DTE, magnet vs support/resistance) saved there as Markdown. Their content is distilled into Spanish, section-ready copy in [`content/educacion.md`](content/educacion.md), which also lists open questions to confirm before publishing. One deck states 70–80% success rates; those figures are unverified and stay out of site copy.
 - A **video** explaining how the tool works (not yet in the repo).
-- No testimonials, customer counts, performance results, screenshots, or press have been provided. Future work must not fabricate any of these, and must not imply trading results or returns.
+- One annotated NinjaTrader screenshot of RT Magneto (ES, 0DTE levels, spikes and the Options Sentiment sub-chart) in `content/assets/rt-magneto-ninjatrader-anotado.png`, documented in `content/educacion.md` section 3. It shows a "SpotGamma" label top-left, so crop or recapture before public use.
+- No testimonials, customer counts, performance results, or press have been provided. Future work must not fabricate any of these, and must not imply trading results or returns.
 
 ## Product Principles
 
