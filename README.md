@@ -13,6 +13,17 @@ npm run preview   # sirve dist/ en local
 
 `dist/` usa rutas relativas, así que funciona en Netlify, Vercel, Cloudflare Pages, GitHub Pages o una subcarpeta.
 
+## Ver la web con Playwright
+
+```bash
+npx playwright install chromium   # solo la primera vez
+npm run build
+npm run preview                   # deja esta terminal abierta (http://localhost:4173)
+npm run capturas                  # en otra terminal
+```
+
+Guarda en `capturas/` una imagen por capítulo en escritorio (1440×900) y móvil (390×844). Con `URL=https://… npm run capturas` recorre otra dirección.
+
 ## Estructura
 
 - `index.html`: todo el contenido y el copy (en español, sale de `content/educacion.md`).

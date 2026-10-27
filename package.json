@@ -7,6 +7,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "playwright": "^1.63.0",
     "vite": "^8.3.5"
   },
   "name": "rt-magneto-website",
@@ -15,6 +16,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "capturas": "node scripts/capturas.mjs"
   }
 }
