@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>RT Magneto · Exposición gamma y cobertura del dealer en tu gráfico de futuros</title>
+  <meta name="description" content="RT Magneto lleva el posicionamiento del mercado de opciones a tu gráfico de futuros: exposición gamma, convexidad, el pivote Zero Gamma y los niveles que actúan como imanes del precio. Para NinjaTrader y ATAS." />
+  <meta name="theme-color" content="#06080d" />
+  <meta property="og:title" content="RT Magneto" />
+  <meta property="og:description" content="Mira las fuerzas invisibles que mueven el precio: exposición gamma 0DTE y 90DTE en tu gráfico de futuros." />
+  <meta property="og:image" content="img/rt-magneto-ninjatrader-1200.webp" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="img/rt-magneto-ninjatrader-1200.webp" as="image" type="image/webp" media="(max-width: 900px)" />
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div class="world-fallback" aria-hidden="true"></div>
+  <div class="world-scrim" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" data-nav>
+    <a class="brand" href="#hero" aria-label="RT Magneto, inicio">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M5 9h22" stroke="var(--gex-pos)" stroke-width="2.4" stroke-linecap="round" />
+        <path d="M5 16h22" stroke="var(--zero)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 4.2" />
+        <path d="M5 23h22" stroke="var(--gex-neg)" stroke-width="2.4" stroke-linecap="round" />
+        <circle cx="19" cy="9" r="3.6" fill="var(--ink)" stroke="var(--text)" stroke-width="2" />
+      </svg>
+      <span>RT Magneto</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav-links">
+        <li><a href="#niebla">Aprende</a></li>
+        <li><a href="#indicador">Indicador</a></li>
+        <li><a href="#producto">Plataformas</a></li>
+        <li><a href="#comunidad">Comunidad</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-sm" href="#acceso">Obtener acceso</a>
+  </header>
+
+  <main id="contenido">
+
+    <!-- HERO -->
+    <section class="chapter hero" id="hero" data-scene="hero">
+      <div class="wrap">
+        <h1 class="display">Mira las fuerzas invisibles que mueven el precio.</h1>
+        <p class="lede">RT Magneto lleva el posicionamiento del mercado de opciones a tu gráfico de futuros: exposición gamma, convexidad, el pivote Zero Gamma y los niveles que actúan como imanes del precio.</p>
+        <div class="actions">
+          <a class="btn" href="#niebla">Aprende a leer el flujo de opciones</a>
+          <a class="btn btn-ghost" href="#indicador">Ver el indicador</a>
+        </div>
+        <dl class="hero-facts">
+          <div><dt>Vencimientos</dt><dd>0DTE y 90DTE</dd></div>
+          <div><dt>Plataformas</dt><dd>NinjaTrader · ATAS</dd></div>
+          <div><dt>Futuros</dt><dd>ES · NQ · RTY · YM · GC · CL</dd></div>
+        </dl>
+      </div>
+      <p class="scroll-cue" aria-hidden="true"><span></span>Desliza para entrar en la estructura</p>
+    </section>
+
+    <!-- NIEBLA -->
+    <section class="chapter" id="niebla" data-scene="fog">
+      <div class="wrap panel-left">
+        <h2 class="h2">¿Operando en la niebla?</h2>
+        <p>Sin un mapa, el mercado parece aleatorio: indicadores que se contradicen, ruido y decisiones emocionales. Debajo del precio hay una estructura que se puede ver.</p>
+        <p class="muted">Sigue bajando: la niebla se despeja y aparecen tres planos. Son los niveles que dibuja la cobertura de los dealers.</p>
+      </div>
+    </section>
+
+    <!-- SALA DE MÁQUINAS -->
+    <section class="chapter" id="sala" data-scene="engine">
+      <div class="wrap panel-right">
+        <h2 class="h2">El mercado tiene una sala de máquinas.</h2>
+        <p>La fuerza se genera en las opciones. Tú conduces el futuro. RT Magneto conecta las dos cosas y pone en tu gráfico de futuros la estructura que viene del mercado de opciones.</p>
+        <table class="map-table">
+          <caption class="sr-only">Subyacente de opciones y futuro donde se muestra</caption>
+          <thead><tr><th scope="col">Opciones</th><th scope="col" aria-hidden="true"></th><th scope="col">Tu futuro</th></tr></thead>
+          <tbody>
+            <tr><td>SPX · SPY</td><td class="arrow" aria-hidden="true"></td><td>ES</td></tr>
+            <tr><td>NDX · QQQ</td><td class="arrow" aria-hidden="true"></td><td>NQ</td></tr>
+            <tr><td>RUT · IWM</td><td class="arrow" aria-hidden="true"></td><td>RTY</td></tr>
+            <tr><td>DIA</td><td class="arrow" aria-hidden="true"></td><td>YM</td></tr>
+            <tr><td>GLD</td><td class="arrow" aria-hidden="true"></td><td>GC</td></tr>
+            <tr><td>USO</td><td class="arrow" aria-hidden="true"></td><td>CL</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- COBERTURA DEL DEALER -->
+    <section class="chapter" id="cobertura" data-scene="hedge">
+      <div class="wrap panel-left">
+        <h2 class="h2">El market maker no apuesta. Cubre.</h2>
+        <p>Los dealers venden opciones y no buscan dirección: neutralizan su delta comprando o vendiendo futuros. Cuando el precio se mueve, la gamma les obliga a ajustar esa cobertura, y ese flujo forzado deja huella en el gráfico.</p>
+        <ol class="chain">
+          <li>Cambia el delta de las opciones</li>
+          <li>El dealer ajusta con futuros</li>
+          <li>El futuro mueve el índice</li>
+          <li>El índice arrastra a las acciones</li>
+        </ol>
+        <p class="muted">Delta dice dónde está el dealer ahora. Gamma dice qué va a tener que hacer cuando el precio se mueva.</p>
+      </div>
+    </section>
+
+    <!-- ANATOMÍA DE UN SPIKE -->
+    <section class="chapter" id="spike" data-scene="spike">
+      <div class="wrap panel-right wide">
+        <h2 class="h2">Dos colores. Una sola señal.</h2>
+        <p>Cada orden grande de opciones aparece como un punto con dos capas. El anillo exterior es la <strong>convexidad</strong>: si el flujo compra o vende opciones y cuánta volatilidad espera. El círculo interior es el <strong>GEX</strong>: si la exposición es del lado call o del lado put. Se leen juntos.</p>
+        <ul class="archetypes">
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24" class="ring-long"/><circle cx="32" cy="32" r="12" class="core-pos"/></svg>
+            <h3>Long Call</h3>
+            <p>Anillo cian, núcleo verde. Convicción alcista y alta volatilidad esperada.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24" class="ring-long"/><circle cx="32" cy="32" r="12" class="core-neg"/></svg>
+            <h3>Long Put</h3>
+            <p>Anillo cian, núcleo rojo. Convicción bajista y alta volatilidad esperada.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24" class="ring-short"/><circle cx="32" cy="32" r="12" class="core-neg"/></svg>
+            <h3>Short Call</h3>
+            <p>Anillo morado, núcleo rojo. Estancamiento o resistencia por encima, sin convicción de ruptura.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24" class="ring-short"/><circle cx="32" cy="32" r="12" class="core-pos"/></svg>
+            <h3>Short Put</h3>
+            <p>Anillo morado, núcleo verde. Estancamiento o soporte sólido; visión de rango.</p>
+          </li>
+        </ul>
+        <p class="muted">No preguntes solo hacia dónde. Pregunta cuánto: un spike cian marca la mayor expectativa de un movimiento grande, sea al alza o a la baja.</p>
+      </div>
+    </section>
+
+    <!-- ESCALERA GAMMA -->
+    <section class="chapter" id="escalera" data-scene="ladder">
+      <div class="wrap panel-left">
+        <h2 class="h2">La escalera de exposición gamma.</h2>
+        <p>Cada peldaño es un strike. A la derecha, exposición positiva: los dealers amortiguan el movimiento. A la izquierda, negativa: lo amplifican. RT Magneto la muestra de dos formas, y comparar las dos ayuda a ver si el posicionamiento real está cambiando.</p>
+        <div class="segmented" role="group" aria-label="Ver la escalera por">
+          <button type="button" aria-pressed="true" data-ladder="volume">Por volumen</button>
+          <button type="button" aria-pressed="false" data-ladder="imbalance">Por desequilibrio</button>
+        </div>
+        <p class="note">Escalera ilustrativa, generada para explicar el concepto. No son datos de mercado.</p>
+      </div>
+    </section>
+
+    <!-- REGÍMENES -->
+    <section class="chapter tall" id="regimenes" data-scene="regime">
+      <div class="wrap panel-right">
+        <h2 class="h2">Amortiguador o acelerador.</h2>
+        <div class="regimes">
+          <div class="regime regime-pos">
+            <h3>Zona de gravedad <span>GEX+</span></h3>
+            <p>Los dealers están largos de gamma: compran las caídas y venden las subidas. La volatilidad se comprime y el precio tiende a volver a la media.</p>
+          </div>
+          <div class="regime regime-neg">
+            <h3>Zona de aceleración <span>GEX−</span></h3>
+            <p>Los dealers están cortos de gamma: venden cuando el precio cae. Los rangos se expanden y el mercado es propenso a rupturas.</p>
+          </div>
+        </div>
+        <blockquote class="pull">En GEX+, piensa como un contrarian. En GEX−, piensa como un seguidor de tendencia.</blockquote>
+      </div>
+    </section>
+
+    <!-- TRES NIVELES -->
+    <section class="chapter" id="niveles" data-scene="levels">
+      <div class="wrap panel-left">
+        <h2 class="h2">Conoce tu campo de batalla.</h2>
+        <dl class="levels">
+          <div class="level level-wall">
+            <dt>El muro <span>Max GEX+</span></dt>
+            <dd>Imán que atrae al precio y a menudo provoca giros. En gamma positiva funciona como punto de equilibrio.</dd>
+          </div>
+          <div class="level level-pivot">
+            <dt>El pivote <span>Zero Gamma</span></dt>
+            <dd>La línea en la arena: donde la gamma neta de los dealers cambia de signo. Es un filtro de contexto, no un gatillo: se opera la aceptación, no el toque.</dd>
+          </div>
+          <div class="level level-void">
+            <dt>El vacío <span>Max GEX−</span></dt>
+            <dd>Donde el precio puede acelerar. En gamma negativa los niveles dejan de ser imanes y actúan como soporte o resistencia reales.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- 0DTE Y 90DTE -->
+    <section class="chapter" id="horizontes" data-scene="horizons">
+      <div class="wrap panel-right">
+        <h2 class="h2">0DTE y 90DTE: dos horizontes, un mismo gráfico.</h2>
+        <p>El 0DTE refleja el flujo del día: rápido, sensible y cambiante, sobre todo cerca del cierre. El 90DTE refleja el posicionamiento más lento y estructural. RT Magneto te muestra los dos.</p>
+        <ul class="horizon-list">
+          <li><strong>Por encima de ambos pivotes:</strong> sesgo alcista, estabilidad y compresión.</li>
+          <li><strong>Por debajo de ambos:</strong> sesgo bajista y expansión de volatilidad.</li>
+          <li><strong>Entre los dos:</strong> zona de conflicto. Más rupturas falsas; lo prudente es esperar a que se resuelva.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- INDICADOR -->
+    <section class="chapter indicator" id="indicador" data-scene="indicator">
+      <div class="wrap">
+        <div class="indicator-head">
+          <h2 class="h2">Todo lo que ves en el gráfico, con nombre.</h2>
+          <p>RT Magneto pone dos capas sobre tu futuro. En el gráfico principal, los niveles y los spikes del flujo de opciones. En el subgráfico, el sentimiento 0DTE.</p>
+        </div>
+        <div class="indicator-grid">
+          <figure class="shot" data-shot>
+            <div class="shot-frame">
+              <img src="img/rt-magneto-ninjatrader.webp" srcset="img/rt-magneto-ninjatrader-1200.webp 1200w, img/rt-magneto-ninjatrader.webp 1875w" sizes="(max-width: 900px) 100vw, 62vw" width="1875" height="949" alt="Captura de RT Magneto en NinjaTrader sobre ES: niveles GEX+, Zero Gamma y GEX−, puntos de convexidad, spikes de opciones y el subgráfico de sentimiento 0DTE, con cada elemento rotulado." loading="lazy" decoding="async" />
+              <div class="shot-focus" data-focus aria-hidden="true"></div>
+            </div>
+            <figcaption>RT Magneto en NinjaTrader, ES, niveles 0DTE. <a href="img/rt-magneto-ninjatrader.webp" target="_blank" rel="noopener">Ver captura completa</a></figcaption>
+          </figure>
+          <ol class="hotspots">
+            <li data-spot="13,1.5,82,11" class="is-active"><h3>Imán GEX+</h3><p>El nivel de mayor exposición del lado call. Donde la cobertura de los dealers frena las subidas.</p></li>
+            <li data-spot="6,10.5,92,4"><h3>Volume GEX+</h3><p>El mismo imán, calculado con el volumen del día.</p></li>
+            <li data-spot="6,25,92,13"><h3>Zero Gamma 0DTE</h3><p>La línea amarilla que divide la sesión. Por encima, entorno estable; por debajo, volátil.</p></li>
+            <li data-spot="20,52.5,73,3.5"><h3>Volume GEX−</h3><p>Nivel GEX− calculado con el volumen del día.</p></li>
+            <li data-spot="63,69,28,4"><h3>Imán GEX−</h3><p>El suelo, o el destino de las caídas aceleradas.</p></li>
+            <li data-spot="77,3.5,20,6;74,39,14,5"><h3>Convexidad + y −</h3><p>Puntos cian y azules: quién compra y quién vende volatilidad.</p></li>
+            <li data-spot="35,37.5,4,6;71,30,5,9;82,21,15,14"><h3>Spikes de opciones</h3><p>Las órdenes grandes de opciones en el momento en que entran: Long Call, Long Put y Short Call.</p></li>
+            <li data-spot="0,79,100,18"><h3>Sentimiento 0DTE</h3><p>Magenta, dominan los puts. Verde, dominan las calls. Las líneas amarillas marcan el cambio.</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- SENTIMIENTO -->
+    <section class="chapter" id="sentimiento" data-scene="sentiment">
+      <div class="wrap panel-left">
+        <h2 class="h2">Confirma el cambio cuando ocurre.</h2>
+        <p>El indicador de sentimiento muestra si el flujo total de opciones 0DTE está dominado por puts o por calls. El punto de transición da confirmación en tiempo real de los cambios intradía.</p>
+        <figure class="sentiment-fig">
+          <svg viewBox="0 0 600 200" role="img" aria-label="Ilustración: el sentimiento pasa de zona magenta, dominio de puts, a zona verde, dominio de calls">
+            <defs>
+              <clipPath id="sent-reveal"><rect class="sent-reveal" x="0" y="0" width="600" height="200" /></clipPath>
+            </defs>
+            <line x1="0" y1="100" x2="600" y2="100" class="axis" />
+            <g clip-path="url(#sent-reveal)">
+              <path class="sent-neg" d="M0 100 C30 104 50 120 80 126 S130 140 160 134 S210 150 240 128 S275 112 300 100 Z" />
+              <path class="sent-pos" d="M300 100 C320 92 340 80 370 72 S420 58 450 48 S500 44 530 30 S580 22 600 26 L600 100 Z" />
+              <line x1="300" y1="14" x2="300" y2="186" class="switch" />
+            </g>
+            <text x="300" y="196" text-anchor="middle" class="sent-label">Cambio a calls</text>
+          </svg>
+          <figcaption class="note">Ilustración del concepto.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ESCENARIOS -->
+    <section class="chapter flow" id="escenarios" data-scene="scenarios">
+      <div class="wrap">
+        <h2 class="h2 narrow">Cuatro escenarios. Un mapa para cada uno.</h2>
+        <p class="narrow">Según dónde esté el precio respecto a Zero Gamma y a los niveles GEX, cambian la entrada y los objetivos.</p>
+        <ol class="scenarios">
+          <li>
+            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="pull-up"></svg>
+            <h3>El tirón de la gravedad</h3>
+            <p>De Zero Gamma hacia Max GEX+. Dealers largos de gamma. Entrada en retroceso, comprando caídas; objetivo en el imán.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="pull-down"></svg>
+            <h3>La aceleración</h3>
+            <p>De Zero Gamma hacia Max GEX−. Dealers cortos de gamma. Entrada vendiendo el rebote que falla en el pivote.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="fade"></svg>
+            <h3>El muro</h3>
+            <p>Precio en Max GEX+. Se busca un giro confirmado en el orderflow; objetivo de vuelta hacia Zero Gamma.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="break"></svg>
+            <h3>El vacío</h3>
+            <p>Precio en Max GEX− y ruptura. Tras una pequeña consolidación, se opera a favor del impulso.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- MÉTODO -->
+    <section class="chapter flow" id="metodo" data-scene="method">
+      <div class="wrap method">
+        <div>
+          <h2 class="h2">Lee. Define. Opera.</h2>
+          <ol class="steps">
+            <li><h3>Lee lo micro</h3><p>Detecta cambios de convicción en el flujo: convexidad larga que señale expansión de volatilidad.</p></li>
+            <li><h3>Define el régimen</h3><p>Compara el precio con Zero Gamma para saber si el entorno es estable o volátil.</p></li>
+            <li><h3>Opera la estructura</h3><p>Usa los imanes como objetivos y como soportes y resistencias, en lugar de operar el precio a ciegas.</p></li>
+          </ol>
+        </div>
+        <div class="discipline">
+          <h3 class="h3">Saber cuándo no operar también es estructura.</h3>
+          <ul class="checks">
+            <li>Antes de datos macro como CPI, FOMC o NFP.</li>
+            <li>Cuando el GEX es neutral o contradictorio.</li>
+            <li>Cuando el orderflow no confirma.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTO -->
+    <section class="chapter flow" id="producto" data-scene="product">
+      <div class="wrap">
+        <h2 class="h2 narrow">Hecho para el gráfico que ya usas.</h2>
+        <p class="narrow">RT Magneto se instala como indicador en tu plataforma. Carga las griegas del mercado de opciones directamente sobre el futuro correspondiente.</p>
+        <div class="spec">
+          <div class="spec-row">
+            <h3>Plataformas</h3>
+            <ul class="pills">
+              <li>NinjaTrader</li>
+              <li>ATAS</li>
+              <li class="soon">Bookmap <span>próximamente</span></li>
+            </ul>
+          </div>
+          <div class="spec-row">
+            <h3>Griegas</h3>
+            <ul class="pills"><li>Gamma</li><li>Delta</li><li>Vanna</li><li>Charm</li></ul>
+          </div>
+          <div class="spec-row">
+            <h3>Vencimientos</h3>
+            <ul class="pills"><li>0DTE</li><li>90DTE</li></ul>
+          </div>
+          <div class="spec-row">
+            <h3>En tu gráfico</h3>
+            <ul class="feature-list">
+              <li>Niveles de exposición y cobertura del market maker y los dealers</li>
+              <li>Zero Gamma e imanes de desequilibrio GEX+ y GEX−</li>
+              <li>Escalera de exposición gamma por volumen y por desequilibrio</li>
+              <li>Spikes de flujo de opciones con convexidad y GEX</li>
+              <li>Indicador de sentimiento del mercado de opciones</li>
+              <li>Trazas históricas de dónde se formó la máxima exposición gamma</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCESO -->
+    <section class="chapter flow" id="acceso" data-scene="access">
+      <div class="wrap access">
+        <div class="access-card">
+          <h2 class="h2">Pon la estructura en tu gráfico.</h2>
+          <p>Licencia de RT Magneto para NinjaTrader o ATAS.</p>
+          <p class="price" data-placeholder>Precio por anunciar</p>
+          <a class="btn" href="#comunidad">Avísame cuando abra</a>
+          <div class="pay">
+            <span>Pagos con</span>
+            <ul><li>PayPal</li><li>USDT</li><li>USDC</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMUNIDAD -->
+    <section class="chapter flow" id="comunidad" data-scene="community">
+      <div class="wrap community">
+        <div>
+          <h2 class="h2">Aprende con nosotros cada sesión.</h2>
+          <p>Análisis de niveles, explicaciones del flujo de opciones y novedades de RT Magneto.</p>
+          <ul class="channels">
+            <li><a href="#" data-channel="youtube">YouTube<span>Clases y sesiones explicadas</span></a></li>
+            <li><a href="#" data-channel="tiktok">TikTok<span>Conceptos en un minuto</span></a></li>
+            <li><a href="#" data-channel="telegram">Telegram<span>Niveles y avisos del día</span></a></li>
+          </ul>
+        </div>
+        <form class="signup" data-signup novalidate>
+          <h3 class="h3">Recibe la guía y el aviso de lanzamiento</h3>
+          <label for="email">Correo electrónico</label>
+          <div class="field">
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" required />
+            <button class="btn" type="submit">Apuntarme</button>
+          </div>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="risk"><strong>Aviso de riesgo.</strong> Operar futuros y opciones conlleva un riesgo elevado de pérdida y no es adecuado para todos los inversores. RT Magneto es una herramienta de análisis y formación; no ofrece asesoramiento financiero ni garantiza resultados. Los ejemplos y gráficos de esta página son ilustrativos. Texto provisional pendiente de revisión.</p>
+      <p class="fine">© <span data-year>2026</span> RT Magneto. NinjaTrader, ATAS y Bookmap son marcas de sus respectivos propietarios.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
