@@ -9,7 +9,7 @@ const POS = 2.2; // Max GEX+
 const NEG = -2.2; // Max GEX−
 const W = 8; // ancho de cada gráfico
 const N = 44; // velas por escenario
-const GAP_X = 9.6;
+const GAP_X = 10.6;
 const GAP_Y = 8.8;
 
 const C = {
@@ -63,7 +63,7 @@ function cam(look, from, ox = -0.25) {
 }
 export const SCENARIO_CAMERAS = {
   scn0: cam([SX - 1, -0.3, 0], [SX - 4, 3, 40], -0.22),
-  ...Object.fromEntries(CENTERS.map(([x, y], i) => [`scn${i + 1}`, cam([SX + x, y - 0.3, 0], [SX + x - 2.4, y + 1.6, 16], -0.22)])),
+  ...Object.fromEntries(CENTERS.map(([x, y], i) => [`scn${i + 1}`, cam([SX + x + 0.5, y - 0.3, 0], [SX + x - 1.9, y + 1.6, 16.5], -0.22)])),
 };
 
 function labelTexture(text, color) {
@@ -88,16 +88,63 @@ function glowLine(x0, x1, y, z, color, glow, size = 0.13, step = 0.12) {
   return new THREE.Points(geo, new THREE.PointsMaterial({ color, size, map: glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
 }
 
+// Imán de herradura pequeño, de acero con polos rojo y azul, mirando a la izquierda
+function magnet(reg, glow) {
+  const m = new THREE.Group();
+  const body = new THREE.Group();
+  const steel = reg(new THREE.MeshPhongMaterial({ color: 0xc3cad6, specular: 0xffffff, shininess: 90 }));
+  body.add(new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.27, 16, 40, Math.PI), steel));
+  [[-0.8, 0xe5484d], [0.8, 0x3b6cf0]].forEach(([x, col]) => {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.45, 18), steel);
+    leg.position.set(x, -0.22, 0);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.275, 0.275, 0.42, 18), reg(new THREE.MeshPhongMaterial({ color: col, specular: 0xffffff, shininess: 60 })));
+    pole.position.set(x, -0.65, 0);
+    body.add(leg, pole);
+  });
+  body.rotation.z = -Math.PI / 2; // polos hacia el precio
+  body.scale.setScalar(0.42);
+  m.add(body);
+  // Líneas de campo: arcos que se cierran hacia los polos
+  const arcs = [];
+  for (let k = 0; k < 3; k++) {
+    const pts = [];
+    for (let i = 0; i <= 28; i++) {
+      const a = Math.PI / 2 + (i / 28) * Math.PI;
+      pts.push(Math.cos(a) * 0.9, Math.sin(a) * 0.55, 0);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    const arc = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xf5c84b, size: 0.09, map: glow, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+    arc.position.x = -0.25;
+    m.add(arc);
+    arcs.push(arc);
+  }
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xf5c84b, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  halo.scale.setScalar(1.6);
+  m.add(halo);
+  m.userData.update = (t, reduced, on, o) => {
+    arcs.forEach((arc, k) => {
+      const ph = reduced ? k / 3 : (t * 0.7 + k / 3) % 1; // de fuera hacia dentro
+      arc.scale.setScalar(1.9 - ph * 1.3);
+      arc.material.opacity = on * o * Math.sin(ph * Math.PI) * 0.9;
+    });
+    halo.material.opacity = on * o * (reduced ? 0.6 : 0.45 + 0.25 * Math.sin(t * 5));
+    body.scale.setScalar(0.42 * (1 + on * (reduced ? 0.15 : 0.12 + 0.06 * Math.sin(t * 5))));
+    body.rotation.y = reduced ? 0.3 : Math.sin(t * 0.9) * 0.35;
+  };
+  return m;
+}
+
 function buildStage(sc, glow) {
   const g = new THREE.Group();
   const mats = [];
   const reg = (m) => (m.transparent = true, m.userData.base = m.opacity, mats.push(m), m);
 
-  const panel = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.8, 8.2), reg(new THREE.MeshBasicMaterial({ color: 0x0c111c, opacity: 0.94, depthWrite: false })));
-  panel.position.set(0, -0.35, -0.6);
+  const panel = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.8, 8.2), reg(new THREE.MeshBasicMaterial({ color: 0x0c111c, opacity: 0.94, depthWrite: false })));
+  panel.position.set(0.5, -0.35, -0.6);
   panel.renderOrder = -2;
   g.add(panel);
-  const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(W + 0.8, 8.2)), reg(new THREE.LineBasicMaterial({ color: 0x2a3448 })));
+  const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(W + 1.8, 8.2)), reg(new THREE.LineBasicMaterial({ color: 0x2a3448 })));
   frame.position.copy(panel.position);
   g.add(frame);
 
@@ -147,9 +194,22 @@ function buildStage(sc, glow) {
   halo.scale.setScalar(1.2);
   entry.add(halo);
   g.add(entry);
-  const target = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.05, 10, 48), reg(new THREE.MeshBasicMaterial({ color: sc.tone })));
-  target.position.set(candles[N - 1].x - 0.15, sc.target, 0.3);
-  g.add(target);
+  // Imanes en Max GEX+ y Max GEX−, con los polos hacia el precio. El imán del
+  // objetivo atrae: las líneas de campo se cierran hacia él y late.
+  const magnets = [[POS, 'pos'], [NEG, 'neg']].map(([y]) => {
+    const m = magnet(reg, glow);
+    m.position.set(W / 2 + 0.35, y, 0.3);
+    g.add(m);
+    return m;
+  });
+  const active = magnets.find((m) => m.position.y === sc.target) || null;
+  // Si el objetivo no es un imán (vuelta a Zero Gamma o impulso tras la ruptura), un destello
+  const flare = new THREE.Sprite(reg(new THREE.SpriteMaterial({ map: glow, color: sc.tone, blending: THREE.AdditiveBlending, depthWrite: false })));
+  flare.scale.setScalar(1.1);
+  flare.visible = !active;
+  const target = { position: new THREE.Vector3(active ? W / 2 - 0.05 : candles[N - 1].x - 0.1, sc.target, 0.3) };
+  flare.position.copy(target.position);
+  g.add(flare);
   const tradePts = [];
   for (let k = 0; k <= 40; k++) {
     const f = k / 40;
@@ -184,12 +244,16 @@ function buildStage(sc, glow) {
     wickGeo.attributes.position.needsUpdate = true;
   }
 
-  return { group: g, mats, layout, entry, halo, target, trade, sc, ei };
+  return { group: g, mats, layout, entry, halo, magnets, active, flare, trade, tradePts, sc, ei };
 }
 
 export function buildScenarios(glow) {
   const group = new THREE.Group();
   group.position.set(SX, 0, 0);
+  // Luces solo para los imanes metálicos
+  const key = new THREE.PointLight(0xffffff, 120, 60, 1.4);
+  key.position.set(-4, 8, 14);
+  group.add(key, new THREE.AmbientLight(0x4a5570, 1.4));
   const stages = SCENARIOS.map((sc, i) => {
     const st = buildStage(sc, glow);
     st.group.position.set(CENTERS[i][0], CENTERS[i][1], 0);
@@ -223,9 +287,27 @@ export function buildScenarios(glow) {
       st.entry.scale.setScalar(Math.max(0.001, reached) * (1 + w * 0.4));
       st.halo.material.opacity = 0.9 * reached * pulse * o;
       st.trade.material.opacity = done * o;
-      st.target.material.opacity = (0.35 + 0.65 * done) * o;
-      st.target.rotation.y = reduced ? 0.5 : t * 1.5;
-      st.target.scale.setScalar(1 + done * (reduced ? 0.2 : 0.25 * Math.sin(t * 4) + 0.25));
+      // El trayecto fluye hacia el objetivo
+      if (!reduced) {
+        const a = st.trade.geometry.attributes.position.array;
+        const n = st.tradePts.length / 3;
+        const shift = ((t * 0.6) % 1) * 3;
+        for (let k = 0; k < n; k++) {
+          const f = Math.min(n - 1, k + shift * (k < n - 3 ? 1 : 0));
+          const k0 = Math.floor(f);
+          const k1 = Math.min(n - 1, k0 + 1);
+          const fr = f - k0;
+          for (let c = 0; c < 3; c++) a[k * 3 + c] = st.tradePts[k0 * 3 + c] * (1 - fr) + st.tradePts[k1 * 3 + c] * fr;
+        }
+        st.trade.geometry.attributes.position.needsUpdate = true;
+      }
+      const pull = clamp01((p - st.sc.entry) / (1 - st.sc.entry)); // el precio se acerca al imán
+      st.magnets.forEach((m) => {
+        const on = m === st.active ? Math.max(pull, overview * 0.6) : 0;
+        m.userData.update(t, reduced, on, o);
+      });
+      st.flare.material.opacity = done * o * (reduced ? 1 : 0.7 + 0.3 * Math.sin(t * 6));
+      st.flare.scale.setScalar(1.1 + done * 0.4);
       st.group.position.z = w * 0.8;
     });
   }

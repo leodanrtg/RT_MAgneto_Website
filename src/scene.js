@@ -42,12 +42,12 @@ export const SCENES = {
   community: { ox: 0, cx: -3, cy: 2, cz: 15, lx: 0, ly: 0, lz: 0, fog: 0.035, planes: 0.5, ladder: 0.4, spikes: 0.5, flow: 0.5, engine: 0, regime: 0.15, hero: 0, split: 0, horizon: 0, dim: 0.8 },
 };
 
-for (const k in SCENES) Object.assign(SCENES[k], { ind: 0, ind3d: 0, story: 0, fogStep: 0, eng3d: 0, engStep: 0, scn3d: 0, scnStep: 0, ...SCENES[k] });
+for (const k in SCENES) Object.assign(SCENES[k], { ind: 0, ind3d: 0, story: 0, fogStep: 0, eng3d: 0, engStep: 0, scn3d: 0, scnStep: 0, pz: 1, ...SCENES[k] });
 // Escenas propias de la niebla y de la sala de máquinas: el resto del mundo se apaga
 const OFF = { dim: 0, fog: 0.008, planes: 0, ladder: 0, spikes: 0, flow: 0, engine: 0, regime: 0, hero: 0, split: 0, horizon: 0 };
 Object.keys(FOG_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.fog, ...OFF, ...FOG_CAMERAS[k], story: 1, fogStep: i }; });
 Object.keys(ENGINE_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.engine, ...OFF, ...ENGINE_CAMERAS[k], eng3d: 1, engStep: i }; });
-Object.keys(SCENARIO_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.scenarios, ...OFF, ...SCENARIO_CAMERAS[k], scn3d: 1, scnStep: i }; });
+Object.keys(SCENARIO_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.scenarios, ...OFF, ...SCENARIO_CAMERAS[k], scn3d: 1, scnStep: i, pz: i ? 1.3 : 1 }; });
 // Recorrido del indicador en 3D: un fotograma por paso, el resto del mundo apagado
 Object.keys(STEP_CAMERAS).forEach((k, i) => {
   SCENES[k] = { ...SCENES.indicator, ...STEP_CAMERAS[k], ind: i, ind3d: 1, dim: 0, fog: 0.008, planes: 0, ladder: 0, spikes: 0, flow: 0, hero: 0, split: 0, horizon: 0 };
@@ -499,7 +499,7 @@ export function createWorld(canvas, { reduced = false } = {}) {
     camera.position.set(
       state.cx + pointer.sx * 0.8 * drift + Math.sin(t * 0.13) * 0.3 * drift,
       state.cy + pointer.sy * 0.5 * drift + Math.sin(t * 0.17) * 0.15 * drift,
-      state.lz + (state.cz - state.lz) * portraitPush // en vertical se aleja desde el punto de mira
+      state.lz + (state.cz - state.lz) * (portrait ? portraitPush * state.pz : 1) // en vertical se aleja desde el punto de mira
     );
     look.set(state.lx, state.ly, state.lz);
     camera.lookAt(look);
