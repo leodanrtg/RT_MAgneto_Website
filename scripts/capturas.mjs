@@ -17,15 +17,20 @@ for (const [name, opts] of Object.entries(devices)) {
   page.on('pageerror', (e) => console.error(`[${name}] error:`, e.message));
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1500);
-  const ids = await page.$$eval('[data-scene]', (els) => els.map((el) => el.id));
+  // Secciones con escena propia y cada paso del recorrido 3D del indicador
+  const ids = await page.$$eval('[data-scene], [data-cam]', (els) =>
+    els.map((el) => (el.dataset.cam ? `cam:${el.dataset.cam}` : el.id)),
+  );
   for (const [i, id] of ids.entries()) {
     await page.evaluate((id) => {
       document.documentElement.style.scrollBehavior = 'auto';
-      const el = document.getElementById(id);
+      const el = id.startsWith('cam:')
+        ? document.querySelector(`[data-cam="${id.slice(4)}"]`)
+        : document.getElementById(id);
       window.scrollTo(0, id === 'hero' ? 0 : el.getBoundingClientRect().top + window.scrollY);
     }, id);
     await page.waitForTimeout(1800); // deja que la escena 3D termine la transición
-    const file = `${out}/${name}-${String(i + 1).padStart(2, '0')}-${id}.png`;
+    const file = `${out}/${name}-${String(i + 1).padStart(2, '0')}-${id.replace('cam:', '')}.png`;
     await page.screenshot({ path: file });
     console.log(file);
   }

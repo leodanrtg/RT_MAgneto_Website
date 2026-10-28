@@ -8,9 +8,8 @@
   <meta name="theme-color" content="#06080d" />
   <meta property="og:title" content="RT Magneto" />
   <meta property="og:description" content="Mira las fuerzas invisibles que mueven el precio: exposición gamma 0DTE y 90DTE en tu gráfico de futuros." />
-  <meta property="og:image" content="img/rt-magneto-ninjatrader-1200.webp" />
+  <meta property="og:image" content="img/rt-magneto-indicador-1200.webp" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="preload" href="img/rt-magneto-ninjatrader-1200.webp" as="image" type="image/webp" media="(max-width: 900px)" />
 </head>
 <body>
 
@@ -284,32 +283,88 @@
       </div>
     </section>
 
-    <!-- INDICADOR -->
-    <section class="chapter indicator" id="indicador" data-scene="indicator">
+    <!-- INDICADOR: recorrido en 3D -->
+    <section class="indicator" id="indicador">
       <div class="wrap">
-        <div class="indicator-head">
-          <h2 data-i18n="indicador.1" class="h2">Todo lo que ves en el gráfico, con nombre.</h2>
-          <p data-i18n="indicador.2">RT Magneto pone dos capas sobre tu futuro. En el gráfico principal, los niveles y los spikes del flujo de opciones. En el subgráfico, el sentimiento 0DTE.</p>
-        </div>
-        <div class="indicator-grid">
-          <figure class="shot" data-shot>
-            <div class="shot-frame">
-              <img data-i18n-alt="attr.4" src="img/rt-magneto-ninjatrader.webp" srcset="img/rt-magneto-ninjatrader-1200.webp 1200w, img/rt-magneto-ninjatrader.webp 1875w" sizes="(max-width: 900px) 100vw, 62vw" width="1875" height="949" alt="Captura de RT Magneto en NinjaTrader sobre ES: niveles GEX+, Zero Gamma y GEX−, puntos de convexidad, spikes de opciones y el subgráfico de sentimiento 0DTE, con cada elemento rotulado." loading="lazy" decoding="async" />
-              <div class="shot-focus" data-focus aria-hidden="true"></div>
+        <ol class="ind-steps">
+          <li class="ind-step ind-intro" data-cam="ind0">
+            <div class="ind-card">
+              <h2 data-i18n="indicador.1" class="h2">Todo lo que ves en el gráfico, con nombre.</h2>
+              <p data-i18n="indicador.2">RT Magneto pone dos capas sobre tu futuro. En el gráfico principal, los niveles y los spikes del flujo de opciones. En el subgráfico, el sentimiento 0DTE.</p>
+              <p class="note" data-i18n="indicador.3">Recreación en 3D del indicador a partir de una captura real en NinjaTrader. Desliza para recorrerlo parte por parte.</p>
             </div>
-            <figcaption data-i18n="indicador.3">RT Magneto en NinjaTrader, ES, niveles 0DTE. <a href="img/rt-magneto-ninjatrader.webp" target="_blank" rel="noopener">Ver captura completa</a></figcaption>
-          </figure>
-          <ol class="hotspots">
-            <li data-spot="13,1.5,82,11" class="is-active"><h3 data-i18n="indicador.4">Imán GEX+</h3><p data-i18n="indicador.5">El nivel de mayor exposición del lado call. Donde la cobertura de los dealers frena las subidas.</p></li>
-            <li data-spot="6,10.5,92,4"><h3 data-i18n="indicador.6">Volume GEX+</h3><p data-i18n="indicador.7">El mismo imán, calculado con el volumen del día.</p></li>
-            <li data-spot="6,25,92,13"><h3 data-i18n="indicador.8">Zero Gamma 0DTE</h3><p data-i18n="indicador.9">La línea amarilla que divide la sesión. Por encima, entorno estable; por debajo, volátil.</p></li>
-            <li data-spot="20,52.5,73,3.5"><h3 data-i18n="indicador.10">Volume GEX−</h3><p data-i18n="indicador.11">Nivel GEX− calculado con el volumen del día.</p></li>
-            <li data-spot="63,69,28,4"><h3 data-i18n="indicador.12">Imán GEX−</h3><p data-i18n="indicador.13">El suelo, o el destino de las caídas aceleradas.</p></li>
-            <li data-spot="77,3.5,20,6;74,39,14,5"><h3 data-i18n="indicador.14">Convexidad + y −</h3><p data-i18n="indicador.15">Puntos cian y azules: quién compra y quién vende volatilidad.</p></li>
-            <li data-spot="35,37.5,4,6;71,30,5,9;82,21,15,14"><h3 data-i18n="indicador.16">Spikes de opciones</h3><p data-i18n="indicador.17">Las órdenes grandes de opciones en el momento en que entran: Long Call, Long Put y Short Call.</p></li>
-            <li data-spot="0,79,100,18"><h3 data-i18n="indicador.18">Sentimiento 0DTE</h3><p data-i18n="indicador.19">Magenta, dominan los puts. Verde, dominan las calls. Las líneas amarillas marcan el cambio.</p></li>
-          </ol>
-        </div>
+          </li>
+          <li class="ind-step" data-cam="ind1" data-tone="pos">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">1/8</span>
+              <h3 data-i18n="indicador.4">Volume GEX+</h3>
+              <p data-i18n="indicador.5">El imán GEX+ calculado con el volumen del día. Donde la cobertura de los dealers tiende a frenar las subidas.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind2" data-tone="long">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">2/8</span>
+              <h3 data-i18n="indicador.6">Convexidad +</h3>
+              <p data-i18n="indicador.7">Puntos cian: el flujo compra opciones. Señal de convicción y de más volatilidad esperada.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind3" data-tone="spike">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">3/8</span>
+              <h3 data-i18n="indicador.8">Spikes de flujo de opciones</h3>
+              <p data-i18n="indicador.9">Las órdenes grandes de opciones en el momento en que entran. El anillo exterior marca la convexidad; el núcleo, el GEX.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind4" data-tone="zero">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">4/8</span>
+              <h3 data-i18n="indicador.10">Zero Gamma 0DTE</h3>
+              <p data-i18n="indicador.11">La línea amarilla que divide la sesión, y se mueve durante el día. Por encima, entorno estable; por debajo, volátil.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind5" data-tone="short">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">5/8</span>
+              <h3 data-i18n="indicador.12">Convexidad −</h3>
+              <p data-i18n="indicador.13">Puntos azules: el flujo vende opciones. Apunta a rango y estancamiento.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind6" data-tone="neg">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">6/8</span>
+              <h3 data-i18n="indicador.14">Volume GEX−</h3>
+              <p data-i18n="indicador.15">El imán GEX− calculado con el volumen del día. El suelo, o el destino de las caídas aceleradas.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind7" data-tone="pos">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">7/8</span>
+              <h3 data-i18n="indicador.16">Zona de flujo GEX positivo</h3>
+              <p data-i18n="indicador.17">En el subgráfico de sentimiento 0DTE, el verde indica que dominan las calls.</p>
+            </div>
+          </li>
+          <li class="ind-step" data-cam="ind8" data-tone="purple">
+            <div class="ind-card">
+              <span class="ind-num" aria-hidden="true">8/8</span>
+              <h3 data-i18n="indicador.18">Zona de flujo GEX negativo</h3>
+              <p data-i18n="indicador.19">El morado indica que dominan los puts. El paso de una zona a otra confirma el cambio intradía.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CAPTURA REAL -->
+    <section class="chapter flow capture" id="captura" data-scene="capture">
+      <div class="wrap">
+        <h2 data-i18n="captura.1" class="h2 narrow">Así se ve en NinjaTrader.</h2>
+        <p data-i18n="captura.2" class="narrow muted">La captura real de RT Magneto sobre un futuro, con cada elemento rotulado.</p>
+        <figure class="shot-real" data-tilt>
+          <div class="shot-frame">
+            <img data-i18n-alt="attr.4" src="img/rt-magneto-indicador.webp" srcset="img/rt-magneto-indicador-1200.webp 1200w, img/rt-magneto-indicador.webp 1523w" sizes="(max-width: 1240px) 100vw, 1200px" width="1523" height="1080" alt="Captura de RT Magneto en NinjaTrader: Volume GEX+ y Volume GEX−, pivote Zero Gamma 0DTE, puntos de convexidad, spikes de flujo de opciones y el subgráfico de sentimiento con sus zonas positiva y negativa, cada elemento rotulado." loading="lazy" decoding="async" />
+          </div>
+          <figcaption><a data-i18n="captura.3" href="img/rt-magneto-indicador.webp" target="_blank" rel="noopener">Ver captura completa</a></figcaption>
+        </figure>
       </div>
     </section>
 

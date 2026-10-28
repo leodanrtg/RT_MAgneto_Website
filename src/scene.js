@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { buildIndicator, STEP_CAMERAS } from './indicator3d.js';
 
 // Colores del indicador (mismos valores que en styles.css)
 const C = {
@@ -38,6 +39,13 @@ export const SCENES = {
   access:    { ox: 0, cx: 0, cy: 0.5, cz: 16, lx: 0, ly: 0.5, lz: 0, fog: 0.03, planes: 0.7, ladder: 0.5, spikes: 0.6, flow: 0.7, engine: 0, regime: 0.1, hero: 0, split: 0, horizon: 0, dim: 0.55 },
   community: { ox: 0, cx: -3, cy: 2, cz: 15, lx: 0, ly: 0, lz: 0, fog: 0.035, planes: 0.5, ladder: 0.4, spikes: 0.5, flow: 0.5, engine: 0, regime: 0.15, hero: 0, split: 0, horizon: 0, dim: 0.8 },
 };
+
+for (const k in SCENES) Object.assign(SCENES[k], { ind: 0, ind3d: 0, ...SCENES[k] });
+// Recorrido del indicador en 3D: un fotograma por paso, el resto del mundo apagado
+Object.keys(STEP_CAMERAS).forEach((k, i) => {
+  SCENES[k] = { ...SCENES.indicator, ...STEP_CAMERAS[k], ind: i, ind3d: 1, dim: 0, fog: 0.008, planes: 0, ladder: 0, spikes: 0, flow: 0, hero: 0, split: 0, horizon: 0 };
+});
+SCENES.capture = { ...SCENES.indicator, ind: 0, ind3d: 0, dim: 0.85 };
 
 // Escalera ilustrativa: dos perfiles de GEX por strike (volumen y desequilibrio)
 const STRIKES = 31;
@@ -442,6 +450,10 @@ export function createWorld(canvas, { reduced = false } = {}) {
   }
 
   function updatePlanes(t) {
+    const away = state.ind3d > 0.9; // durante el recorrido del indicador
+    trail.visible = !away;
+    puck.visible = !away;
+    floor.material.opacity = 0.5 * (1 - state.ind3d);
     const o = state.planes;
     const pulse = reduced ? 1 : 0.85 + 0.15 * Math.sin(t * 2);
     for (const [g, base] of [[wall, 1], [pivot, 1], [voidP, 1]]) {
@@ -459,6 +471,10 @@ export function createWorld(canvas, { reduced = false } = {}) {
     flip90.userData.edges.material.color.copy(C.long);
     flip90.userData.plane.material.color.copy(C.long);
   }
+
+  // ---------- Indicador en 3D ----------
+  const indicator = buildIndicator(glow);
+  scene.add(indicator.group);
 
   // ---------- Cámara ----------
   const look = new THREE.Vector3();
@@ -531,6 +547,7 @@ export function createWorld(canvas, { reduced = false } = {}) {
     updateBars(dt);
     updateHero(dt, t);
     updatePlanes(t);
+    indicator.update(state, t, reduced);
     renderer.render(scene, camera);
   }
 

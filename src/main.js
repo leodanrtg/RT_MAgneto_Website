@@ -101,6 +101,11 @@ function collectKeys(SCENES) {
     // El capítulo de regímenes es largo: a mitad de recorrido pasa de gravedad a aceleración
     if (SCENES[name + '2']) keys.push({ at: top + sec.offsetHeight * 0.55, state: SCENES[name + '2'] });
   });
+  // Pasos del recorrido del indicador: un fotograma por paso
+  document.querySelectorAll('[data-cam]').forEach((el) => {
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    if (SCENES[el.dataset.cam]) keys.push({ at: top, state: SCENES[el.dataset.cam] });
+  });
   keys.sort((a, b) => a.at - b.at);
   return keys;
 }
@@ -110,12 +115,12 @@ function bindScenesStatic(SCENES) {
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue;
-      const name = e.target.dataset.scene;
+      const name = e.target.dataset.scene || e.target.dataset.cam;
       const s = SCENES[name + '2'] || SCENES[name];
       if (s) { Object.assign(world.state, s); world.renderOnce(); }
     }
   }, { rootMargin: '-45% 0px -45% 0px' });
-  document.querySelectorAll('[data-scene]').forEach((s) => io.observe(s));
+  document.querySelectorAll('[data-scene], [data-cam]').forEach((s) => io.observe(s));
 }
 
 function bindPointer() {
@@ -172,43 +177,24 @@ function bindLadder() {
   }));
 }
 
-// ---------- Captura del indicador ----------
+// ---------- Recorrido del indicador y captura real ----------
 
-function bindHotspots() {
-  const focus = document.querySelector('[data-focus]');
-  const items = [...document.querySelectorAll('.hotspots li')];
-  if (!focus || !items.length) return;
-  const boxes = [];
-  const ensure = (n) => {
-    while (boxes.length < n) {
-      const b = document.createElement('div');
-      b.className = 'box';
-      focus.appendChild(b);
-      boxes.push(b);
-    }
-  };
-  const activate = (li) => {
-    items.forEach((o) => o.classList.toggle('is-active', o === li));
-    const rects = li.dataset.spot.split(';').map((r) => r.split(',').map(Number));
-    ensure(rects.length);
-    boxes.forEach((b, i) => {
-      const r = rects[i];
-      if (!r) { b.style.opacity = '0'; return; }
-      b.style.opacity = '1';
-      b.style.left = r[0] + '%';
-      b.style.top = r[1] + '%';
-      b.style.width = r[2] + '%';
-      b.style.height = r[3] + '%';
+function bindIndicator() {
+  const sec = document.getElementById('indicador');
+  if (sec) {
+    // En móvil se aclara el velo inferior para que se vea el modelo 3D
+    ScrollTrigger.create({
+      trigger: sec, start: 'top 60%', end: 'bottom 40%',
+      onToggle: (self) => root.classList.toggle('in-indicator', self.isActive),
     });
-  };
-  activate(items[0]);
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) activate(e.target);
-  }, { rootMargin: '-40% 0px -50% 0px' });
-  items.forEach((li) => {
-    io.observe(li);
-    li.addEventListener('click', () => activate(li));
-  });
+  }
+  const frame = document.querySelector('[data-tilt] .shot-frame');
+  if (frame && !reduced) {
+    gsap.fromTo(frame, { '--tilt': '28deg', '--tilt-scale': 0.88 }, {
+      '--tilt': '0deg', '--tilt-scale': 1, ease: 'none',
+      scrollTrigger: { trigger: frame, start: 'top 95%', end: 'top 35%', scrub: 0.6 },
+    });
+  }
 }
 
 // ---------- Sentimiento y escenarios ----------
@@ -337,7 +323,7 @@ buildMinis();
 bindReveals();
 bindNav();
 bindLadder();
-bindHotspots();
+bindIndicator();
 bindSentiment();
 bindSignup();
 initWorld();
