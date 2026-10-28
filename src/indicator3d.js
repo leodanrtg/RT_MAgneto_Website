@@ -53,6 +53,7 @@ function lerpPath(path, x) {
   }
   return path[path.length - 1][1];
 }
+const WHITE = new THREE.Color(0xffffff);
 function rnd(i) { const s = Math.sin(i * 91.17 + 7.3) * 43758.5453; return s - Math.floor(s); }
 
 function dotsMaterial(color, size, glow) {
@@ -75,12 +76,14 @@ export function buildIndicator(glow) {
   const panelMat = new THREE.MeshBasicMaterial({ color: 0x0c111c, transparent: true, opacity: 0.92, depthWrite: false });
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.8, 15.4), panelMat);
   panel.position.set(ORIGIN_X, -0.35, -0.4);
+  panel.renderOrder = -2; // el fondo siempre se pinta antes que los puntos
   group.add(panel);
   const grid = new THREE.GridHelper(W, 24, 0x1d2638, 0x161d2b);
   grid.rotation.x = Math.PI / 2;
   grid.position.set(ORIGIN_X, 2, -0.35);
   grid.scale.set(1, 1, 10 / W);
   grid.material.transparent = true;
+  grid.renderOrder = -1;
   group.add(grid);
   const sepGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(px(0), -3.1, -0.3), new THREE.Vector3(px(IMG_W), -3.1, -0.3)]);
   const frameMat = new THREE.LineBasicMaterial({ color: 0x3a4660, transparent: true });
@@ -132,8 +135,12 @@ export function buildIndicator(glow) {
     g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     const mat = dotsMaterial(color, size, glow);
     const p = new THREE.Points(g, mat);
+    // Halo del mismo color que parpadea cuando se describe la parte
+    const halo = new THREE.Points(g, dotsMaterial(color, size * 3.4, glow));
+    halo.material.opacity = 0;
+    p.add(halo);
     group.add(p);
-    parts.push({ obj: p, mats: [mat], step: stepIdx });
+    parts.push({ obj: p, mats: [mat], step: stepIdx, halo });
     return p;
   }
 
@@ -146,7 +153,7 @@ export function buildIndicator(glow) {
   for (let x = 90, i = 0; x <= 1515; x += 8, i++) zero.push(px(x), py(lerpPath(ZERO, x) + (rnd(i + 40) - 0.5) * 22), 0);
   dots(zero, 0xf5c84b, 0.17, 4);
   // 5 · Convexidad − (azul)
-  dots(dottedRow(562, 1070, 1415, 8, 8, 5), 0x4d6bff, 0.16, 5);
+  dots(dottedRow(562, 1070, 1415, 8, 8, 5), 0x7d95ff, 0.2, 5);
   // 6 · Volume GEX− (rojo)
   dots([...dottedRow(610, 637, 1300, 7, 3, 6), ...dottedRow(506, 1258, 1490, 8, 3, 7), ...dottedRow(401, 1280, 1515, 12, 3, 8), ...dottedRow(716, 535, 645, 8, 3, 9)], 0xff4d5e, 0.15, 6);
 
@@ -189,10 +196,11 @@ export function buildIndicator(glow) {
     geo.translate(0, 0, -0.175);
     const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85 });
     const edgeMat = new THREE.LineBasicMaterial({ color: new THREE.Color(color).multiplyScalar(1.3), transparent: true });
+    mat.userData.color0 = mat.color.clone();
     const m = new THREE.Mesh(geo, mat);
     m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), edgeMat));
     group.add(m);
-    parts.push({ obj: m, mats: [mat, edgeMat], step: stepIdx });
+    parts.push({ obj: m, mats: [mat, edgeMat], step: stepIdx, area: mat });
   }
   area(SENT_POS, 0x35c95a, 7);
   area(SENT_NEG, 0x9b3fd0, 8);
@@ -207,11 +215,14 @@ export function buildIndicator(glow) {
     if (!group.visible) return;
     const ind = state.ind;
     const overview = Math.max(0, 1 - ind); // en la vista general todo encendido
+    const blink = reduced ? 0.6 : 0.5 + 0.5 * Math.sin(t * 5.5); // parpadeo de la parte descrita
     for (const p of parts) {
       const w = Math.max(0, 1 - Math.abs(ind - p.step));
       const bright = Math.max(overview, w);
-      const o = (0.18 + 0.82 * bright) * vis;
+      const o = (0.18 + 0.82 * bright) * vis * (1 - 0.35 * w * (1 - blink));
       p.mats.forEach((m) => { m.opacity = m.userData.base * o; });
+      if (p.halo) p.halo.material.opacity = w * vis * (0.25 + 0.55 * blink);
+      if (p.area) p.area.color.copy(p.area.userData.color0).lerp(WHITE, 0.45 * w * blink);
       // La parte descrita se levanta hacia la cámara y respira
       const lift = w * 1.4;
       p.obj.position.z = lift;
@@ -220,6 +231,8 @@ export function buildIndicator(glow) {
         p.obj.children.forEach((g, i) => {
           const pulse = reduced ? 1 : 1 + 0.12 * Math.sin(t * 3 + i);
           g.scale.setScalar((1 + w * 0.8) * pulse);
+          g.children[2].material.opacity = g.children[2].material.userData.base * (1 + w * (0.4 + 1.2 * blink)) * o;
+          g.children[2].scale.setScalar(1.6 * (1 + w * 0.8 * blink));
           g.userData.ring.rotation.y = reduced ? 0.4 * w : t * 0.8 * w + i;
           g.userData.ring.position.z = -0.5 * w; // anillo y núcleo se separan en profundidad
           g.userData.core.position.z = 0.35 * w;
