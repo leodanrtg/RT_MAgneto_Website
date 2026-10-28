@@ -7,7 +7,7 @@
  "nav.5": "Idioma",
  "nav.6": "Obter acesso",
  "hero.1": "Veja as forças invisíveis que movem o preço.",
- "hero.2": "O RT Magneto leva o posicionamento do mercado de opções ao seu gráfico de futuros: exposição gamma, convexidade, o pivô Zero Gamma e os níveis que funcionam como ímãs do preço.",
+ "hero.2": "O RT Magneto leva o posicionamento do mercado de opções para o seu gráfico de futuros: escada de exposição gamma, delta, convexidade, mostra o pivô Zero Gamma e os níveis com maior concentração de exposição, que atuam como ímãs do preço. Os spikes do fluxo de opções mostram as grandes posições de hedge do Market Maker e dos Dealers. O indicador do fluxo líquido de exposição gamma ou delta mostra o sentimento e o regime do mercado.",
  "hero.3": "Aprenda a ler o fluxo de opções",
  "hero.4": "Ver o indicador",
  "hero.5": "Vencimentos",

@@ -7,7 +7,7 @@
  "nav.5": "Idioma",
  "nav.6": "Obtener acceso",
  "hero.1": "Mira las fuerzas invisibles que mueven el precio.",
- "hero.2": "RT Magneto lleva el posicionamiento del mercado de opciones a tu gráfico de futuros: exposición gamma, convexidad, el pivote Zero Gamma y los niveles que actúan como imanes del precio.",
+ "hero.2": "RT Magneto lleva el posicionamiento del mercado de opciones a tu gráfico de futuros: escalera de la exposición gamma, delta, convexidad, muestra el pivote Zero Gamma y los niveles con mayor concentración de exposición que actúan como imanes del precio. Los spikes del flujo de opciones muestran las grandes posiciones de cobertura por parte del Market Maker y los Dealers. El indicador del flujo neto de exposición gamma o delta muestra el sentimiento y régimen del mercado.",
  "hero.3": "Aprende a leer el flujo de opciones",
  "hero.4": "Ver el indicador",
  "hero.5": "Vencimientos",
