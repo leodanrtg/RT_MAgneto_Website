@@ -83,7 +83,7 @@
  "indicador.8": "Spikes do fluxo de opções",
  "indicador.9": "As ordens grandes de opções no momento em que entram. O anel externo marca a convexidade; o núcleo, o GEX.",
  "indicador.10": "Zero Gamma 0DTE",
- "indicador.11": "A linha amarela que divide a sessão, e ela se move ao longo do dia. Acima, ambiente estável; abaixo, volátil.",
+ "indicador.11": "A linha amarela divide a mudança de regime ou de contexto, e se move durante o dia. Acima dela, ambiente estável (regime de gamma positiva); abaixo, volátil (regime de gamma negativa).",
  "indicador.12": "Convexidade −",
  "indicador.13": "Pontos azuis: o fluxo vende opções. Aponta para lateralidade e estagnação.",
  "indicador.14": "Volume GEX−",

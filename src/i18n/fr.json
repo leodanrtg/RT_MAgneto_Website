@@ -83,7 +83,7 @@
  "indicador.8": "Spikes du flux d'options",
  "indicador.9": "Les gros ordres d'options au moment où ils arrivent. L'anneau extérieur indique la convexité ; le cœur, le GEX.",
  "indicador.10": "Zero Gamma 0DTE",
- "indicador.11": "La ligne jaune qui divise la séance, et elle se déplace au fil de la journée. Au-dessus, environnement stable ; en dessous, volatil.",
+ "indicador.11": "La ligne jaune marque le changement de régime ou de contexte, et elle se déplace pendant la journée. Au-dessus, un environnement stable (régime de gamma positif) ; en dessous, volatil (régime de gamma négatif).",
  "indicador.12": "Convexité −",
  "indicador.13": "Points bleus : le flux vend des options. Cela indique un range et une stagnation.",
  "indicador.14": "Volume GEX−",

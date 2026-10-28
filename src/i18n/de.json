@@ -83,7 +83,7 @@
  "indicador.8": "Spikes des Optionsflows",
  "indicador.9": "Große Optionsorders im Moment ihres Eingangs. Der äußere Ring zeigt die Konvexität, der Kern das GEX.",
  "indicador.10": "Zero Gamma 0DTE",
- "indicador.11": "Die gelbe Linie, die die Session teilt, und sie wandert im Tagesverlauf. Darüber ein stabiles Umfeld, darunter ein volatiles.",
+ "indicador.11": "Die gelbe Linie markiert den Wechsel von Regime oder Kontext und verschiebt sich im Lauf des Tages. Darüber ein stabiles Umfeld (positives Gamma-Regime), darunter ein volatiles (negatives Gamma-Regime).",
  "indicador.12": "Konvexität −",
  "indicador.13": "Blaue Punkte: Der Flow verkauft Optionen. Das deutet auf Range und Stagnation hin.",
  "indicador.14": "Volume GEX−",

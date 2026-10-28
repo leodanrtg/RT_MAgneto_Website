@@ -83,7 +83,7 @@
  "indicador.8": "Options order flow spikes",
  "indicador.9": "Large options orders at the moment they hit. The outer ring shows convexity; the core, GEX.",
  "indicador.10": "Zero Gamma 0DTE",
- "indicador.11": "The yellow line that divides the session, and it moves during the day. Above it, a stable environment; below it, a volatile one.",
+ "indicador.11": "The yellow line marks the change of regime or context, and it moves during the day. Above it, a stable environment (positive gamma regime); below it, a volatile one (negative gamma regime).",
  "indicador.12": "Convexity −",
  "indicador.13": "Blue dots: the flow is selling options. It points to range and stagnation.",
  "indicador.14": "Volume GEX−",
