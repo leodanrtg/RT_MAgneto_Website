@@ -74,7 +74,7 @@
  "horizontes.4": "<strong>Unter beiden:</strong> bearisher Bias und Volatilitätsausweitung.",
  "horizontes.5": "<strong>Dazwischen:</strong> Konfliktzone. Mehr Fehlausbrüche; klug ist es, abzuwarten, bis sie sich auflöst.",
  "indicador.1": "Alles, was du im Chart siehst.",
- "indicador.2": "RT Magneto legt zwei Ebenen über deinen Future. Im Hauptchart die Levels deiner Wahl und die Spikes des Optionsflows. Im Subchart das 0DTE-Sentiment.",
+ "indicador.2": "RT Magneto legt zwei Ebenen über deinen Futures-Chart. Im Hauptchart die Levels deiner Wahl und die Spikes des Optionsflows. Im Subchart das 0DTE-Sentiment des Optionsmarkts.",
  "indicador.3": "Eine 3D-Nachbildung des Indikators auf Basis eines echten NinjaTrader-Screenshots. Scrolle, um ihn Teil für Teil zu erkunden.",
  "indicador.4": "Größtes positives Volume GEX",
  "indicador.5": "Das Level mit der höchsten Konzentration positiver Gamma-Exposure. Der größte GEX+-Magnet wird aus dem Tagesvolumen berechnet. Hier bremst das Hedging der Dealer Anstiege meist aus.",

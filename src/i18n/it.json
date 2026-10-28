@@ -74,7 +74,7 @@
  "horizontes.4": "<strong>Sotto entrambi:</strong> bias ribassista ed espansione della volatilità.",
  "horizontes.5": "<strong>Tra i due:</strong> zona di conflitto. Più false rotture; la scelta prudente è aspettare che si risolva.",
  "indicador.1": "Tutto quello che vedi sul grafico.",
- "indicador.2": "RT Magneto aggiunge due livelli al tuo future. Nel grafico principale, i livelli che preferisci e gli spike del flusso di opzioni. Nel sottografico, il sentiment 0DTE.",
+ "indicador.2": "RT Magneto aggiunge due livelli al tuo grafico dei future. Nel grafico principale, i livelli che preferisci e gli spike del flusso di opzioni. Nel sottografico, il sentiment 0DTE del mercato delle opzioni.",
  "indicador.3": "Ricostruzione in 3D dell'indicatore a partire da uno screenshot reale di NinjaTrader. Scorri per esplorarlo parte per parte.",
  "indicador.4": "Volume GEX positivo maggiore",
  "indicador.5": "Rappresenta il livello con la maggiore concentrazione di esposizione gamma positiva. Il magnete GEX+ maggiore è calcolato con il volume del giorno. È dove la copertura dei dealer tende a frenare i rialzi.",

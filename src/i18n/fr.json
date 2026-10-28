@@ -74,7 +74,7 @@
  "horizontes.4": "<strong>En dessous des deux :</strong> biais baissier et expansion de la volatilité.",
  "horizontes.5": "<strong>Entre les deux :</strong> zone de conflit. Plus de fausses cassures ; le plus prudent est d'attendre qu'elle se résolve.",
  "indicador.1": "Tout ce que vous voyez sur le graphique.",
- "indicador.2": "RT Magneto ajoute deux couches à votre future. Sur le graphique principal, les niveaux de votre choix et les spikes du flux d'options. Sur le sous-graphique, le sentiment 0DTE.",
+ "indicador.2": "RT Magneto ajoute deux couches à votre graphique de futures. Sur le graphique principal, les niveaux de votre choix et les spikes du flux d'options. Sur le sous-graphique, le sentiment 0DTE du marché des options.",
  "indicador.3": "Recréation en 3D de l'indicateur à partir d'une vraie capture NinjaTrader. Faites défiler pour le parcourir élément par élément.",
  "indicador.4": "Volume GEX positif majeur",
  "indicador.5": "Le niveau où l'exposition gamma positive est la plus concentrée. L'aimant GEX+ majeur est calculé à partir du volume du jour. C'est là que la couverture des dealers tend à freiner les hausses.",

@@ -74,7 +74,7 @@
  "horizontes.4": "<strong>Abaixo dos dois:</strong> viés de baixa e expansão de volatilidade.",
  "horizontes.5": "<strong>Entre os dois:</strong> zona de conflito. Mais rompimentos falsos; o prudente é esperar que se resolva.",
  "indicador.1": "Tudo o que você vê no gráfico.",
- "indicador.2": "O RT Magneto coloca duas camadas sobre o seu futuro. No gráfico principal, os níveis da sua preferência e os spikes do fluxo de opções. No subgráfico, o sentimento 0DTE.",
+ "indicador.2": "O RT Magneto coloca duas camadas sobre o seu gráfico de futuros. No gráfico principal, os níveis da sua preferência e os spikes do fluxo de opções. No subgráfico, o sentimento 0DTE do mercado de opções.",
  "indicador.3": "Recriação em 3D do indicador a partir de uma captura real no NinjaTrader. Role para percorrê-lo parte por parte.",
  "indicador.4": "Maior Volume GEX positivo",
  "indicador.5": "Representa o maior nível de concentração de exposição gamma positiva. O ímã GEX+ maior é calculado com o volume do dia. É onde o hedge dos dealers tende a frear as altas.",
