@@ -159,5 +159,6 @@
  "js.emailError": "It couldn't be sent. Try again in a few minutes.",
  "captura.1": "This is how it looks in NinjaTrader.",
  "captura.2": "The real RT Magneto screenshot on a futures market.",
- "captura.3": "View full screenshot"
+ "captura.3": "View full screenshot",
+ "label.zg": "ZG Pivot"
 }

@@ -159,5 +159,6 @@
  "js.emailError": "No se pudo enviar. Vuelve a intentarlo en unos minutos.",
  "captura.1": "Así se ve en NinjaTrader.",
  "captura.2": "La captura real de RT Magneto sobre un mercado de futuros.",
- "captura.3": "Ver captura completa"
+ "captura.3": "Ver captura completa",
+ "label.zg": "ZG Pivote"
 }

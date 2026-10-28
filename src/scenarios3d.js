@@ -39,19 +39,19 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const SCENARIOS = [
   { // 1 · El tirón de la gravedad: retroceso a Zero Gamma, compra, objetivo el imán GEX+
     path: [[0, -0.9], [0.16, -0.2], [0.3, 0.9], [0.42, 0.55], [0.5, 0.08], [0.62, 0.7], [0.78, 1.5], [0.9, 2.05], [1, 2.15]],
-    entry: 0.5, target: POS, dir: 1, tone: C.pos,
+    entry: 0.5, target: POS, side: POS, dir: 1, tone: C.pos,
   },
   { // 2 · La aceleración: rebote que falla en el pivote, venta, objetivo GEX−
     path: [[0, 1.2], [0.18, 0.6], [0.32, -0.7], [0.44, -0.35], [0.52, -0.05], [0.62, -0.6], [0.78, -1.5], [0.9, -2.05], [1, -2.15]],
-    entry: 0.52, target: NEG, dir: -1, tone: C.neg,
+    entry: 0.52, target: NEG, side: NEG, dir: -1, tone: C.neg,
   },
   { // 3 · El muro: el precio toca Max GEX+, se confirma el giro y vuelve a Zero Gamma
     path: [[0, -0.4], [0.18, 0.5], [0.34, 1.4], [0.46, 2.1], [0.52, 2.2], [0.58, 2.05], [0.7, 1.2], [0.86, 0.35], [1, 0.05]],
-    entry: 0.56, target: 0, dir: -1, tone: C.zero,
+    entry: 0.56, target: 0, side: POS, dir: -1, tone: C.zero,
   },
   { // 4 · El vacío: llega a Max GEX−, consolida y rompe con impulso
     path: [[0, 0.5], [0.2, -0.6], [0.36, -1.7], [0.44, -2.1], [0.52, -1.95], [0.6, -2.12], [0.66, -2.0], [0.74, -2.6], [0.88, -3.2], [1, -3.45]],
-    entry: 0.7, target: -3.45, dir: -1, tone: C.void,
+    entry: 0.7, target: -3.45, side: NEG, dir: -1, tone: C.void,
   },
 ];
 
@@ -102,7 +102,7 @@ function magnet(reg, glow) {
     body.add(leg, pole);
   });
   body.rotation.z = -Math.PI / 2; // polos hacia el precio
-  body.scale.setScalar(0.42);
+  body.scale.setScalar(0.28);
   m.add(body);
   // Líneas de campo: arcos que se cierran hacia los polos
   const arcs = [];
@@ -129,7 +129,7 @@ function magnet(reg, glow) {
       arc.material.opacity = on * o * Math.sin(ph * Math.PI) * 0.9;
     });
     halo.material.opacity = on * o * (reduced ? 0.6 : 0.45 + 0.25 * Math.sin(t * 5));
-    body.scale.setScalar(0.42 * (1 + on * (reduced ? 0.15 : 0.12 + 0.06 * Math.sin(t * 5))));
+    body.scale.setScalar(0.28 * (1 + on * (reduced ? 0.15 : 0.12 + 0.06 * Math.sin(t * 5))));
     body.rotation.y = reduced ? 0.3 : Math.sin(t * 0.9) * 0.35;
   };
   return m;
@@ -189,14 +189,15 @@ function buildStage(sc, glow) {
   const entryC = candles[ei];
   const entry = new THREE.Group();
   entry.position.set(entryC.x, entryC.close, 0.3);
-  entry.add(new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), reg(new THREE.MeshBasicMaterial({ color: C.zero }))));
+  entry.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 20, 14), reg(new THREE.MeshBasicMaterial({ color: C.zero }))));
   const halo = new THREE.Sprite(reg(new THREE.SpriteMaterial({ map: glow, color: C.zero, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.9 })));
-  halo.scale.setScalar(1.2);
+  halo.scale.setScalar(0.75);
   entry.add(halo);
   g.add(entry);
   // Imanes en Max GEX+ y Max GEX−, con los polos hacia el precio. El imán del
   // objetivo atrae: las líneas de campo se cierran hacia él y late.
-  const magnets = [[POS, 'pos'], [NEG, 'neg']].map(([y]) => {
+  // Solo el imán del lado que corresponde al escenario
+  const magnets = [sc.side].map((y) => {
     const m = magnet(reg, glow);
     m.position.set(W / 2 + 0.35, y, 0.3);
     g.add(m);
@@ -205,7 +206,7 @@ function buildStage(sc, glow) {
   const active = magnets.find((m) => m.position.y === sc.target) || null;
   // Si el objetivo no es un imán (vuelta a Zero Gamma o impulso tras la ruptura), un destello
   const flare = new THREE.Sprite(reg(new THREE.SpriteMaterial({ map: glow, color: sc.tone, blending: THREE.AdditiveBlending, depthWrite: false })));
-  flare.scale.setScalar(1.1);
+  flare.scale.setScalar(0.7);
   flare.visible = !active;
   const target = { position: new THREE.Vector3(active ? W / 2 - 0.05 : candles[N - 1].x - 0.1, sc.target, 0.3) };
   flare.position.copy(target.position);
@@ -284,7 +285,7 @@ export function buildScenarios(glow) {
       const reached = clamp01((p - st.sc.entry) * 12);
       const done = clamp01((p - 0.96) * 25);
       const pulse = reduced ? 1 : 0.75 + 0.25 * Math.sin(t * 6);
-      st.entry.scale.setScalar(Math.max(0.001, reached) * (1 + w * 0.4));
+      st.entry.scale.setScalar(Math.max(0.001, reached) * (1 + w * 0.2));
       st.halo.material.opacity = 0.9 * reached * pulse * o;
       st.trade.material.opacity = done * o;
       // El trayecto fluye hacia el objetivo
@@ -307,7 +308,7 @@ export function buildScenarios(glow) {
         m.userData.update(t, reduced, on, o);
       });
       st.flare.material.opacity = done * o * (reduced ? 1 : 0.7 + 0.3 * Math.sin(t * 6));
-      st.flare.scale.setScalar(1.1 + done * 0.4);
+      st.flare.scale.setScalar(0.7 + done * 0.25);
       st.group.position.z = w * 0.8;
     });
   }

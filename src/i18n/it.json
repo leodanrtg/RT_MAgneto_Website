@@ -159,5 +159,6 @@
  "js.emailError": "Invio non riuscito. Riprova tra qualche minuto.",
  "captura.1": "Ecco come appare su NinjaTrader.",
  "captura.2": "Lo screenshot reale di RT Magneto su un mercato dei future.",
- "captura.3": "Vedi lo screenshot completo"
+ "captura.3": "Vedi lo screenshot completo",
+ "label.zg": "ZG Pivot"
 }

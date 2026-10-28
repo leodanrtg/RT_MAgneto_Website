@@ -48,6 +48,35 @@ export const ENGINE_CAMERAS = {
   eng3: cam([8, 0, EZ], [5.2, 1, EZ + 10.5], -0.25),
 };
 
+// Etiqueta de texto en un plano (lienzo 2D). setText() la redibuja al cambiar de idioma.
+function textLabel(text, css, h) {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 96;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(h * (512 / 96), h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+  mesh.userData.setText = (str) => {
+    const g = c.getContext('2d');
+    g.clearRect(0, 0, 512, 96);
+    g.font = '500 54px "IBM Plex Mono", ui-monospace, monospace';
+    // Fondo oscuro para que se lea sobre las velas
+    const w = Math.min(512, g.measureText(str).width + 28);
+    g.fillStyle = 'rgba(8, 11, 18, 0.82)';
+    g.beginPath();
+    g.roundRect(0, 8, w, 80, 16);
+    g.fill();
+    g.fillStyle = css;
+    g.textBaseline = 'middle';
+    g.fillText(str, 14, 50);
+    tex.needsUpdate = true;
+  };
+  mesh.userData.setText(text);
+  return mesh;
+}
+const ZG_LABELS = []; // etiquetas «ZG Pivote», traducidas con setZgLabel()
+export function setZgLabel(str) { ZG_LABELS.forEach((l) => l.userData.setText(str)); }
+
 function glowPoints(positions, color, size, glow, opacity = 1) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -131,7 +160,7 @@ function buildFog(glow) {
   group.add(fogPts);
 
   // Los tres planos de la cobertura: GEX+, Zero Gamma y GEX−
-  const planes = [[GEX_POS, C.pos], [0, C.zero], [GEX_NEG, C.neg]].map(([y, col]) => {
+  const planes = [[GEX_POS, C.pos, 'Max GEX+', '#5ee08a'], [0, C.zero, 'ZG Pivote', '#f5c84b'], [GEX_NEG, C.neg, 'Max GEX−', '#ef3fa6']].map(([y, col, name, css]) => {
     const g = new THREE.Group();
     const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(23, 9),
@@ -151,7 +180,11 @@ function buildFog(glow) {
     for (let x = -11.5; x <= 11.5; x += 0.14) front.push(x, 0, 2);
     const line = glowPoints(front, col, 0.2, glow, 0);
     g.add(line);
-    g.userData = { y, plane, edge, line };
+    const label = textLabel(name, css, 0.5);
+    label.position.set(-2.5, 0.45, 2.1);
+    if (y === 0) ZG_LABELS.push(label);
+    g.add(label);
+    g.userData = { y, plane, edge, line, label };
     group.add(g);
     return g;
   });
@@ -186,6 +219,7 @@ function buildFog(glow) {
       d.edge.material.opacity = 0.35 * rise * vis;
       const pulse = reduced ? 1 : 0.85 + 0.15 * Math.sin(t * 2 + k);
       d.line.material.opacity = rise * vis * pulse;
+      d.label.material.opacity = rise * vis;
     });
   }
   return { group, update };
@@ -299,7 +333,7 @@ function buildEngine(glow) {
   const cGeo = new THREE.BoxGeometry(0.085, 1, 0.08);
   const cMesh = new THREE.InstancedMesh(cGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }), M);
   const wick = [];
-  const LV = [[1.55, C.pos], [0.15, C.zero], [-1.55, C.neg]];
+  const LV = [[1.55, C.pos, 'Max GEX+', '#5ee08a'], [0.15, C.zero, 'ZG Pivote', '#f5c84b'], [-1.55, C.neg, 'Max GEX−', '#ef3fa6']];
   const path = [[-3.3, -0.4], [-2.4, 1.35], [-1.6, 0.3], [-0.8, 1.5], [0, 0.2], [0.8, -1.4], [1.6, -0.6], [2.4, -1.5], [3.3, 0.4]];
   const m4 = new THREE.Matrix4();
   const q = new THREE.Quaternion();
@@ -318,7 +352,11 @@ function buildEngine(glow) {
   const wg = new THREE.BufferGeometry();
   wg.setAttribute('position', new THREE.Float32BufferAttribute(wick, 3));
   chart.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x8b95a8, opacity: 0.7 })));
-  const levels = LV.map(([y, col]) => {
+  const levels = LV.map(([y, col, name, css]) => {
+    const label = textLabel(name, css, 0.3);
+    label.position.set(-3.3 + 0.8, y + 0.26, 0.3);
+    if (y === 0.15) ZG_LABELS.push(label);
+    chart.add(label);
     const pts = [];
     for (let x = 0; x <= 6.8; x += 0.1) pts.push(x, 0, 0.12);
     const l = glowPoints(pts, col, 0.17, glow);

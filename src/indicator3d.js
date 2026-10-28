@@ -158,8 +158,8 @@ export function buildIndicator(glow) {
   dots([...dottedRow(610, 637, 1300, 7, 3, 6), ...dottedRow(506, 1258, 1490, 8, 3, 7), ...dottedRow(401, 1280, 1515, 12, 3, 8), ...dottedRow(716, 535, 645, 8, 3, 9)], 0xff4d5e, 0.15, 6);
 
   // 3 · Spikes de flujo de opciones: anillo de convexidad + núcleo GEX
-  const ringGeo = new THREE.TorusGeometry(0.3, 0.055, 12, 48);
-  const coreGeo = new THREE.SphereGeometry(0.22, 24, 16);
+  const ringGeo = new THREE.TorusGeometry(0.2, 0.04, 12, 48);
+  const coreGeo = new THREE.SphereGeometry(0.14, 24, 16);
   const SPIKES = [
     [500, 378, 0x34d6f0, 0xd23a55],
     [785, 152, 0x8f6bff, 0x3fbf6a],
@@ -175,7 +175,7 @@ export function buildIndicator(glow) {
     const cm = new THREE.MeshBasicMaterial({ color: cc, transparent: true });
     const gm = new THREE.SpriteMaterial({ map: glow, color: rc, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false });
     const glowS = new THREE.Sprite(gm);
-    glowS.scale.setScalar(1.6);
+    glowS.scale.setScalar(1.0);
     g.add(new THREE.Mesh(ringGeo, rm), new THREE.Mesh(coreGeo, cm), glowS);
     g.position.set(px(x), py(y), 0.05);
     g.userData.ring = g.children[0];
@@ -230,9 +230,9 @@ export function buildIndicator(glow) {
       if (p.spikes) {
         p.obj.children.forEach((g, i) => {
           const pulse = reduced ? 1 : 1 + 0.12 * Math.sin(t * 3 + i);
-          g.scale.setScalar((1 + w * 0.8) * pulse);
-          g.children[2].material.opacity = g.children[2].material.userData.base * (1 + w * (0.4 + 1.2 * blink)) * o;
-          g.children[2].scale.setScalar(1.6 * (1 + w * 0.8 * blink));
+          g.scale.setScalar((1 + w * 0.35) * pulse);
+          g.children[2].material.opacity = g.children[2].material.userData.base * (1 + w * (0.3 + 0.6 * blink)) * o;
+          g.children[2].scale.setScalar(1.0 * (1 + w * 0.5 * blink));
           g.userData.ring.rotation.y = reduced ? 0.4 * w : t * 0.8 * w + i;
           g.userData.ring.position.z = -0.5 * w; // anillo y núcleo se separan en profundidad
           g.userData.core.position.z = 0.35 * w;
