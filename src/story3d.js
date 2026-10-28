@@ -42,10 +42,10 @@ export const FOG_CAMERAS = {
   fog1: cam([FX - 1, -0.2, 0], [FX + 3, 7, 18], 0.24),
 };
 export const ENGINE_CAMERAS = {
-  eng0: cam([1.5, 0.4, EZ], [0, 4, EZ + 29], -0.24),
+  eng0: cam([2.2, 0.4, EZ], [0.6, 4, EZ + 31], -0.24),
   eng1: cam([-7, 0, EZ], [-9.5, 1.8, EZ + 13], -0.25),
   eng2: cam([0, 1.1, EZ + 1], [-1.6, 2.4, EZ + 10.5], -0.25),
-  eng3: cam([8, 0, EZ], [5.2, 1, EZ + 10.5], -0.25),
+  eng3: { ...cam([9.4, 0, EZ], [7.2, 1, EZ + 18], -0.25), pz: 1.35 }, // en vertical, más lejos para ver la escalera
 };
 
 // Etiqueta de texto en un plano (lienzo 2D). setText() la redibuja al cambiar de idioma.
@@ -323,11 +323,13 @@ function buildEngine(glow) {
   const chart = new THREE.Group();
   chart.position.set(8.2, 0, 0);
   chart.rotation.y = -0.32;
-  const panel = new THREE.Mesh(new THREE.PlaneGeometry(7.4, 5.6), new THREE.MeshBasicMaterial({ color: 0x0c111c, opacity: 0.94, depthWrite: false }));
-  panel.position.z = -0.2;
+  // El panel se alarga a la derecha para dejar sitio a la escalera de GEX
+  const panel = new THREE.Mesh(new THREE.PlaneGeometry(10.2, 5.6), new THREE.MeshBasicMaterial({ color: 0x0c111c, opacity: 0.94, depthWrite: false }));
+  panel.position.set(1.4, 0, -0.2);
+  panel.renderOrder = -2; // el fondo siempre debajo de etiquetas y velas
   chart.add(panel);
-  const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(7.4, 5.6)), new THREE.MeshBasicMaterial({ color: 0x3a4660 }));
-  frame.position.z = -0.19;
+  const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(10.2, 5.6)), new THREE.MeshBasicMaterial({ color: 0x3a4660 }));
+  frame.position.set(1.4, 0, -0.19);
   chart.add(frame);
   const M = 46;
   const cGeo = new THREE.BoxGeometry(0.085, 1, 0.08);
@@ -358,12 +360,42 @@ function buildEngine(glow) {
     if (y === 0.15) ZG_LABELS.push(label);
     chart.add(label);
     const pts = [];
-    for (let x = 0; x <= 6.8; x += 0.1) pts.push(x, 0, 0.12);
+    for (let x = 0; x <= 9.6; x += 0.1) pts.push(x, 0, 0.12);
     const l = glowPoints(pts, col, 0.17, glow);
     l.position.set(-3.4, y, 0);
     chart.add(l);
     return l;
   });
+
+  // Escalera de exposición gamma por strike, a la derecha de las velas (ilustrativa):
+  // GEX+ en verde hacia la derecha, GEX− en magenta hacia la izquierda
+  const gauss = (y, mu, sd) => Math.exp(-((y - mu) ** 2) / (2 * sd * sd));
+  const LADDER_X = 5.1;
+  const rungs = [];
+  for (let y = -2.5; y <= 2.51; y += 0.2) {
+    let v = 1.6 * gauss(y, 1.55, 0.22) + 0.55 * gauss(y, 0.95, 0.3) + 0.4 * gauss(y, 2.3, 0.3)
+      - 1.5 * gauss(y, -1.55, 0.22) - 0.5 * gauss(y, -0.85, 0.3) - 0.35 * gauss(y, -2.3, 0.3);
+    v += (rnd(Math.round(y * 10) + 500) - 0.5) * 0.12;
+    if (Math.abs(y - 0.15) < 0.12) v *= 0.2;
+    rungs.push({ y, v });
+  }
+  const rungMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.11, 0.14), new THREE.MeshBasicMaterial({ color: 0xffffff }), rungs.length);
+  rungs.forEach((r, i) => {
+    const big = Math.abs(r.v) > 1.2; // las barras de Max GEX± brillan más
+    rungMesh.setColorAt(i, (r.v >= 0 ? C.pos : C.neg).clone().multiplyScalar(big ? 1.15 : 0.75));
+  });
+  chart.add(rungMesh);
+  const axisGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(LADDER_X, -2.65, 0.05), new THREE.Vector3(LADDER_X, 2.65, 0.05)]);
+  chart.add(new THREE.Line(axisGeo, new THREE.LineBasicMaterial({ color: 0x3a4660 })));
+  function layoutLadder(k) {
+    rungs.forEach((r, i) => {
+      const len = Math.max(0.001, Math.abs(r.v) * 0.75 * k);
+      tmp.set(LADDER_X + Math.sign(r.v) * len / 2, r.y, 0.05);
+      rungMesh.setMatrixAt(i, m4.compose(tmp, q, sc.set(len, 1, 1)));
+    });
+    rungMesh.instanceMatrix.needsUpdate = true;
+  }
+  layoutLadder(1);
   group.add(fade(chart, 3));
 
   function update(state, t, reduced) {
@@ -396,6 +428,7 @@ function buildEngine(glow) {
     // Los niveles se dibujan sobre tu gráfico al llegar al futuro (y en la vista general)
     const draw = Math.max(overview, clamp01((s - 2.2) / 0.8));
     levels.forEach((l, k) => { l.scale.x = Math.max(0.001, clamp01(draw * 1.4 - k * 0.2)); });
+    layoutLadder(clamp01(draw * 1.3 - 0.2));
   }
   return { group, update };
 }
