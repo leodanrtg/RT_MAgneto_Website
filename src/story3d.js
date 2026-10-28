@@ -368,9 +368,9 @@ function buildEngine(glow) {
   });
 
   // Escalera de exposición gamma por strike, a la derecha de las velas (ilustrativa):
-  // GEX+ en verde hacia la derecha, GEX− en magenta hacia la izquierda
+  // GEX+ en verde y GEX− en magenta, todas hacia la izquierda desde el eje
   const gauss = (y, mu, sd) => Math.exp(-((y - mu) ** 2) / (2 * sd * sd));
-  const LADDER_X = 5.1;
+  const LADDER_X = 6.1;
   const rungs = [];
   for (let y = -2.5; y <= 2.51; y += 0.2) {
     let v = 1.6 * gauss(y, 1.55, 0.22) + 0.55 * gauss(y, 0.95, 0.3) + 0.4 * gauss(y, 2.3, 0.3)
@@ -390,7 +390,7 @@ function buildEngine(glow) {
   function layoutLadder(k) {
     rungs.forEach((r, i) => {
       const len = Math.max(0.001, Math.abs(r.v) * 0.75 * k);
-      tmp.set(LADDER_X + Math.sign(r.v) * len / 2, r.y, 0.05);
+      tmp.set(LADDER_X - len / 2, r.y, 0.05);
       rungMesh.setMatrixAt(i, m4.compose(tmp, q, sc.set(len, 1, 1)));
     });
     rungMesh.instanceMatrix.needsUpdate = true;
