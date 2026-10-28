@@ -180,14 +180,17 @@ function bindLadder() {
 // ---------- Recorrido del indicador y captura real ----------
 
 function bindIndicator() {
-  const sec = document.getElementById('indicador');
-  if (sec) {
-    // En móvil se aclara el velo inferior para que se vea el modelo 3D
+  // En móvil se aclara el velo inferior para que se vea el modelo 3D
+  const active = new Set();
+  document.querySelectorAll('#indicador, .story').forEach((sec) => {
     ScrollTrigger.create({
       trigger: sec, start: 'top 60%', end: 'bottom 40%',
-      onToggle: (self) => root.classList.toggle('in-indicator', self.isActive),
+      onToggle: (self) => {
+        active[self.isActive ? 'add' : 'delete'](sec);
+        root.classList.toggle('in-indicator', active.size > 0);
+      },
     });
-  }
+  });
   const frame = document.querySelector('[data-tilt] .shot-frame');
   if (frame && !reduced) {
     gsap.fromTo(frame, { '--tilt': '28deg', '--tilt-scale': 0.88 }, {

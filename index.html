@@ -126,20 +126,38 @@
       <p data-i18n="hero.10" class="scroll-cue" aria-hidden="true"><span></span>Desliza para entrar en la estructura</p>
     </section>
 
-    <!-- NIEBLA -->
-    <section class="chapter" id="niebla" data-scene="fog">
-      <div class="wrap panel-left">
+    <!-- NIEBLA: escena 3D propia en dos pasos -->
+    <section class="story" id="niebla"><div class="wrap"><ol class="ind-steps">
+      <li class="ind-step ind-intro story-left" data-cam="fog0"><div class="ind-card">
         <h2 data-i18n="niebla.1" class="h2">¿Operando en la niebla?</h2>
         <p data-i18n="niebla.2">Sin un mapa, el mercado parece aleatorio: indicadores que se contradicen, ruido y decisiones emocionales. Debajo del precio hay una estructura que se puede ver.</p>
-        <p data-i18n="niebla.3" class="muted">Sigue bajando: la niebla se despeja y aparecen tres planos. Son los niveles que dibuja la cobertura de los dealers.</p>
-      </div>
-    </section>
+      </div></li>
+      <li class="ind-step story-left" data-cam="fog1" data-tone="zero"><div class="ind-card">
+        <h3 data-i18n="niebla.4">La estructura debajo del precio</h3>
+        <p data-i18n="niebla.3">Sigue bajando: la niebla se despeja y aparecen tres planos. Son los niveles que dibuja la cobertura de los dealers.</p>
+      </div></li>
+    </ol></div></section>
 
-    <!-- SALA DE MÁQUINAS -->
-    <section class="chapter" id="sala" data-scene="engine">
-      <div class="wrap panel-right">
+    <!-- SALA DE MÁQUINAS: motor de opciones → RT Magneto → tu futuro -->
+    <section class="story" id="sala"><div class="wrap"><ol class="ind-steps">
+      <li class="ind-step ind-intro" data-cam="eng0"><div class="ind-card">
         <h2 data-i18n="sala.1" class="h2">El mercado tiene una sala de máquinas.</h2>
         <p data-i18n="sala.2">La fuerza se genera en las opciones. Tú conduces el futuro. RT Magneto conecta las dos cosas y pone en tu gráfico de futuros la estructura que viene del mercado de opciones.</p>
+      </div></li>
+      <li class="ind-step" data-cam="eng1" data-tone="long"><div class="ind-card">
+        <span class="ind-num">1/3</span>
+        <h3 data-i18n="sala.6">Opciones: aquí se genera la fuerza</h3>
+        <p data-i18n="sala.7">Cada call y cada put que se negocia cambia la exposición de los dealers. Esa es la energía que mueve el sistema.</p>
+      </div></li>
+      <li class="ind-step" data-cam="eng2" data-tone="zero"><div class="ind-card">
+        <span class="ind-num">2/3</span>
+        <h3 data-i18n="sala.8">RT Magneto: la conexión</h3>
+        <p data-i18n="sala.9">Calcula la exposición gamma y delta del subyacente de opciones y la lleva al futuro que le corresponde.</p>
+      </div></li>
+      <li class="ind-step" data-cam="eng3" data-tone="pos"><div class="ind-card">
+        <span class="ind-num">3/3</span>
+        <h3 data-i18n="sala.10">Tu futuro: la estructura en tu gráfico</h3>
+        <p data-i18n="sala.11">Zero Gamma y los imanes GEX+ y GEX− aparecen como niveles sobre tus velas.</p>
         <table class="map-table">
           <caption data-i18n="sala.3" class="sr-only">Subyacente de opciones y futuro donde se muestra</caption>
           <thead><tr><th data-i18n="sala.4" scope="col">Opciones</th><th scope="col" aria-hidden="true"></th><th data-i18n="sala.5" scope="col">Tu futuro</th></tr></thead>
@@ -152,8 +170,8 @@
             <tr><td>USO</td><td class="arrow" aria-hidden="true"></td><td>CL</td></tr>
           </tbody>
         </table>
-      </div>
-    </section>
+      </div></li>
+    </ol></div></section>
 
     <!-- COBERTURA DEL DEALER -->
     <section class="chapter" id="cobertura" data-scene="hedge">
