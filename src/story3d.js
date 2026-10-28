@@ -74,8 +74,8 @@ function textLabel(text, css, h) {
   mesh.userData.setText(text);
   return mesh;
 }
-const ZG_LABELS = []; // etiquetas «ZG Pivote», traducidas con setZgLabel()
-export function setZgLabel(str) { ZG_LABELS.forEach((l) => l.userData.setText(str)); }
+const LABELS = []; // etiquetas traducibles: { key, mesh }, actualizadas con setLabels()
+export function setLabels(tr) { LABELS.forEach((l) => l.mesh.userData.setText(tr(l.key))); }
 
 function glowPoints(positions, color, size, glow, opacity = 1) {
   const geo = new THREE.BufferGeometry();
@@ -182,7 +182,7 @@ function buildFog(glow) {
     g.add(line);
     const label = textLabel(name, css, 0.5);
     label.position.set(-2.5, 0.45, 2.1);
-    if (y === 0) ZG_LABELS.push(label);
+    if (y === 0) LABELS.push({ key: 'label.zg', mesh: label });
     g.add(label);
     g.userData = { y, plane, edge, line, label };
     group.add(g);
@@ -281,7 +281,7 @@ function buildEngine(glow) {
   const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 80, 0.13, 12), new THREE.MeshBasicMaterial({ color: C.long, opacity: 0.22, depthWrite: false }));
   group.add(fade(tube, 2));
   const P = 90;
-  const flow = glowPoints(new Array(P * 3).fill(0), C.long, 0.34, glow);
+  const flow = glowPoints(new Array(P * 3).fill(0), C.long, 0.26, glow, 0.45);
   group.add(fade(flow, 2));
   const tmp = new THREE.Vector3();
   function layoutFlow(t, speed) {
@@ -291,6 +291,49 @@ function buildEngine(glow) {
       a.set([tmp.x, tmp.y + Math.sin(i * 2.1) * 0.06, tmp.z + Math.cos(i * 1.3) * 0.06], i * 3);
     }
     flow.geometry.attributes.position.needsUpdate = true;
+  }
+
+  // Flujos de opciones por el cable: paquetes de compra (verde) y de venta (magenta) con estela
+  const PK = 12; // paquetes por lado
+  const TR = 7; // puntos de estela por paquete
+  const flows = [
+    { color: C.pos, lane: 0.1, seed: 3, key: 'label.buy', css: '#5ee08a' },
+    { color: C.neg, lane: -0.1, seed: 41, key: 'label.sell', css: '#ef3fa6' },
+  ].map((f) => {
+    const heads = glowPoints(new Array(PK * 3).fill(0), f.color, 0.6, glow);
+    const trail = glowPoints(new Array(PK * TR * 3).fill(0), f.color, 0.2, glow, 0.7);
+    group.add(fade(heads, 2), fade(trail, 2));
+    const pk = Array.from({ length: PK }, (_, i) => ({ off: rnd(i + f.seed), sp: 0.07 + rnd(i + f.seed + 5) * 0.06 }));
+    return { ...f, heads, trail, pk };
+  });
+  // Etiquetas junto al cable, compra arriba y venta abajo
+  flows.forEach((f, k) => {
+    const label = textLabel('', f.css, 0.22);
+    label.position.set(2.15, k ? 0.3 : 1.45, 1.1);
+    LABELS.push({ key: f.key, mesh: label });
+    group.add(fade(label, 2));
+  });
+  const nrm = new THREE.Vector3();
+  function layoutPackets(t, boost) {
+    flows.forEach((f) => {
+      const h = f.heads.geometry.attributes.position.array;
+      const tr = f.trail.geometry.attributes.position.array;
+      f.pk.forEach((p, i) => {
+        const u = (p.off + t * p.sp * boost) % 1;
+        for (let j = 0; j <= TR; j++) {
+          const v = Math.max(0, u - j * 0.009);
+          curve.getPointAt(v, tmp);
+          curve.getTangentAt(v, nrm);
+          // carril: desplazado a un lado del eje del cable
+          const ox = -nrm.y * f.lane;
+          const oy = nrm.x * f.lane;
+          if (j === 0) h.set([tmp.x + ox, tmp.y + oy, tmp.z + f.lane * 0.6], i * 3);
+          else tr.set([tmp.x + ox, tmp.y + oy, tmp.z + f.lane * 0.6], (i * TR + j - 1) * 3);
+        }
+      });
+      f.heads.geometry.attributes.position.needsUpdate = true;
+      f.trail.geometry.attributes.position.needsUpdate = true;
+    });
   }
 
   // RT Magneto: un imán de herradura metálico con polos rojo y azul
@@ -357,7 +400,7 @@ function buildEngine(glow) {
   const levels = LV.map(([y, col, name, css]) => {
     const label = textLabel(name, css, 0.3);
     label.position.set(-3.3 + 0.8, y + 0.26, 0.3);
-    if (y === 0.15) ZG_LABELS.push(label);
+    if (y === 0.15) LABELS.push({ key: 'label.zg', mesh: label });
     chart.add(label);
     const pts = [];
     for (let x = 0; x <= 9.6; x += 0.1) pts.push(x, 0, 0.12);
@@ -422,6 +465,7 @@ function buildEngine(glow) {
     }
     contracts.instanceMatrix.needsUpdate = true;
     layoutFlow(tt, 0.08 + w(2) * 0.1);
+    layoutPackets(tt, 1 + w(2) * 0.8);
     magnet.rotation.y = reduced ? -0.35 : Math.sin(t * 0.5) * 0.5;
     magnet.scale.setScalar(1 + w(2) * 0.35);
     field.forEach((f, k) => { f.scale.setScalar(1 + (reduced ? 0 : ((t * 0.6 + k / 3) % 1) * 0.25)); });

@@ -160,5 +160,7 @@
  "captura.1": "So sieht es in NinjaTrader aus.",
  "captura.2": "Der echte RT-Magneto-Screenshot auf einem Futures-Markt.",
  "captura.3": "Vollständigen Screenshot ansehen",
- "label.zg": "ZG Pivot"
+ "label.zg": "ZG Pivot",
+ "label.buy": "Kaufflow",
+ "label.sell": "Verkaufsflow"
 }

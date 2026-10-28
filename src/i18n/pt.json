@@ -160,5 +160,7 @@
  "captura.1": "É assim que aparece no NinjaTrader.",
  "captura.2": "A captura real do RT Magneto sobre um mercado de futuros.",
  "captura.3": "Ver captura completa",
- "label.zg": "ZG Pivô"
+ "label.zg": "ZG Pivô",
+ "label.buy": "Fluxo de compra",
+ "label.sell": "Fluxo de venda"
 }

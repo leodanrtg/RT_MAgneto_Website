@@ -42,8 +42,8 @@ async function initWorld() {
     const { createWorld, SCENES } = await import('./scene.js');
     world = createWorld(canvas, { reduced });
     world.resize();
-    world.setZgLabel(t('label.zg'));
-    document.addEventListener('langchange', () => world.setZgLabel(t('label.zg')));
+    world.setLabels(t);
+    document.addEventListener('langchange', () => world.setLabels(t));
     window.addEventListener('resize', debounce(() => { world.resize(); if (reduced) world.renderOnce(); }, 120));
     if (reduced) bindScenesStatic(SCENES);
     else bindScenesScrubbed(SCENES);

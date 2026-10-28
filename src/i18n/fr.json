@@ -160,5 +160,7 @@
  "captura.1": "Voici ce que ça donne dans NinjaTrader.",
  "captura.2": "La vraie capture de RT Magneto sur un marché de futures.",
  "captura.3": "Voir la capture complète",
- "label.zg": "ZG Pivot"
+ "label.zg": "ZG Pivot",
+ "label.buy": "Flux acheteur",
+ "label.sell": "Flux vendeur"
 }

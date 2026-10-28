@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { buildIndicator, STEP_CAMERAS } from './indicator3d.js';
-import { buildStory, FOG_CAMERAS, ENGINE_CAMERAS, setZgLabel } from './story3d.js';
+import { buildStory, FOG_CAMERAS, ENGINE_CAMERAS, setLabels } from './story3d.js';
 import { buildScenarios, SCENARIO_CAMERAS } from './scenarios3d.js';
 
 // Colores del indicador (mismos valores que en styles.css)
@@ -573,7 +573,7 @@ export function createWorld(canvas, { reduced = false } = {}) {
       if (reduced) renderOnce();
     },
     setPointer(x, y) { pointer.x = x; pointer.y = y; },
-    setZgLabel(str) { setZgLabel(str); if (reduced) renderOnce(); },
+    setLabels(tr) { setLabels(tr); if (reduced) renderOnce(); },
     start() {
       if (running || reduced) return;
       running = true;

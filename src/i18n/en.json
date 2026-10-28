@@ -160,5 +160,7 @@
  "captura.1": "This is how it looks in NinjaTrader.",
  "captura.2": "The real RT Magneto screenshot on a futures market.",
  "captura.3": "View full screenshot",
- "label.zg": "ZG Pivot"
+ "label.zg": "ZG Pivot",
+ "label.buy": "Buy flow",
+ "label.sell": "Sell flow"
 }
