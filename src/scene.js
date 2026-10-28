@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { buildIndicator, STEP_CAMERAS } from './indicator3d.js';
 import { buildStory, FOG_CAMERAS, ENGINE_CAMERAS } from './story3d.js';
+import { buildScenarios, SCENARIO_CAMERAS } from './scenarios3d.js';
 
 // Colores del indicador (mismos valores que en styles.css)
 const C = {
@@ -41,11 +42,12 @@ export const SCENES = {
   community: { ox: 0, cx: -3, cy: 2, cz: 15, lx: 0, ly: 0, lz: 0, fog: 0.035, planes: 0.5, ladder: 0.4, spikes: 0.5, flow: 0.5, engine: 0, regime: 0.15, hero: 0, split: 0, horizon: 0, dim: 0.8 },
 };
 
-for (const k in SCENES) Object.assign(SCENES[k], { ind: 0, ind3d: 0, story: 0, fogStep: 0, eng3d: 0, engStep: 0, ...SCENES[k] });
+for (const k in SCENES) Object.assign(SCENES[k], { ind: 0, ind3d: 0, story: 0, fogStep: 0, eng3d: 0, engStep: 0, scn3d: 0, scnStep: 0, ...SCENES[k] });
 // Escenas propias de la niebla y de la sala de máquinas: el resto del mundo se apaga
 const OFF = { dim: 0, fog: 0.008, planes: 0, ladder: 0, spikes: 0, flow: 0, engine: 0, regime: 0, hero: 0, split: 0, horizon: 0 };
 Object.keys(FOG_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.fog, ...OFF, ...FOG_CAMERAS[k], story: 1, fogStep: i }; });
 Object.keys(ENGINE_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.engine, ...OFF, ...ENGINE_CAMERAS[k], eng3d: 1, engStep: i }; });
+Object.keys(SCENARIO_CAMERAS).forEach((k, i) => { SCENES[k] = { ...SCENES.scenarios, ...OFF, ...SCENARIO_CAMERAS[k], scn3d: 1, scnStep: i }; });
 // Recorrido del indicador en 3D: un fotograma por paso, el resto del mundo apagado
 Object.keys(STEP_CAMERAS).forEach((k, i) => {
   SCENES[k] = { ...SCENES.indicator, ...STEP_CAMERAS[k], ind: i, ind3d: 1, dim: 0, fog: 0.008, planes: 0, ladder: 0, spikes: 0, flow: 0, hero: 0, split: 0, horizon: 0 };
@@ -455,7 +457,7 @@ export function createWorld(canvas, { reduced = false } = {}) {
   }
 
   function updatePlanes(t) {
-    const solo = Math.max(state.ind3d, state.story, state.eng3d); // escenas propias
+    const solo = Math.max(state.ind3d, state.story, state.eng3d, state.scn3d); // escenas propias
     const away = solo > 0.9;
     trail.visible = !away;
     puck.visible = !away;
@@ -483,6 +485,8 @@ export function createWorld(canvas, { reduced = false } = {}) {
   scene.add(indicator.group);
   const story = buildStory(glow);
   story.groups.forEach((g) => scene.add(g));
+  const scenarios = buildScenarios(glow);
+  scene.add(scenarios.group);
 
   // ---------- Cámara ----------
   const look = new THREE.Vector3();
@@ -557,6 +561,7 @@ export function createWorld(canvas, { reduced = false } = {}) {
     updatePlanes(t);
     indicator.update(state, t, reduced);
     story.update(state, t, reduced);
+    scenarios.update(state, t, reduced);
     renderer.render(scene, camera);
   }
 

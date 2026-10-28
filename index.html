@@ -409,35 +409,33 @@
       </div>
     </section>
 
-    <!-- ESCENARIOS -->
-    <section class="chapter flow" id="escenarios" data-scene="scenarios">
-      <div class="wrap">
-        <h2 data-i18n="escenarios.1" class="h2 narrow">Cuatro escenarios. Un mapa para cada uno.</h2>
-        <p data-i18n="escenarios.2" class="narrow">Según dónde esté el precio respecto a Zero Gamma y a los niveles GEX, cambian la entrada y los objetivos.</p>
-        <ol class="scenarios">
-          <li>
-            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="pull-up"></svg>
-            <h3 data-i18n="escenarios.3">El tirón de la gravedad</h3>
-            <p data-i18n="escenarios.4">De Zero Gamma hacia Max GEX+. Dealers largos de gamma. Entrada en retroceso, comprando caídas; objetivo en el imán.</p>
-          </li>
-          <li>
-            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="pull-down"></svg>
-            <h3 data-i18n="escenarios.5">La aceleración</h3>
-            <p data-i18n="escenarios.6">De Zero Gamma hacia Max GEX−. Dealers cortos de gamma. Entrada vendiendo el rebote que falla en el pivote.</p>
-          </li>
-          <li>
-            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="fade"></svg>
-            <h3 data-i18n="escenarios.7">El muro</h3>
-            <p data-i18n="escenarios.8">Precio en Max GEX+. Se busca un giro confirmado en el orderflow; objetivo de vuelta hacia Zero Gamma.</p>
-          </li>
-          <li>
-            <svg viewBox="0 0 240 150" aria-hidden="true" class="mini" data-mini="break"></svg>
-            <h3 data-i18n="escenarios.9">El vacío</h3>
-            <p data-i18n="escenarios.10">Precio en Max GEX− y ruptura. Tras una pequeña consolidación, se opera a favor del impulso.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
+    <!-- ESCENARIOS: cuatro gráficos de velas en 3D, uno por escenario -->
+    <section class="story" id="escenarios"><div class="wrap"><ol class="ind-steps">
+      <li class="ind-step ind-intro" data-cam="scn0"><div class="ind-card">
+        <h2 data-i18n="escenarios.1" class="h2">Cuatro escenarios. Un mapa para cada uno.</h2>
+        <p data-i18n="escenarios.2">Según dónde esté el precio respecto a Zero Gamma y a los niveles GEX, cambian la entrada y los objetivos.</p>
+      </div></li>
+      <li class="ind-step" data-cam="scn1" data-tone="pos"><div class="ind-card">
+        <span class="ind-num">1/4</span>
+        <h3 data-i18n="escenarios.3">El tirón de la gravedad</h3>
+        <p data-i18n="escenarios.4">De Zero Gamma hacia Max GEX+. Dealers largos de gamma. Entrada en retroceso, comprando caídas; objetivo en el imán.</p>
+      </div></li>
+      <li class="ind-step" data-cam="scn2" data-tone="neg"><div class="ind-card">
+        <span class="ind-num">2/4</span>
+        <h3 data-i18n="escenarios.5">La aceleración</h3>
+        <p data-i18n="escenarios.6">De Zero Gamma hacia Max GEX−. Dealers cortos de gamma. Entrada vendiendo el rebote que falla en el pivote.</p>
+      </div></li>
+      <li class="ind-step" data-cam="scn3" data-tone="zero"><div class="ind-card">
+        <span class="ind-num">3/4</span>
+        <h3 data-i18n="escenarios.7">El muro</h3>
+        <p data-i18n="escenarios.8">Precio en Max GEX+. Se busca un giro confirmado en el orderflow; objetivo de vuelta hacia Zero Gamma.</p>
+      </div></li>
+      <li class="ind-step" data-cam="scn4" data-tone="purple"><div class="ind-card">
+        <span class="ind-num">4/4</span>
+        <h3 data-i18n="escenarios.9">El vacío</h3>
+        <p data-i18n="escenarios.10">Precio en Max GEX− y ruptura. Tras una pequeña consolidación, se opera a favor del impulso.</p>
+      </div></li>
+    </ol></div></section>
 
     <!-- MÉTODO -->
     <section class="chapter flow" id="metodo" data-scene="method">

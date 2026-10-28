@@ -133,7 +133,7 @@ function bindPointer() {
 // ---------- Revelados ----------
 
 function bindReveals() {
-  const targets = document.querySelectorAll('.chapter .wrap > *, .archetypes li, .scenarios li, .steps li, .spec-row, .channels li');
+  const targets = document.querySelectorAll('.chapter .wrap > *, .archetypes li, .steps li, .spec-row, .channels li');
   if (reduced) return;
   targets.forEach((el) => el.setAttribute('data-reveal', ''));
   const io = new IntersectionObserver((entries) => {
@@ -200,7 +200,7 @@ function bindIndicator() {
   }
 }
 
-// ---------- Sentimiento y escenarios ----------
+// ---------- Sentimiento ----------
 
 function bindSentiment() {
   const rect = document.querySelector('.sent-reveal');
@@ -211,59 +211,6 @@ function bindSentiment() {
   });
 }
 
-const MINI = {
-  // [puntos del precio], punto de entrada
-  'pull-up':   { pts: [[8, 112], [30, 104], [52, 92], [70, 66], [88, 58], [104, 70], [118, 76], [138, 64], [160, 52], [182, 44], [204, 37], [232, 34]], entry: [118, 76] },
-  'pull-down': { pts: [[8, 44], [30, 52], [52, 64], [70, 86], [88, 94], [104, 82], [118, 74], [138, 88], [160, 100], [182, 108], [204, 114], [232, 117]], entry: [118, 74] },
-  'fade':      { pts: [[8, 92], [28, 80], [48, 68], [68, 54], [86, 44], [102, 36], [114, 31], [124, 38], [142, 50], [164, 62], [190, 72], [232, 76]], entry: [118, 33] },
-  'break':     { pts: [[8, 60], [28, 72], [48, 86], [66, 100], [84, 112], [100, 117], [114, 120], [128, 117], [140, 121], [160, 130], [190, 138], [232, 146]], entry: [142, 121] },
-};
-
-function buildMinis() {
-  const ns = 'http://www.w3.org/2000/svg';
-  document.querySelectorAll('[data-mini]').forEach((svg) => {
-    const d = MINI[svg.dataset.mini];
-    if (!d) return;
-    const add = (tag, attrs) => {
-      const el = document.createElementNS(ns, tag);
-      for (const k in attrs) el.setAttribute(k, attrs[k]);
-      svg.appendChild(el);
-      return el;
-    };
-    add('line', { x1: 0, x2: 240, y1: 35, y2: 35, class: 'lvl lvl-pos' });
-    add('line', { x1: 0, x2: 240, y1: 75, y2: 75, class: 'lvl lvl-zero' });
-    add('line', { x1: 0, x2: 240, y1: 115, y2: 115, class: 'lvl lvl-neg' });
-    add('text', { x: 6, y: 29 }).textContent = 'Max GEX+';
-    add('text', { x: 6, y: 69 }).textContent = 'Zero Gamma';
-    add('text', { x: 6, y: 109 }).textContent = 'Max GEX−';
-    const path = add('path', { class: 'price', d: smoothPath(d.pts) });
-    const dot = add('circle', { class: 'entry', cx: d.entry[0], cy: d.entry[1], r: 4.5 });
-    if (!reduced) {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = String(len);
-      path.style.strokeDashoffset = String(len);
-      dot.style.opacity = '0';
-      ScrollTrigger.create({
-        trigger: svg, start: 'top 85%', once: true,
-        onEnter: () => {
-          gsap.to(path.style, { strokeDashoffset: 0, duration: 1.6, ease: 'power3.out' });
-          gsap.to(dot.style, { opacity: 1, duration: 0.4, delay: 0.7 });
-        },
-      });
-    }
-  });
-}
-
-function smoothPath(pts) {
-  let d = `M${pts[0][0]} ${pts[0][1]}`;
-  for (let i = 1; i < pts.length; i++) {
-    const [x0, y0] = pts[i - 1];
-    const [x1, y1] = pts[i];
-    const mx = (x0 + x1) / 2;
-    d += ` C${mx} ${y0} ${mx} ${y1} ${x1} ${y1}`;
-  }
-  return d;
-}
 
 // ---------- Formulario ----------
 
@@ -322,7 +269,6 @@ function bindLang() {
 }
 
 bindLang();
-buildMinis();
 bindReveals();
 bindNav();
 bindLadder();
