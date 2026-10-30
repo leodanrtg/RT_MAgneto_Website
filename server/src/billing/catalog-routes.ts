@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Deps } from '../app.ts';
 
 // Catálogo público: solo productos y planes activos que ya existen en PayPal.
-export function catalogRoutes({ sql }: Deps) {
+export function catalogRoutes({ sql, config }: Deps) {
   return async (app: FastifyInstance) => {
     app.get('/', async () => {
       const rows = await sql`
@@ -21,7 +21,7 @@ export function catalogRoutes({ sql }: Deps) {
           interval: r.billing_interval, intervalCount: r.interval_count,
         });
       }
-      return { products: [...products.values()] };
+      return { products: [...products.values()], supportEmail: config.SUPPORT_EMAIL };
     });
   };
 }

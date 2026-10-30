@@ -231,6 +231,16 @@ export function adminRoutes(deps: Deps) {
       return { items: rows.map(({ total, ...r }) => r), total: rows[0]?.total ?? 0, pageSize: PAGE_SIZE };
     });
 
+    app.get('/subscriptions/:id', async (req) => {
+      const { id } = Id.parse(req.params);
+      const [s] = await sql`
+        SELECT s.*, u.email, pr.name AS product, p.name AS plan FROM subscriptions s
+        JOIN users u ON u.id = s.user_id JOIN plans p ON p.id = s.plan_id JOIN products pr ON pr.id = s.product_id
+        WHERE s.id = ${id}`;
+      if (!s) throw notFound('Suscripción');
+      return s;
+    });
+
     app.post('/subscriptions/:id/refresh', async (req) => {
       const { id } = Id.parse(req.params);
       const sub = await loadSubscription(sql, { id });
