@@ -28,7 +28,7 @@
  "sala.6": "Opciones: aquí se genera la fuerza",
  "sala.7": "Cada call y cada put que se negocia cambia la exposición de los dealers. Esa es la energía que mueve el sistema.",
  "sala.8": "RT Magneto: la conexión",
- "sala.9": "Calcula la exposición gamma y delta del subyacente de opciones y la lleva al futuro que le corresponde.",
+ "sala.9": "Calcula la exposición gamma y delta del subyacente del mercado de opciones y la lleva al mercado futuro que le corresponde.",
  "sala.10": "Tu mercado de futuros: la estructura en tu gráfico",
  "sala.11": "Zero Gamma pivot y los imanes GEX+ y GEX− por imbalance o volumen más la convexidad aparecen como niveles sobre tu gráfica de velas.",
  "cobertura.1": "El market maker no apuesta. Cubre.",

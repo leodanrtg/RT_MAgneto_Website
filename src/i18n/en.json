@@ -28,7 +28,7 @@
  "sala.6": "Options: where the force is generated",
  "sala.7": "Every call and every put that trades changes dealer exposure. That is the energy that drives the system.",
  "sala.8": "RT Magneto: the connection",
- "sala.9": "It calculates the gamma and delta exposure of the options underlying and carries it to the matching future.",
+ "sala.9": "It calculates the gamma and delta exposure of the options market underlying and carries it to the matching futures market.",
  "sala.10": "Your futures market: the structure on your chart",
  "sala.11": "The Zero Gamma pivot and the GEX+ and GEX− magnets by imbalance or volume, plus convexity, appear as levels on your candlestick chart.",
  "cobertura.1": "The market maker doesn't bet. It hedges.",

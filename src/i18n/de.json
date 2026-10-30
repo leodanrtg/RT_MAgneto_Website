@@ -28,7 +28,7 @@
  "sala.6": "Optionen: Hier entsteht die Kraft",
  "sala.7": "Jeder gehandelte Call und jeder Put verändert die Exposure der Dealer. Das ist die Energie, die das System antreibt.",
  "sala.8": "RT Magneto: die Verbindung",
- "sala.9": "Es berechnet die Gamma- und Delta-Exposure des Options-Basiswerts und überträgt sie auf den passenden Future.",
+ "sala.9": "Es berechnet die Gamma- und Delta-Exposure des Basiswerts im Optionsmarkt und überträgt sie auf den passenden Futures-Markt.",
  "sala.10": "Dein Futures-Markt: die Struktur auf deinem Chart",
  "sala.11": "Der Zero-Gamma-Pivot und die Magnete GEX+ und GEX− nach Ungleichgewicht oder Volumen, dazu die Konvexität, erscheinen als Levels auf deinem Kerzenchart.",
  "cobertura.1": "Der Market Maker wettet nicht. Er hedgt.",

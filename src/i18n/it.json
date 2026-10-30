@@ -28,7 +28,7 @@
  "sala.6": "Le opzioni: qui nasce la forza",
  "sala.7": "Ogni call e ogni put negoziata cambia l'esposizione dei dealer. È l'energia che muove il sistema.",
  "sala.8": "RT Magneto: la connessione",
- "sala.9": "Calcola l'esposizione gamma e delta del sottostante delle opzioni e la porta sul future corrispondente.",
+ "sala.9": "Calcola l'esposizione gamma e delta del sottostante del mercato delle opzioni e la porta sul mercato dei futures corrispondente.",
  "sala.10": "Il tuo mercato dei futures: la struttura sul tuo grafico",
  "sala.11": "Il pivot Zero Gamma e i magneti GEX+ e GEX− per squilibrio o volume, più la convessità, compaiono come livelli sul tuo grafico a candele.",
  "cobertura.1": "Il market maker non scommette. Si copre.",
