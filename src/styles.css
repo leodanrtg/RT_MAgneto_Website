@@ -330,10 +330,20 @@ strong { font-weight: 650; color: #fff; }
 /* Captura real con inclinación 3D al entrar */
 .shot-real { margin-top: clamp(2rem, 4vw, 3rem); perspective: 1600px; }
 .shot-real .shot-frame {
+  position: relative;
   border-radius: 14px; overflow: hidden; border: 1px solid var(--hair-2); background: #808080;
-  box-shadow: 0 50px 90px -40px rgba(0, 0, 0, 0.9);
-  transform-origin: 50% 100%;
-  transform: rotateX(var(--tilt, 0deg)) scale(var(--tilt-scale, 1));
+  box-shadow: 0 calc(30px + var(--lift, 0) * 40px) 90px -40px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(52, 214, 240, calc(var(--lift, 0) * 0.25));
+  transform-origin: 50% 60%;
+  transform: translateZ(var(--tz, 0px)) rotateX(calc(var(--rx, 0deg) + var(--px, 0) * 1deg)) rotateY(calc(var(--ry, 0deg) + var(--py, 0) * 1deg)) scale(var(--s, 1));
+  will-change: transform;
+}
+/* Brillo que barre la captura con el scroll */
+.shot-glare {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: screen;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.22) 48%, rgba(52, 214, 240, 0.12) 52%, transparent 65%);
+  background-size: 250% 100%;
+  background-position: var(--glare, 120%) 0;
+  opacity: var(--glare-o, 0);
 }
 .shot-real img { width: 100%; height: auto; }
 .shot-real figcaption { margin-top: 0.75rem; font-size: 0.875rem; color: var(--faint); }

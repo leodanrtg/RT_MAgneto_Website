@@ -195,10 +195,24 @@ function bindIndicator() {
   });
   const frame = document.querySelector('[data-tilt] .shot-frame');
   if (frame && !reduced) {
-    gsap.fromTo(frame, { '--tilt': '28deg', '--tilt-scale': 0.88 }, {
-      '--tilt': '0deg', '--tilt-scale': 1, ease: 'none',
-      scrollTrigger: { trigger: frame, start: 'top 95%', end: 'top 35%', scrub: 0.6 },
-    });
+    // Entra inclinada y lejos, se endereza en el centro y se despide hacia atrás
+    gsap.set(frame, { '--rx': '38deg', '--ry': '-16deg', '--tz': '-260px', '--s': 0.8, '--glare': '120%', '--glare-o': 0, '--lift': 0 });
+    gsap.timeline({ scrollTrigger: { trigger: frame, start: 'top 100%', end: 'bottom 0%', scrub: 0.8 } })
+      .to(frame, { '--rx': '0deg', '--ry': '0deg', '--tz': '0px', '--s': 1, '--lift': 1, ease: 'power2.out', duration: 1 })
+      .to(frame, { '--glare': '-20%', '--glare-o': 1, ease: 'none', duration: 0.8 }, 0.35)
+      .to(frame, { '--glare-o': 0, duration: 0.2 }, 1.05)
+      .to(frame, { '--rx': '-14deg', '--ry': '8deg', '--tz': '-120px', '--s': 0.92, '--lift': 0, ease: 'power1.in', duration: 0.8 }, 1.4);
+    // En escritorio la captura sigue un poco al puntero
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const px = gsap.quickTo(frame, '--px', { duration: 0.5, ease: 'power3' });
+      const py = gsap.quickTo(frame, '--py', { duration: 0.5, ease: 'power3' });
+      frame.addEventListener('pointermove', (e) => {
+        const r = frame.getBoundingClientRect();
+        px(((e.clientY - r.top) / r.height - 0.5) * -6);
+        py(((e.clientX - r.left) / r.width - 0.5) * 8);
+      });
+      frame.addEventListener('pointerleave', () => { px(0); py(0); });
+    }
   }
 }
 

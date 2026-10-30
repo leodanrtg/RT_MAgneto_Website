@@ -147,7 +147,7 @@
  "attr.1": "RT Magneto, Startseite",
  "attr.2": "Hauptmenü",
  "attr.3": "Leiter anzeigen nach",
- "attr.4": "Screenshot von RT Magneto in NinjaTrader: Volume GEX+ und Volume GEX−, der Zero-Gamma-0DTE-Pivot, Konvexitätspunkte, Spikes des Optionsflows und der Sentiment-Subchart mit positiver und negativer Zone, jedes Element beschriftet.",
+ "attr.4": "RT Magneto in NinjaTrader auf dem NQ-Future: GEX+- und GEX−-Leiter, 0DTE-Zero-Gamma-Pivot, Konvexitätspunkte, Optionsflow-Spikes und der Sentiment-Subchart mit positiver und negativer Zone.",
  "attr.5": "Illustration: Das Sentiment wechselt von der magenta Zone, Put-Dominanz, in die grüne Zone, Call-Dominanz",
  "attr.6": "du@email.com",
  "svg.1": "Wechsel zu Calls",
