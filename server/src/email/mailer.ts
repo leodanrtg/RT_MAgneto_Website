@@ -53,7 +53,27 @@ export class ResendMailer implements Mailer {
   }
 }
 
+// "Nombre <correo@dominio>" o solo "correo@dominio"
+export function parseAddress(from: string) {
+  const m = from.match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  return m ? { name: m[1].trim() || undefined, email: m[2].trim() } : { email: from.trim() };
+}
+
+// https://developers.brevo.com/reference/sendtransacemail
+// Usa la API HTTPS (puerto 443): no depende de los puertos SMTP, que algunos VPS bloquean.
+export class BrevoMailer implements Mailer {
+  constructor(private key: string, private from: string) {}
+  async send(msg: OutgoingEmail) {
+    const data = await post('https://api.brevo.com/v3/smtp/email', { 'api-key': this.key }, {
+      sender: parseAddress(this.from), to: [{ email: msg.to }], subject: msg.subject, textContent: msg.text, htmlContent: msg.html,
+      headers: { 'X-RT-Idempotency-Key': msg.idempotencyKey.slice(0, 200) },
+    });
+    return { providerMessageId: String(data.messageId) };
+  }
+}
+
 export function createMailer(c: Config): Mailer {
+  if (c.MAIL_PROVIDER === 'brevo') return new BrevoMailer(c.MAIL_API_KEY, c.MAIL_FROM);
   if (c.MAIL_PROVIDER === 'postmark') return new PostmarkMailer(c.MAIL_API_KEY, c.MAIL_FROM);
   if (c.MAIL_PROVIDER === 'resend') return new ResendMailer(c.MAIL_API_KEY, c.MAIL_FROM);
   return new OutboxMailer(c.NODE_ENV === 'development' ? path.resolve('.outbox') : undefined);

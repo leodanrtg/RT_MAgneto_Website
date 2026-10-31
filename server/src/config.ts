@@ -26,7 +26,7 @@ const schema = z.object({
   // qué hacer con el acceso cuando se reembolsa por completo el último pago
   REFUND_POLICY: z.enum(['suspend', 'keep']).default('suspend'),
 
-  MAIL_PROVIDER: z.enum(['console', 'postmark', 'resend']).default('console'),
+  MAIL_PROVIDER: z.enum(['console', 'brevo', 'postmark', 'resend']).default('console'),
   MAIL_API_KEY: z.string().default(''),
   MAIL_FROM: z.string().default('RT Magneto <licencias@example.com>'),
   SUPPORT_EMAIL: z.string().default('soporte@example.com'),

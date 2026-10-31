@@ -85,7 +85,7 @@ cd server && TEST_DATABASE_URL=postgres://…/rt_comercial_test npm test
 npm run typecheck
 ```
 
-50 pruebas cubren registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
+53 pruebas cubren el envío por Brevo, registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
 
 ## PayPal
 
@@ -112,13 +112,20 @@ Mientras tanto, si no se puede conectar, las licencias se siguen creando a mano 
 
 Plantillas en `server/src/email/templates.ts`: verificación, bienvenida, compra confirmada, clave de activación, renovación, pago fallido, periodo de gracia, cancelación, fin de acceso, licencia suspendida, licencia reactivada, recuperación de contraseña (y aviso de cuenta existente). Cada envío tiene una clave única: el mismo evento nunca manda dos correos, y un correo fallido se reintenta (o se reenvía desde el panel) sin tocar la licencia. Las claves solo se envían a la dirección verificada de la cuenta.
 
-Verifica tu dominio en el proveedor (registros SPF, DKIM y DMARC) antes de usar `MAIL_FROM` con tu dominio.
+Proveedor recomendado: **Brevo** (`MAIL_PROVIDER=brevo`). Se usa su API HTTPS, no SMTP, así que funciona aunque el VPS bloquee los puertos de correo (DigitalOcean lo hace en muchas cuentas).
+
+1. En Brevo, **Senders, Domains & Dedicated IPs → Domains**: añade tu dominio y crea en tu DNS los registros que indica (DKIM, código de verificación y DMARC). Sin esto los correos acaban en spam.
+2. Añade el remitente de `MAIL_FROM` (por ejemplo `licencias@tudominio.com`) como sender verificado.
+3. **SMTP & API → API Keys → Generate a new API key** y ponla en `MAIL_API_KEY` del `.env` del servidor. Es la clave API (empieza por `xkeysib-`), no la clave SMTP.
+4. Si activaste "Authorised IPs" en Brevo, añade la IP del servidor.
+
+También se admiten Postmark y Resend con la misma variable.
 
 ## Despliegue
 
 El hosting debe poder ejecutar un proceso Node permanente (webhooks, cola, barrido de vencimientos) y PostgreSQL. Un hosting solo estático no basta.
 
-Opción recomendada: un VPS con Docker.
+Opción recomendada: un VPS con Docker. Un Droplet de DigitalOcean sirve (mínimo 1 GB de RAM; 2 GB recomendado para compilar las imágenes): instala Docker, abre solo los puertos 22, 80 y 443 en el firewall, y apunta el registro A del dominio (o un subdominio) a la IP del Droplet antes de arrancar, para que Caddy pueda obtener el certificado.
 
 ```bash
 cp server/.env.example server/.env    # rellena todo, NODE_ENV=production
