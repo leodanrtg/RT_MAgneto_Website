@@ -1,0 +1,27 @@
+# Despliegue en un VPS: Caddy (HTTPS automático) + backend + PostgreSQL.
+# Uso (desde la raíz del repo): docker compose -f server/docker-compose.yml --env-file server/.env up -d --build
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rt
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: rt_comercial
+    volumes: [pgdata:/var/lib/postgresql/data]
+
+  app:
+    build: { context: .., dockerfile: server/Dockerfile, target: app }
+    restart: unless-stopped
+    env_file: .env
+    depends_on: [db]
+
+  caddy:
+    build: { context: .., dockerfile: server/Dockerfile, target: web }
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?define DOMAIN en .env}
+    volumes: [caddy:/data]
+
+volumes: { pgdata: {}, caddy: {} }
