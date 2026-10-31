@@ -14,7 +14,8 @@ export type EmailType =
   | 'license_suspended'
   | 'license_reactivated'
   | 'password_reset'
-  | 'account_exists';
+  | 'account_exists'
+  | 'account_invite';
 
 export type EmailData = {
   name: string;
@@ -152,6 +153,12 @@ export function renderEmail(type: EmailType, d: EmailData): Rendered {
       return render(`Licencia reactivada: ${product}`, 'Licencia reactivada', [
         { p: `Tu licencia de ${product} vuelve a estar activa hasta el ${d.date}, con la misma clave.` },
         panel(d),
+      ], d);
+    case 'account_invite':
+      return render('Tu cuenta en RT Magneto', 'Te creamos una cuenta', [
+        { p: 'El equipo de RT Magneto creó una cuenta para ti. Elige una contraseña para entrar a tu panel y ver tus licencias. El enlace caduca en 7 días.' },
+        { button: { label: 'Elegir contraseña', href: d.link! } },
+        { p: `Si caduca, usa "¿Olvidaste la contraseña?" en ${d.appUrl}/entrar/ con este mismo correo.` },
       ], d);
     case 'password_reset':
       return render('Restablece tu contraseña', 'Restablece tu contraseña', [

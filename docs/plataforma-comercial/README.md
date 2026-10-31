@@ -85,7 +85,7 @@ cd server && TEST_DATABASE_URL=postgres://…/rt_comercial_test npm test
 npm run typecheck
 ```
 
-46 pruebas cubren registro, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
+49 pruebas cubren registro, alta manual de clientes, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
 
 ## PayPal
 
@@ -133,6 +133,10 @@ Alternativa: Render o Railway (servicio web Node con `npm start` en `server/`, P
 ### Primer administrador
 
 No existe ninguna ruta web para crear administradores. Se crea desde la consola del servidor con `npm run create-admin -- correo "Nombre"`; la contraseña se pide por teclado (mínimo 12 caracteres). Si la cuenta ya existe, se promueve a administradora sin cambiar su contraseña. Queda en la auditoría.
+
+### Alta manual de clientes
+
+En **Admin → Usuarios → Añadir cliente** se crea una cuenta de cliente con nombre y correo (por ejemplo, alguien que pagó por transferencia). El correo queda verificado y la cuenta no tiene contraseña utilizable: el cliente la elige con el enlace de invitación, válido 7 días, que se envía al crearla o después con **Enviar invitación** desde su ficha. Si el enlace caduca, también sirve "¿Olvidaste la contraseña?". Desde la ficha se le puede crear una licencia manual. El alta y cada invitación quedan en la auditoría. Solo crea clientes; los administradores siguen creándose desde la consola.
 
 ### Copias de seguridad y recuperación
 

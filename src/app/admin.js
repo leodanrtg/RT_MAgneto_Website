@@ -100,9 +100,32 @@ async function resumen() {
 }
 
 // ---------- Usuarios ----------
+async function newCustomer() {
+  const v = await dialog({
+    title: 'Añadir cliente',
+    body: 'Crea la cuenta con el correo ya verificado. El cliente elige su contraseña con el enlace de invitación (válido 7 días). Después puedes crearle una licencia manual desde su ficha.',
+    confirmLabel: 'Crear cuenta',
+    fields: [
+      { name: 'name', label: 'Nombre', required: true },
+      { name: 'email', label: 'Correo', type: 'email', required: true },
+      { name: 'sendInvite', label: 'Enviar invitación por correo', options: [['1', 'Sí, ahora'], ['0', 'No, la envío después']], value: '1' },
+      { name: 'note', label: 'Nota interna (opcional)', type: 'textarea', placeholder: 'Ej.: pagó por transferencia el 30/10' },
+    ],
+  });
+  if (!v) return;
+  try {
+    const { id } = await api('POST', '/admin/users', { ...v, sendInvite: v.sendInvite === '1' });
+    toast(v.sendInvite === '1' ? 'Cliente creado e invitación enviada' : 'Cliente creado', 'good');
+    location.hash = `#usuarios/${id}`;
+  } catch (err) {
+    toast(err.message, 'bad');
+  }
+}
+
 function usuarios() {
   return listView({
     title: 'Usuarios', path: '/admin/users', filters: ['active', 'suspended'],
+    intro: h('div', { class: 'actions' }, h('button', { class: 'btn btn-sm', onclick: newCustomer }, 'Añadir cliente')),
     onRow: (u) => { location.hash = `#usuarios/${u.id}`; },
     columns: () => [
       { label: 'Nombre', cell: (u) => u.name },
@@ -143,7 +166,12 @@ async function usuario(id) {
           path: `/admin/users/${id}/status`, danger: !suspended, done: reload,
           transform: (v) => ({ ...v, status: suspended ? 'active' : 'suspended' }),
         }) }, suspended ? 'Reactivar cuenta' : 'Suspender cuenta'),
-        h('button', { class: 'btn btn-ghost btn-sm', onclick: () => manualLicense(id, reload) }, 'Crear licencia manual'))),
+        h('button', { class: 'btn btn-ghost btn-sm', onclick: () => manualLicense(id, reload) }, 'Crear licencia manual'),
+        !suspended && h('button', { class: 'btn btn-ghost btn-sm', onclick: () => act({
+          title: 'Enviar invitación',
+          body: `Se envía a ${u.email} un enlace para elegir contraseña, válido 7 días. Anula los enlaces anteriores.`,
+          path: `/admin/users/${id}/invite`, fields: [], done: reload,
+        }) }, 'Enviar invitación'))),
     h('section', { class: 'card' }, h('h2', {}, 'Suscripciones'), table([
       { label: 'Producto', cell: (s) => `${s.product} · ${s.plan}` },
       { label: 'Estado', cell: (s) => badge(s.status) },

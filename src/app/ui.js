@@ -89,7 +89,7 @@ export function field({ name, label, type = 'text', required = false, value = ''
   const control = options
     ? h('select', { id, name, required }, ...options.map(([v, l]) => h('option', { value: v, selected: v === value }, l)))
     : type === 'textarea'
-      ? h('textarea', { id, name, required, rows: 4 }, value)
+      ? h('textarea', { id, name, required, rows: 4, placeholder }, value)
       : h('input', { id, name, type, required, value, autocomplete, min, max, step, placeholder });
   return h('label', { class: 'f-field', for: id }, h('span', {}, label), control, hint && h('small', { class: 'note' }, hint));
 }

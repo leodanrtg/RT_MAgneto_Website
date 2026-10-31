@@ -2,11 +2,13 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { clientIp, requireAdmin, type Deps } from '../app.ts';
 import { audit } from '../audit.ts';
+import { hashPassword } from '../auth/passwords.ts';
 import { deleteUserSessions } from '../auth/sessions.ts';
+import { issueToken } from '../auth/tokens.ts';
 import { applyRemote, formatDate, loadSubscription, refreshSubscription } from '../billing/entitlements.ts';
 import { handleStoredEvent } from '../billing/webhook-routes.ts';
 import { queueEmail, retryEmail } from '../email/queue.ts';
-import { decrypt, encrypt } from '../lib/crypto.ts';
+import { decrypt, encrypt, randomToken } from '../lib/crypto.ts';
 import { badRequest, conflict, notFound } from '../lib/errors.ts';
 import { syncLicenseForSubscription } from '../licenses/sync.ts';
 
@@ -18,6 +20,13 @@ const ListQuery = z.object({
   page: z.coerce.number().int().min(1).max(10_000).default(1),
 });
 const Reason = z.object({ reason: z.string().trim().min(3).max(300) });
+const NewUser = z.object({
+  name: z.string().trim().min(1).max(120),
+  email: z.email('Correo no válido').max(254).transform((v) => v.trim().toLowerCase()),
+  sendInvite: z.boolean().default(true),
+  note: z.string().trim().max(4000).default(''),
+});
+const INVITE_TTL_MINUTES = 7 * 24 * 60;
 
 const ProductBody = z.object({
   slug: z.string().regex(/^[a-z0-9-]{2,64}$/),
@@ -50,6 +59,15 @@ export function adminRoutes(deps: Deps) {
   const { sql, config, paypal, licenses } = deps;
   const log = (req: FastifyRequest, action: string, targetType: string, targetId: string, metadata: Record<string, unknown> = {}) =>
     audit(sql, { actorUserId: req.session!.user.id, action, targetType, targetId, metadata, ip: clientIp(req) });
+
+  // Enlace para elegir contraseña; usa el mismo flujo que "¿Olvidaste la contraseña?", con más plazo.
+  async function sendInvite(user: { id: string; name: string; email: string }) {
+    const token = await issueToken(sql, user.id, 'reset_password', INVITE_TTL_MINUTES);
+    await queueEmail(sql, config, {
+      userId: user.id, to: user.email, type: 'account_invite', key: `invite:${user.id}:${token.slice(0, 12)}`,
+      data: { name: user.name, link: `${config.APP_URL}/entrar/?restablecer=${token}` },
+    });
+  }
 
   return async (app: FastifyInstance) => {
     app.addHook('onRequest', async (req) => {
@@ -100,6 +118,36 @@ export function adminRoutes(deps: Deps) {
           AND (${q.status ?? null}::text IS NULL OR status = ${q.status ?? null})
         ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
       return { items: rows.map(({ total, ...r }) => r), total: rows[0]?.total ?? 0, pageSize: PAGE_SIZE };
+    });
+
+    // Alta manual (clientes que pagaron por otra vía, soporte, pruebas). La cuenta nace sin contraseña
+    // utilizable: el cliente la elige con el enlace de invitación o con "¿Olvidaste la contraseña?".
+    app.post('/users', async (req, reply) => {
+      const body = NewUser.parse(req.body);
+      const [user] = await sql<{ id: string; name: string; email: string }[]>`
+        INSERT INTO users (name, email, password_hash, email_verified_at)
+        VALUES (${body.name}, ${body.email}, ${await hashPassword(randomToken())}, now())
+        ON CONFLICT (lower(email)) DO NOTHING
+        RETURNING id, name, email`;
+      if (!user) throw conflict('email_taken', 'Ya existe una cuenta con ese correo.');
+      if (body.note) {
+        await sql`INSERT INTO support_notes (user_id, author_id, body) VALUES (${user.id}, ${req.session!.user.id}, ${body.note})`;
+      }
+      if (body.sendInvite) {
+        await sendInvite(user);
+      }
+      await log(req, 'user.create_manual', 'user', user.id, { invited: body.sendInvite });
+      return reply.status(201).send({ id: user.id });
+    });
+
+    app.post('/users/:id/invite', async (req) => {
+      const { id } = Id.parse(req.params);
+      const [user] = await sql<{ id: string; name: string; email: string; status: string }[]>`SELECT id, name, email, status FROM users WHERE id = ${id}`;
+      if (!user) throw notFound('Usuario');
+      if (user.status !== 'active') throw badRequest('suspended', 'La cuenta está suspendida.');
+      await sendInvite(user);
+      await log(req, 'user.invite_sent', 'user', id);
+      return { message: 'Invitación enviada.' };
     });
 
     app.get('/users/:id', async (req) => {

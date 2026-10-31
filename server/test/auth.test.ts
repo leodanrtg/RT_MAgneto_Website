@@ -92,6 +92,41 @@ describe('contraseñas', () => {
   });
 });
 
+describe('alta manual de clientes', () => {
+  it('el admin crea un cliente, que elige su contraseña con la invitación', async () => {
+    const admin = await createUser(ctx, { role: 'admin' });
+    const email = 'manual.cliente@test.dev';
+    const r = await admin.client.req('POST', '/api/admin/users', { name: 'Cliente Manual', email: 'Manual.Cliente@test.dev', note: 'Pagó por transferencia' });
+    expect(r.status).toBe(201);
+    expect((await admin.client.req('POST', '/api/admin/users', { name: 'Otro', email })).status).toBe(409);
+    const d = await admin.client.req('GET', `/api/admin/users/${r.body.id}`);
+    expect(d.body.user).toMatchObject({ email, role: 'customer', status: 'active' });
+    expect(d.body.notes[0].body).toBe('Pagó por transferencia');
+    expect(d.body.actions.some((a: { action: string }) => a.action === 'user.create_manual')).toBe(true);
+    await drainAll(ctx);
+    const c = new Client(ctx);
+    const token = lastLink(email, 'restablecer');
+    expect((await c.req('POST', '/api/auth/reset-password', { token, password: 'clave-del-cliente-1' })).status).toBe(200);
+    expect((await c.login(email, 'clave-del-cliente-1')).status).toBe(200);
+  });
+
+  it('sin invitación no se envía correo, y se puede enviar después', async () => {
+    const admin = await createUser(ctx, { role: 'admin' });
+    const email = 'sin.invitacion@test.dev';
+    const r = await admin.client.req('POST', '/api/admin/users', { name: 'Sin Invitación', email, sendInvite: false });
+    await drainAll(ctx);
+    expect(ctx.mailer.sent.some((m) => m.to === email)).toBe(false);
+    expect((await admin.client.req('POST', `/api/admin/users/${r.body.id}/invite`)).status).toBe(200);
+    await drainAll(ctx);
+    expect(lastLink(email, 'restablecer')).toBeTruthy();
+  });
+
+  it('un cliente no puede crear cuentas', async () => {
+    const u = await createUser(ctx);
+    expect((await u.client.req('POST', '/api/admin/users', { name: 'X', email: 'x@test.dev' })).status).toBe(403);
+  });
+});
+
 describe('seguridad', () => {
   it('exige token CSRF en peticiones con sesión', async () => {
     const u = await createUser(ctx);
