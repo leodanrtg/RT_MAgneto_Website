@@ -1,9 +1,9 @@
 // Traducción de los paneles. El texto en español del código es la clave; cada idioma tiene su JSON
 // en ./i18n/ con la traducción de cada frase. Lo que falte se muestra en español.
-import { LANGS, detect, remember } from '../lang.js';
+import { LANGS, detect, dirOf, remember } from '../lang.js';
 
 const loaders = import.meta.glob('./i18n/*.json', { import: 'default' });
-const NAMES = { es: 'ES', en: 'EN', pt: 'PT', fr: 'FR', de: 'DE', it: 'IT' };
+const NAMES = { es: 'ES', en: 'EN', pt: 'PT', fr: 'FR', de: 'DE', it: 'IT', tr: 'TR', fa: 'FA', ar: 'AR' };
 
 let dict = {};
 let current = 'es';
@@ -22,6 +22,7 @@ export async function useLang(l = detect(), { save = false } = {}) {
   current = l;
   if (save) remember(l);
   document.documentElement.lang = l;
+  document.documentElement.dir = dirOf(l);
   return l;
 }
 

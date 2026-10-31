@@ -33,6 +33,10 @@ describe('idiomas de la API', () => {
     expect(pickLang('ja')).toBe('es');
     expect(pickLang(undefined)).toBe('es');
     expect(translate('Sesión cerrada.', 'fr')).toBe('Session fermée.');
+    expect(pickLang('tr-TR')).toBe('tr');
+    expect(pickLang('fa-IR,fa;q=0.9')).toBe('fa');
+    expect(pickLang('ar')).toBe('ar');
+    expect(translate('Sesión cerrada.', 'tr')).toBe('Çıkış yapıldı.');
   });
 
   it('responde errores y avisos en el idioma pedido', async () => {
@@ -42,6 +46,8 @@ describe('idiomas de la API', () => {
     const body = JSON.parse(v.body);
     expect(body.message).toBe('Verifique os dados do formulário.');
     expect(body.fields.map((f: { message: string }) => f.message)).toEqual(expect.arrayContaining(['E-mail inválido', 'Mínimo de 10 caracteres']));
+    const ar = await ctx.app.inject({ method: 'POST', url: '/api/auth/login', headers: { 'accept-language': 'ar' }, payload: { email: 'nadie@test.dev', password: 'x' } });
+    expect(JSON.parse(ar.body).message).toBe('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
     const u = await createUser(ctx);
     const out = await u.client.req('POST', '/api/auth/logout');
     expect(out.body.message).toBe('Sesión cerrada.');

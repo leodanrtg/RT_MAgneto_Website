@@ -1,6 +1,8 @@
 // Idiomas de la web y preferencia del visitante. Lo comparten la landing y los paneles,
 // así que el idioma elegido en uno se mantiene en el otro.
-export const LANGS = ['es', 'en', 'pt', 'fr', 'de', 'it'];
+export const LANGS = ['es', 'en', 'pt', 'fr', 'de', 'it', 'tr', 'fa', 'ar'];
+export const RTL = ['fa', 'ar'];
+export const dirOf = (lang) => (RTL.includes(lang) ? 'rtl' : 'ltr');
 const STORE_KEY = 'rtm-lang';
 
 function stored() {

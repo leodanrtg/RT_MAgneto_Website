@@ -79,11 +79,12 @@ Para ver los paneles sin PayPal hay un servidor de demostración que **borra la 
 
 ## Idiomas
 
-Los paneles (/entrar, /cuenta, /admin) usan los mismos seis idiomas que la landing (ES, EN, PT, FR, DE, IT) y comparten la preferencia: el idioma elegido en la landing se mantiene en los paneles y al revés. Cada panel tiene su selector.
+Los paneles (/entrar, /cuenta, /admin) usan los mismos nueve idiomas que la landing (ES, EN, PT, FR, DE, IT, TR, FA, AR) y comparten la preferencia: el idioma elegido en la landing se mantiene en los paneles y al revés. Cada panel tiene su selector.
 
 - Los textos se escriben en español en el código con `t('…')`; las traducciones están en `src/app/i18n/<idioma>.json`. `npm run check:i18n` (también se ejecuta en `npm run build`) falla si falta alguna.
 - La API responde sus mensajes en el idioma que la página envía en `Accept-Language`. Las traducciones están en `server/src/lib/i18n.ts`, y una prueba falla si un mensaje nuevo no tiene traducción.
-- Fechas e importes usan el formato del idioma elegido.
+- Fechas e importes usan el formato del idioma elegido (en persa, el calendario persa).
+- Persa y árabe se muestran de derecha a izquierda (`dir="rtl"` en `<html>`). Los paneles de la landing siguen en el lado que les deja libre la escena 3D. El CSS nuevo debe usar propiedades lógicas (`margin-inline-start`, `text-align: start`…) para que funcione en ambos sentidos.
 - Pendiente: los correos automáticos siguen en español.
 
 ## Pruebas
@@ -201,5 +202,4 @@ Hay dos roles: Cliente (su panel /cuenta) y Administrador (acceso completo a /ad
 - Confirmar si ATAS usa el mismo sistema de licencias.
 - Precios y planes definitivos; la landing sigue mostrando "Precio por anunciar".
 - Enlace de descarga del indicador en el panel del cliente.
-- Traducir los paneles: hoy están solo en español (la landing tiene 6 idiomas).
 - Pagos con USDT y USDC: fuera de este alcance.

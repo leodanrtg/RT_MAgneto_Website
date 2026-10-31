@@ -120,7 +120,7 @@ function paymentsCard(payments) {
 function installCard(supportEmail) {
   return h('section', { class: 'card', 'aria-labelledby': 'h-inst' },
     h('h2', { id: 'h-inst' }, t('Instalación y soporte')),
-    h('ol', { style: 'list-style:decimal;padding-left:1.25rem;display:grid;gap:.4rem' },
+    h('ol', { style: 'list-style:decimal;padding-inline-start:1.25rem;display:grid;gap:.4rem' },
       h('li', {}, t('En NinjaTrader 8, importa el indicador desde Herramientas › Importar › Complemento NinjaScript con el archivo que te facilita el soporte.')),
       h('li', {}, t('Añade RT Magneto a un gráfico de futuros.')),
       h('li', {}, t('Introduce tu clave de activación cuando el indicador la pida. La clave queda vinculada a tu equipo.'))),

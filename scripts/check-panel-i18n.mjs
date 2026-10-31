@@ -20,7 +20,8 @@ if (process.argv.includes('--list')) {
   process.exit(0);
 }
 let missing = 0;
-for (const lang of ['en', 'pt', 'fr', 'de', 'it']) {
+const LANGS = ['en', 'pt', 'fr', 'de', 'it', 'tr', 'fa', 'ar'];
+for (const lang of LANGS) {
   const dict = JSON.parse(readFileSync(join(dir, 'i18n', `${lang}.json`), 'utf8'));
   for (const k of list) {
     if (typeof dict[k] !== 'string' || !dict[k]) { console.error(`${lang}: falta «${k}»`); missing++; continue; }
@@ -30,4 +31,4 @@ for (const lang of ['en', 'pt', 'fr', 'de', 'it']) {
   for (const k of Object.keys(dict)) if (!keys.has(k)) console.warn(`${lang}: sobra «${k}»`);
 }
 if (missing) { console.error(`${missing} traducciones pendientes`); process.exit(1); }
-console.log(`Paneles: ${list.length} textos traducidos en 5 idiomas.`);
+console.log(`Paneles: ${list.length} textos traducidos en ${LANGS.length} idiomas.`);

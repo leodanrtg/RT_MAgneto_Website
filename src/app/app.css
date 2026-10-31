@@ -81,7 +81,7 @@
 .toolbar .f-field { min-width: 12rem; flex: 1; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--hair); border-radius: 12px; }
 .table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-.table th { text-align: left; font-weight: 600; color: var(--muted); background: var(--ink-3); padding: 0.65rem 0.85rem; white-space: nowrap; }
+.table th { text-align: start; font-weight: 600; color: var(--muted); background: var(--ink-3); padding: 0.65rem 0.85rem; white-space: nowrap; }
 .table td { padding: 0.65rem 0.85rem; border-top: 1px solid var(--hair); vertical-align: top; }
 .table tr.is-link { cursor: pointer; }
 .table tr.is-link:hover td { background: rgba(255, 255, 255, 0.03); }
@@ -94,9 +94,9 @@
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
 .empty { color: var(--faint); padding: 1.5rem; text-align: center; border: 1px dashed var(--hair-2); border-radius: 12px; }
 .loading { color: var(--muted); }
-.loading::before { content: ""; display: inline-block; width: 0.9em; height: 0.9em; margin-right: 0.5em; vertical-align: -0.1em;
+.loading::before { content: ""; display: inline-block; width: 0.9em; height: 0.9em; margin-inline-end: 0.5em; vertical-align: -0.1em;
   border-radius: 50%; border: 2px solid var(--zero); border-right-color: transparent; animation: spin 0.7s linear infinite; }
-.notice { border-left: 3px solid var(--zero); background: rgba(245, 200, 75, 0.07); padding: 0.8rem 1rem; border-radius: 0 10px 10px 0; color: #e8dcb5; }
+.notice { border-inline-start: 3px solid var(--zero); background: rgba(245, 200, 75, 0.07); padding: 0.8rem 1rem; border-radius: 10px; border-start-start-radius: 0; border-end-start-radius: 0; color: #e8dcb5; }
 .notice-bad { border-color: var(--vol-neg); background: rgba(255, 90, 78, 0.08); color: #f3c3be; }
 
 /* Diálogo y aviso */
@@ -140,6 +140,8 @@
   .app-nav .brand span { display: none; }
   .app-nav .nav-end { gap: 0.4rem; min-width: 0; flex-wrap: wrap; justify-content: flex-end; }
   .app-nav .btn-sm { padding: 0.45rem 0.75rem; white-space: nowrap; }
-  .app-nav .lang { padding-right: 1.6rem; }
+  .app-nav .lang { padding-inline-end: 1.6rem; }
   .table td > * { justify-self: start; }
 }
+
+[dir="rtl"] .side a[aria-current="page"] { box-shadow: inset -2px 0 0 var(--zero); }

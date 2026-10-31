@@ -1,5 +1,5 @@
 import es from './i18n/es.json';
-import { LANGS, detect, remember as rememberLang } from './lang.js';
+import { LANGS, detect, dirOf, remember as rememberLang } from './lang.js';
 
 export { LANGS, detect };
 
@@ -15,6 +15,7 @@ export async function setLang(lang, { remember = false } = {}) {
   if (remember) rememberLang(lang);
 
   document.documentElement.lang = lang;
+  document.documentElement.dir = dirOf(lang);
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const v = dict[el.dataset.i18n];
     if (v != null) el.innerHTML = v;

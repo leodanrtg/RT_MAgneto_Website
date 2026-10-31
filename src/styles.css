@@ -228,10 +228,10 @@ strong { font-weight: 650; color: #fff; }
 
 /* Sala de máquinas */
 .map-table { border-collapse: collapse; font-family: var(--mono); font-size: 0.95rem; width: 100%; max-width: 22rem; }
-.map-table th { text-align: left; font-family: var(--font); font-weight: 500; font-size: 0.8rem; color: var(--faint); padding-bottom: 0.5rem; }
+.map-table th { text-align: start; font-family: var(--font); font-weight: 500; font-size: 0.8rem; color: var(--faint); padding-bottom: 0.5rem; }
 .map-table td { padding: 0.45rem 0; border-top: 1px solid var(--hair); }
 .map-table td:first-child { color: var(--muted); }
-.map-table td:last-child { color: var(--text); font-weight: 500; text-align: right; }
+.map-table td:last-child { color: var(--text); font-weight: 500; text-align: end; }
 .map-table .arrow { width: 40%; position: relative; }
 .map-table .arrow::after {
   content: ""; position: absolute; left: 12%; right: 12%; top: 50%; height: 1px;
@@ -270,8 +270,8 @@ strong { font-weight: 650; color: #fff; }
 
 /* Regímenes */
 .regimes { display: grid; gap: 1.5rem; }
-.regime { padding-left: 1.1rem; position: relative; }
-.regime::before { content: ""; position: absolute; left: 0; top: 0.35rem; bottom: 0.35rem; width: 1px; }
+.regime { padding-inline-start: 1.1rem; position: relative; }
+.regime::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.35rem; bottom: 0.35rem; width: 1px; }
 .regime-pos::before { background: var(--gex-pos); }
 .regime-neg::before { background: var(--gex-neg); }
 .regime h3 { font-size: 1.2rem; display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
@@ -377,7 +377,7 @@ strong { font-weight: 650; color: #fff; }
 .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .pills li { padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid var(--hair-2); font-weight: 600; font-stretch: 106%; }
 .pills li.soon { color: var(--muted); border-style: dashed; font-weight: 500; }
-.pills li.soon span { font-size: 0.8rem; color: var(--faint); margin-left: 0.35rem; font-weight: 400; }
+.pills li.soon span { font-size: 0.8rem; color: var(--faint); margin-inline-start: 0.35rem; font-weight: 400; }
 .feature-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 2rem; }
 .feature-list li { display: flex; gap: 0.75rem; }
 .feature-list li::before { content: ""; flex: none; width: 0.45rem; height: 0.45rem; border-radius: 50%; margin-top: 0.6rem; background: var(--gex-pos); box-shadow: 0 0 10px var(--gex-pos); }
@@ -411,8 +411,8 @@ strong { font-weight: 650; color: #fff; }
   font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.4rem); font-weight: 700; font-stretch: 112%; letter-spacing: -0.02em;
   transition: color 0.25s, padding 0.4s var(--ease-out);
 }
-.channels a span { font-size: 0.9rem; font-weight: 400; font-stretch: 100%; letter-spacing: 0; color: var(--faint); text-align: right; }
-.channels a:hover { color: var(--zero); padding-left: 0.5rem; }
+.channels a span { font-size: 0.9rem; font-weight: 400; font-stretch: 100%; letter-spacing: 0; color: var(--faint); text-align: end; }
+.channels a:hover { color: var(--zero); padding-inline-start: 0.5rem; }
 .signup { padding: clamp(1.5rem, 3vw, 2.25rem); border-radius: 20px; background: rgba(13, 18, 30, 0.8); border: 1px solid var(--hair); display: grid; gap: 0.75rem; }
 .signup label { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
 .field { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -468,7 +468,7 @@ strong { font-weight: 650; color: #fff; }
   .hero-facts { gap: 0.6rem 1.5rem; }
   .btn-sm { padding: 0.5rem 0.95rem; }
   .channels a { flex-direction: column; gap: 0.2rem; }
-  .channels a span { text-align: left; }
+  .channels a span { text-align: start; }
   .actions .btn { width: 100%; }
 }
 
@@ -573,3 +573,20 @@ strong { font-weight: 650; color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .metal, .field ellipse, .zgc-lines ellipse { animation: none; }
 }
+
+/* ---------- Derecha a izquierda (persa y árabe) ---------- */
+/* El texto va de derecha a izquierda, pero los paneles siguen en el lado que les deja libre la escena 3D. */
+[dir="rtl"] .panel-left > * { margin-right: auto; }
+[dir="rtl"] .panel-right > * { margin-left: 0; margin-right: 0; }
+@media (min-width: 901px) {
+  [dir="rtl"] .panel-right > * { margin-left: auto; }
+  [dir="rtl"] .ind-step { justify-content: flex-start; }
+  [dir="rtl"] .ind-step.story-left { justify-content: flex-end; }
+  [dir="rtl"] .hero .wrap > * { margin-right: auto; }
+  [dir="rtl"] .hero .actions, [dir="rtl"] .hero .hero-facts { width: fit-content; }
+}
+[dir="rtl"] .lang { background-position: left 0.7rem center; padding: 0 0.85rem 0 1.8rem; }
+/* el árabe y el persa son escrituras ligadas: sin espaciado entre letras */
+:lang(ar) *, :lang(fa) * { letter-spacing: 0 !important; }
+/* sus letras tienen trazos altos y bajos: los titulos necesitan mas interlineado */
+:lang(ar) :is(.display, .h2, .h3, h1, h2, h3), :lang(fa) :is(.display, .h2, .h3, h1, h2, h3) { line-height: 1.3; }
