@@ -7,11 +7,13 @@ import { brand, busy, field, h, showErrors } from './ui.js';
 
 const root = document.getElementById('app');
 const params = new URLSearchParams(location.search);
-const next = (() => {
+const nextParam = (() => {
   const n = params.get('next');
   // solo rutas internas, para no abrir una redirección a otra web
-  return n && n.startsWith('/') && !n.startsWith('//') ? n : '../cuenta/';
+  return n && n.startsWith('/') && !n.startsWith('//') ? n : null;
 })();
+// sin destino pedido, el administrador va a su panel y el cliente a su cuenta
+const next = (user) => nextParam ?? (user?.role === 'admin' ? '../admin/' : '../cuenta/');
 
 function clearSecretsFromUrl() {
   history.replaceState(null, '', location.pathname);
@@ -47,8 +49,8 @@ function login(notice) {
       { name: 'email', label: 'Correo', type: 'email', required: true, autocomplete: 'email' },
       { name: 'password', label: 'Contraseña', type: 'password', required: true, autocomplete: 'current-password' },
     ], 'Entrar', async (data) => {
-      await api('POST', '/auth/login', data);
-      location.assign(next);
+      const res = await api('POST', '/auth/login', data);
+      location.assign(next(res?.user));
     }, [h('a', { class: 'note', href: '?recuperar=1' }, '¿Olvidaste la contraseña?')]));
 }
 
@@ -86,7 +88,8 @@ async function verify(token) {
   clearSecretsFromUrl();
   try {
     await api('POST', '/auth/verify-email', { token });
-    if (await me()) return location.assign(next);
+    const u = await me();
+    if (u) return location.assign(next(u));
     login('Correo confirmado. Ya puedes entrar.');
   } catch (err) {
     login(err.message);
@@ -97,4 +100,4 @@ if (params.get('verificar')) verify(params.get('verificar'));
 else if (params.get('restablecer')) reset(params.get('restablecer'));
 else if (params.get('recuperar')) forgot();
 else if (params.get('registro')) register();
-else me().then((u) => (u ? location.replace(next) : login())).catch(() => login());
+else me().then((u) => (u ? location.replace(next(u)) : login())).catch(() => login());

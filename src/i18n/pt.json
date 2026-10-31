@@ -151,6 +151,7 @@
  "attr.4": "RT Magneto no NinjaTrader sobre o futuro NQ: escada GEX+ e GEX−, pivô Zero Gamma 0DTE, pontos de convexidade, spikes de fluxo de opções e o subgráfico de sentimento com suas zonas positiva e negativa.",
  "attr.5": "Ilustração: o sentimento passa da zona magenta, domínio das puts, para a zona verde, domínio das calls",
  "attr.6": "voce@email.com",
+ "attr.7": "Minha conta",
  "svg.1": "Virada para calls",
  "meta.title": "RT Magneto · Exposição gamma e hedge do dealer no seu gráfico de futuros",
  "meta.description": "O RT Magneto leva o posicionamento do mercado de opções ao seu gráfico de futuros: exposição gamma, convexidade, o pivô Zero Gamma e os níveis que funcionam como ímãs do preço. Para NinjaTrader e ATAS.",

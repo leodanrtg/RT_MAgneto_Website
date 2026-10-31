@@ -35,7 +35,7 @@ export async function setLang(lang, { remember = false } = {}) {
     const v = dict[el.dataset.i18n];
     if (v != null) el.innerHTML = v;
   });
-  for (const attr of ['alt', 'aria-label', 'placeholder']) {
+  for (const attr of ['alt', 'aria-label', 'placeholder', 'title']) {
     document.querySelectorAll(`[data-i18n-${attr}]`).forEach((el) => {
       const v = dict[el.getAttribute(`data-i18n-${attr}`)];
       if (v != null) el.setAttribute(attr, v);
