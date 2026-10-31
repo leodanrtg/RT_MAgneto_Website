@@ -92,7 +92,7 @@ describe('contraseñas', () => {
   });
 });
 
-describe('alta manual de clientes', () => {
+describe('alta manual y roles', () => {
   it('el admin crea un cliente, que elige su contraseña con la invitación', async () => {
     const admin = await createUser(ctx, { role: 'admin' });
     const email = 'manual.cliente@test.dev';
@@ -121,9 +121,35 @@ describe('alta manual de clientes', () => {
     expect(lastLink(email, 'restablecer')).toBeTruthy();
   });
 
+  it('crea otro administrador y gestiona roles sin poder cambiar el propio', async () => {
+    const admin = await createUser(ctx, { role: 'admin' });
+    const email = 'segundo.admin@test.dev';
+    const r = await admin.client.req('POST', '/api/admin/users', { name: 'Segundo Admin', email, role: 'admin' });
+    expect(r.status).toBe(201);
+    await drainAll(ctx);
+    const c = new Client(ctx);
+    expect((await c.req('POST', '/api/auth/reset-password', { token: lastLink(email, 'restablecer'), password: 'clave-segundo-admin' })).status).toBe(200);
+    await c.login(email, 'clave-segundo-admin');
+    expect((await c.req('GET', '/api/admin/dashboard')).status).toBe(200);
+    const admins = await admin.client.req('GET', '/api/admin/users?role=admin');
+    expect(admins.body.items.every((u: { role: string }) => u.role === 'admin')).toBe(true);
+    expect(admins.body.items.some((u: { email: string }) => u.email === email)).toBe(true);
+
+    // nadie cambia su propio rol
+    expect((await c.req('POST', `/api/admin/users/${r.body.id}/role`, { role: 'customer', reason: 'prueba' })).status).toBe(400);
+    // el primero le quita el rol: pierde el panel y sus sesiones
+    expect((await admin.client.req('POST', `/api/admin/users/${r.body.id}/role`, { role: 'customer', reason: 'ya no colabora' })).status).toBe(200);
+    expect((await c.req('GET', '/api/auth/me')).status).toBe(401);
+    await c.login(email, 'clave-segundo-admin');
+    expect((await c.req('GET', '/api/admin/dashboard')).status).toBe(403);
+    const d = await admin.client.req('GET', `/api/admin/users/${r.body.id}`);
+    expect(d.body.actions.some((a: { action: string }) => a.action === 'user.role_change')).toBe(true);
+  });
+
   it('un cliente no puede crear cuentas', async () => {
     const u = await createUser(ctx);
     expect((await u.client.req('POST', '/api/admin/users', { name: 'X', email: 'x@test.dev' })).status).toBe(403);
+    expect((await u.client.req('POST', `/api/admin/users/${u.id}/role`, { role: 'admin', reason: 'quiero ser admin' })).status).toBe(403);
   });
 });
 

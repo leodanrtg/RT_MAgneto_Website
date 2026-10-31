@@ -17,12 +17,14 @@ const Id = z.object({ id: z.uuid() });
 const ListQuery = z.object({
   search: z.string().trim().max(120).optional(),
   status: z.string().trim().max(40).optional(),
+  role: z.enum(['customer', 'admin']).optional(),
   page: z.coerce.number().int().min(1).max(10_000).default(1),
 });
 const Reason = z.object({ reason: z.string().trim().min(3).max(300) });
 const NewUser = z.object({
   name: z.string().trim().min(1).max(120),
   email: z.email('Correo no válido').max(254).transform((v) => v.trim().toLowerCase()),
+  role: z.enum(['customer', 'admin']).default('customer'),
   sendInvite: z.boolean().default(true),
   note: z.string().trim().max(4000).default(''),
 });
@@ -116,17 +118,18 @@ export function adminRoutes(deps: Deps) {
         FROM users
         WHERE (${like}::text IS NULL OR name ILIKE ${like} OR email ILIKE ${like})
           AND (${q.status ?? null}::text IS NULL OR status = ${q.status ?? null})
+          AND (${q.role ?? null}::text IS NULL OR role = ${q.role ?? null})
         ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
       return { items: rows.map(({ total, ...r }) => r), total: rows[0]?.total ?? 0, pageSize: PAGE_SIZE };
     });
 
-    // Alta manual (clientes que pagaron por otra vía, soporte, pruebas). La cuenta nace sin contraseña
+    // Alta manual (clientes que pagaron por otra vía, soporte, otros administradores). La cuenta nace sin contraseña
     // utilizable: el cliente la elige con el enlace de invitación o con "¿Olvidaste la contraseña?".
     app.post('/users', async (req, reply) => {
       const body = NewUser.parse(req.body);
       const [user] = await sql<{ id: string; name: string; email: string }[]>`
-        INSERT INTO users (name, email, password_hash, email_verified_at)
-        VALUES (${body.name}, ${body.email}, ${await hashPassword(randomToken())}, now())
+        INSERT INTO users (name, email, password_hash, role, email_verified_at)
+        VALUES (${body.name}, ${body.email}, ${await hashPassword(randomToken())}, ${body.role}, now())
         ON CONFLICT (lower(email)) DO NOTHING
         RETURNING id, name, email`;
       if (!user) throw conflict('email_taken', 'Ya existe una cuenta con ese correo.');
@@ -136,7 +139,7 @@ export function adminRoutes(deps: Deps) {
       if (body.sendInvite) {
         await sendInvite(user);
       }
-      await log(req, 'user.create_manual', 'user', user.id, { invited: body.sendInvite });
+      await log(req, 'user.create_manual', 'user', user.id, { role: body.role, invited: body.sendInvite });
       return reply.status(201).send({ id: user.id });
     });
 
@@ -178,6 +181,21 @@ export function adminRoutes(deps: Deps) {
       if (body.status === 'suspended') await deleteUserSessions(sql, id);
       await log(req, `user.${body.status === 'suspended' ? 'suspend' : 'reactivate'}`, 'user', id, { reason: body.reason });
       return { status: body.status };
+    });
+
+    // Nadie cambia su propio rol, así que siempre queda al menos un administrador.
+    app.post('/users/:id/role', async (req) => {
+      const { id } = Id.parse(req.params);
+      const body = z.object({ role: z.enum(['customer', 'admin']), reason: z.string().trim().min(3).max(300) }).parse(req.body);
+      if (id === req.session!.user.id) throw badRequest('self', 'No puedes cambiar tu propio rol.');
+      const [before] = await sql`SELECT role FROM users WHERE id = ${id}`;
+      if (!before) throw notFound('Usuario');
+      if (before.role === body.role) return { role: body.role };
+      await sql`UPDATE users SET role = ${body.role}, updated_at = now() WHERE id = ${id}`;
+      // sesiones nuevas con el rol nuevo
+      await deleteUserSessions(sql, id);
+      await log(req, 'user.role_change', 'user', id, { from: before.role, to: body.role, reason: body.reason });
+      return { role: body.role };
     });
 
     app.post('/users/:id/notes', async (req) => {

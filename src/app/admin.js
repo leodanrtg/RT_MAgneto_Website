@@ -34,14 +34,15 @@ async function act({ title, body, path, fields = [{ name: 'reason', label: 'Moti
   }
 }
 
-function listView({ title, path, filters = [], columns, onRow, intro, heading = 'h1' }) {
-  const state = { page: 1, search: '', status: '' };
+function listView({ title, path, filters = [], roles = false, columns, onRow, intro, heading = 'h1' }) {
+  const state = { page: 1, search: '', status: '', role: '' };
   const results = h('div', {});
   const load = async () => {
     results.replaceChildren(loading());
     const q = new URLSearchParams({ page: state.page });
     if (state.search) q.set('search', state.search);
     if (state.status) q.set('status', state.status);
+    if (state.role) q.set('role', state.role);
     try {
       const data = await api('GET', `${path}?${q}`);
       results.replaceChildren(table(columns(load), data.items, { onRow }), pager({ ...data, page: state.page }, (p) => { state.page = p; load(); }));
@@ -52,11 +53,12 @@ function listView({ title, path, filters = [], columns, onRow, intro, heading = 
   const form = h('form', { class: 'toolbar', role: 'search' },
     field({ name: 'search', label: 'Buscar', type: 'search' }),
     filters.length > 0 && field({ name: 'status', label: 'Estado', options: [['', 'Todos'], ...filters.map((s) => [s, STATUS_LABEL[s] || s])] }),
+    roles && field({ name: 'role', label: 'Rol', options: [['', 'Todos'], ['customer', 'Cliente'], ['admin', 'Administrador']] }),
     h('button', { class: 'btn btn-ghost btn-sm', type: 'submit' }, 'Filtrar'));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const v = Object.fromEntries(new FormData(form));
-    Object.assign(state, { page: 1, search: v.search || '', status: v.status || '' });
+    Object.assign(state, { page: 1, search: v.search || '', status: v.status || '', role: v.role || '' });
     load();
   });
   load();
@@ -100,14 +102,15 @@ async function resumen() {
 }
 
 // ---------- Usuarios ----------
-async function newCustomer() {
+async function newUser() {
   const v = await dialog({
-    title: 'Añadir cliente',
-    body: 'Crea la cuenta con el correo ya verificado. El cliente elige su contraseña con el enlace de invitación (válido 7 días). Después puedes crearle una licencia manual desde su ficha.',
+    title: 'Añadir usuario',
+    body: 'Crea la cuenta con el correo ya verificado. La persona elige su contraseña con el enlace de invitación (válido 7 días). Un administrador tiene acceso completo a este panel.',
     confirmLabel: 'Crear cuenta',
     fields: [
       { name: 'name', label: 'Nombre', required: true },
       { name: 'email', label: 'Correo', type: 'email', required: true },
+      { name: 'role', label: 'Rol', options: [['customer', 'Cliente'], ['admin', 'Administrador']], value: 'customer' },
       { name: 'sendInvite', label: 'Enviar invitación por correo', options: [['1', 'Sí, ahora'], ['0', 'No, la envío después']], value: '1' },
       { name: 'note', label: 'Nota interna (opcional)', type: 'textarea', placeholder: 'Ej.: pagó por transferencia el 30/10' },
     ],
@@ -115,7 +118,7 @@ async function newCustomer() {
   if (!v) return;
   try {
     const { id } = await api('POST', '/admin/users', { ...v, sendInvite: v.sendInvite === '1' });
-    toast(v.sendInvite === '1' ? 'Cliente creado e invitación enviada' : 'Cliente creado', 'good');
+    toast(v.sendInvite === '1' ? 'Cuenta creada e invitación enviada' : 'Cuenta creada', 'good');
     location.hash = `#usuarios/${id}`;
   } catch (err) {
     toast(err.message, 'bad');
@@ -124,8 +127,8 @@ async function newCustomer() {
 
 function usuarios() {
   return listView({
-    title: 'Usuarios', path: '/admin/users', filters: ['active', 'suspended'],
-    intro: h('div', { class: 'actions' }, h('button', { class: 'btn btn-sm', onclick: newCustomer }, 'Añadir cliente')),
+    title: 'Usuarios', path: '/admin/users', filters: ['active', 'suspended'], roles: true,
+    intro: h('div', { class: 'actions' }, h('button', { class: 'btn btn-sm', onclick: newUser }, 'Añadir usuario')),
     onRow: (u) => { location.hash = `#usuarios/${u.id}`; },
     columns: () => [
       { label: 'Nombre', cell: (u) => u.name },
@@ -167,6 +170,14 @@ async function usuario(id) {
           transform: (v) => ({ ...v, status: suspended ? 'active' : 'suspended' }),
         }) }, suspended ? 'Reactivar cuenta' : 'Suspender cuenta'),
         h('button', { class: 'btn btn-ghost btn-sm', onclick: () => manualLicense(id, reload) }, 'Crear licencia manual'),
+        h('button', { class: 'btn btn-ghost btn-sm', onclick: () => act({
+          title: u.role === 'admin' ? 'Quitar administrador' : 'Hacer administrador',
+          body: u.role === 'admin'
+            ? 'Pasará a ser cliente y perderá el acceso a este panel. Se cerrarán sus sesiones.'
+            : 'Tendrá acceso completo a este panel: clientes, licencias, pagos y roles. Se cerrarán sus sesiones para aplicar el cambio.',
+          path: `/admin/users/${id}/role`, danger: u.role !== 'admin', done: reload,
+          transform: (v) => ({ ...v, role: u.role === 'admin' ? 'customer' : 'admin' }),
+        }) }, u.role === 'admin' ? 'Quitar administrador' : 'Hacer administrador'),
         !suspended && h('button', { class: 'btn btn-ghost btn-sm', onclick: () => act({
           title: 'Enviar invitación',
           body: `Se envía a ${u.email} un enlace para elegir contraseña, válido 7 días. Anula los enlaces anteriores.`,
