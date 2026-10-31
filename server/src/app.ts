@@ -9,6 +9,7 @@ import type { LicenseEngine } from './licenses/engine.ts';
 import type { PayPalApi } from './billing/paypal.ts';
 import { HttpError, forbidden, unauthorized } from './lib/errors.ts';
 import { safeEqual } from './lib/crypto.ts';
+import { pickLang, translate } from './lib/i18n.ts';
 import { SESSION_COOKIE, findSession, type Session } from './auth/sessions.ts';
 import { authRoutes } from './auth/routes.ts';
 import { catalogRoutes } from './billing/catalog-routes.ts';
@@ -58,6 +59,17 @@ export async function buildApp(deps: Deps) {
     reply.header('Referrer-Policy', 'same-origin');
     reply.header('X-Frame-Options', 'DENY');
     reply.header('Cache-Control', 'no-store');
+  });
+
+  // Mensajes de respuesta en el idioma de la página (Accept-Language).
+  app.addHook('preSerialization', async (req, _reply, payload: any) => {
+    if (!payload || typeof payload !== 'object') return payload;
+    const lang = pickLang(req.headers['accept-language']);
+    if (lang === 'es' || (typeof payload.message !== 'string' && !Array.isArray(payload.fields))) return payload;
+    const out = { ...payload };
+    if (typeof out.message === 'string') out.message = translate(out.message, lang);
+    if (Array.isArray(out.fields)) out.fields = out.fields.map((f: { message: string }) => ({ ...f, message: translate(f.message, lang) }));
+    return out;
   });
 
   app.addHook('onRequest', async (req) => {

@@ -1,9 +1,11 @@
 // Cliente de la API del backend comercial. Misma web, misma cookie de sesión.
+import { lang, t } from './i18n.js';
+
 let csrf = null;
 
 export class ApiError extends Error {
   constructor(status, body) {
-    super(body?.message || 'Error de conexión. Inténtalo de nuevo.');
+    super(body?.message || t('Error de conexión. Inténtalo de nuevo.'));
     this.status = status;
     this.code = body?.error;
     this.fields = body?.fields || [];
@@ -11,7 +13,8 @@ export class ApiError extends Error {
 }
 
 export async function api(method, path, body) {
-  const headers = { Accept: 'application/json' };
+  // el servidor responde los mensajes en el idioma de la página
+  const headers = { Accept: 'application/json', 'Accept-Language': lang() };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (csrf && method !== 'GET') headers['X-CSRF-Token'] = csrf;
   let res;

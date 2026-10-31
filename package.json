@@ -15,7 +15,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/check-panel-i18n.mjs && vite build",
+    "check:i18n": "node scripts/check-panel-i18n.mjs",
     "preview": "vite preview",
     "capturas": "node scripts/capturas.mjs"
   }

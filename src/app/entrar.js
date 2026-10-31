@@ -3,9 +3,11 @@ import '@fontsource/ibm-plex-mono/400.css';
 import '../styles.css';
 import './app.css';
 import { api, me } from './api.js';
+import { t, langSelect, useLang } from './i18n.js';
 import { brand, busy, field, h, showErrors } from './ui.js';
 
 const root = document.getElementById('app');
+let view = () => {}; // vista actual, para volver a pintarla al cambiar de idioma
 const params = new URLSearchParams(location.search);
 const nextParam = (() => {
   const n = params.get('next');
@@ -23,9 +25,9 @@ function shell(mode, ...content) {
   const tab = (m, label, href) => h('a', { href, 'aria-current': mode === m ? 'page' : undefined }, label);
   root.replaceChildren(h('main', { class: 'auth' },
     h('div', { class: 'auth-card card' },
-      brand(),
-      (mode === 'login' || mode === 'register') && h('nav', { class: 'tabs', 'aria-label': 'Acceso' },
-        tab('login', 'Entrar', '?'), tab('register', 'Crear cuenta', '?registro=1')),
+      h('div', { class: 'card-head' }, brand(), langSelect(h, () => view())),
+      (mode === 'login' || mode === 'register') && h('nav', { class: 'tabs', 'aria-label': t('Acceso') },
+        tab('login', t('Entrar'), '?'), tab('register', t('Crear cuenta'), '?registro=1')),
       ...content)));
 }
 
@@ -43,44 +45,48 @@ function form(fields, submitLabel, onSubmit, extra = []) {
 const done = (title, text, link) => [h('h1', { class: 'app-title' }, title), h('p', { class: 'muted' }, text), link];
 
 function login(notice) {
+  view = () => login(notice);
   shell('login',
     notice && h('p', { class: 'notice' }, notice),
     form([
-      { name: 'email', label: 'Correo', type: 'email', required: true, autocomplete: 'email' },
-      { name: 'password', label: 'Contraseña', type: 'password', required: true, autocomplete: 'current-password' },
-    ], 'Entrar', async (data) => {
+      { name: 'email', label: t('Correo'), type: 'email', required: true, autocomplete: 'email' },
+      { name: 'password', label: t('Contraseña'), type: 'password', required: true, autocomplete: 'current-password' },
+    ], t('Entrar'), async (data) => {
       const res = await api('POST', '/auth/login', data);
       location.assign(next(res?.user));
-    }, [h('a', { class: 'note', href: '?recuperar=1' }, '¿Olvidaste la contraseña?')]));
+    }, [h('a', { class: 'note', href: '?recuperar=1' }, t('¿Olvidaste la contraseña?'))]));
 }
 
 function register() {
+  view = register;
   shell('register', form([
-    { name: 'name', label: 'Nombre', required: true, autocomplete: 'name' },
-    { name: 'email', label: 'Correo', type: 'email', required: true, autocomplete: 'email' },
-    { name: 'password', label: 'Contraseña', type: 'password', required: true, autocomplete: 'new-password', hint: 'Mínimo 10 caracteres.' },
-  ], 'Crear cuenta', async (data, f) => {
+    { name: 'name', label: t('Nombre'), required: true, autocomplete: 'name' },
+    { name: 'email', label: t('Correo'), type: 'email', required: true, autocomplete: 'email' },
+    { name: 'password', label: t('Contraseña'), type: 'password', required: true, autocomplete: 'new-password', hint: t('Mínimo 10 caracteres.') },
+  ], t('Crear cuenta'), async (data, f) => {
     const r = await api('POST', '/auth/register', data);
-    f.replaceWith(...done('Revisa tu correo', `${r.message} Después podrás entrar y elegir tu plan.`, h('a', { class: 'btn btn-ghost', href: '?' }, 'Ir a entrar')));
+    f.replaceWith(...done(t('Revisa tu correo'), `${r.message} ${t('Después podrás entrar y elegir tu plan.')}`, h('a', { class: 'btn btn-ghost', href: '?' }, t('Ir a entrar'))));
   }));
 }
 
 function forgot() {
-  shell('forgot', h('h1', { class: 'app-title' }, 'Recuperar contraseña'), form([
-    { name: 'email', label: 'Correo de tu cuenta', type: 'email', required: true, autocomplete: 'email' },
-  ], 'Enviar enlace', async (data, f) => {
+  view = forgot;
+  shell('forgot', h('h1', { class: 'app-title' }, t('Recuperar contraseña')), form([
+    { name: 'email', label: t('Correo de tu cuenta'), type: 'email', required: true, autocomplete: 'email' },
+  ], t('Enviar enlace'), async (data, f) => {
     const r = await api('POST', '/auth/forgot-password', data);
     f.replaceWith(h('p', { class: 'form-ok' }, r.message));
-  }, [h('a', { class: 'note', href: '?' }, 'Volver')]));
+  }, [h('a', { class: 'note', href: '?' }, t('Volver'))]));
 }
 
 function reset(token) {
+  view = () => reset(token);
   clearSecretsFromUrl();
-  shell('reset', h('h1', { class: 'app-title' }, 'Nueva contraseña'), form([
-    { name: 'password', label: 'Nueva contraseña', type: 'password', required: true, autocomplete: 'new-password', hint: 'Mínimo 10 caracteres.' },
-  ], 'Guardar', async (data) => {
+  shell('reset', h('h1', { class: 'app-title' }, t('Nueva contraseña')), form([
+    { name: 'password', label: t('Nueva contraseña'), type: 'password', required: true, autocomplete: 'new-password', hint: t('Mínimo 10 caracteres.') },
+  ], t('Guardar'), async (data) => {
     await api('POST', '/auth/reset-password', { token, password: data.password });
-    login('Contraseña actualizada. Ya puedes entrar.');
+    login(t('Contraseña actualizada. Ya puedes entrar.'));
   }));
 }
 
@@ -90,14 +96,16 @@ async function verify(token) {
     await api('POST', '/auth/verify-email', { token });
     const u = await me();
     if (u) return location.assign(next(u));
-    login('Correo confirmado. Ya puedes entrar.');
+    login(t('Correo confirmado. Ya puedes entrar.'));
   } catch (err) {
     login(err.message);
   }
 }
 
-if (params.get('verificar')) verify(params.get('verificar'));
-else if (params.get('restablecer')) reset(params.get('restablecer'));
-else if (params.get('recuperar')) forgot();
-else if (params.get('registro')) register();
-else me().then((u) => (u ? location.replace(next(u)) : login())).catch(() => login());
+useLang().then(() => {
+  if (params.get('verificar')) verify(params.get('verificar'));
+  else if (params.get('restablecer')) reset(params.get('restablecer'));
+  else if (params.get('recuperar')) forgot();
+  else if (params.get('registro')) register();
+  else me().then((u) => (u ? location.replace(next(u)) : login())).catch(() => login());
+});

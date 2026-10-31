@@ -146,7 +146,7 @@ export function adminRoutes(deps: Deps) {
     app.post('/users/:id/invite', async (req) => {
       const { id } = Id.parse(req.params);
       const [user] = await sql<{ id: string; name: string; email: string; status: string }[]>`SELECT id, name, email, status FROM users WHERE id = ${id}`;
-      if (!user) throw notFound('Usuario');
+      if (!user) throw notFound('Usuario no encontrado.');
       if (user.status !== 'active') throw badRequest('suspended', 'La cuenta está suspendida.');
       await sendInvite(user);
       await log(req, 'user.invite_sent', 'user', id);
@@ -156,7 +156,7 @@ export function adminRoutes(deps: Deps) {
     app.get('/users/:id', async (req) => {
       const { id } = Id.parse(req.params);
       const [user] = await sql`SELECT id, name, email, role, status, email_verified_at, created_at, updated_at FROM users WHERE id = ${id}`;
-      if (!user) throw notFound('Usuario');
+      if (!user) throw notFound('Usuario no encontrado.');
       const [subscriptions, payments, licenseRows, notes, actions] = await Promise.all([
         sql`SELECT s.*, p.name AS plan, pr.name AS product FROM subscriptions s JOIN plans p ON p.id = s.plan_id
             JOIN products pr ON pr.id = s.product_id WHERE s.user_id = ${id} ORDER BY s.created_at DESC`,
@@ -177,7 +177,7 @@ export function adminRoutes(deps: Deps) {
       const body = z.object({ status: z.enum(['active', 'suspended']), reason: z.string().trim().min(3).max(300) }).parse(req.body);
       if (id === req.session!.user.id) throw badRequest('self', 'No puedes cambiar el estado de tu propia cuenta.');
       const [u] = await sql`UPDATE users SET status = ${body.status}, updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!u) throw notFound('Usuario');
+      if (!u) throw notFound('Usuario no encontrado.');
       if (body.status === 'suspended') await deleteUserSessions(sql, id);
       await log(req, `user.${body.status === 'suspended' ? 'suspend' : 'reactivate'}`, 'user', id, { reason: body.reason });
       return { status: body.status };
@@ -189,7 +189,7 @@ export function adminRoutes(deps: Deps) {
       const body = z.object({ role: z.enum(['customer', 'admin']), reason: z.string().trim().min(3).max(300) }).parse(req.body);
       if (id === req.session!.user.id) throw badRequest('self', 'No puedes cambiar tu propio rol.');
       const [before] = await sql`SELECT role FROM users WHERE id = ${id}`;
-      if (!before) throw notFound('Usuario');
+      if (!before) throw notFound('Usuario no encontrado.');
       if (before.role === body.role) return { role: body.role };
       await sql`UPDATE users SET role = ${body.role}, updated_at = now() WHERE id = ${id}`;
       // sesiones nuevas con el rol nuevo
@@ -234,7 +234,7 @@ export function adminRoutes(deps: Deps) {
           license_product_ref = ${b.licenseProductRef === undefined ? sql`license_product_ref` : b.licenseProductRef},
           activation_policy = coalesce(${b.activationPolicy ?? null}, activation_policy), updated_at = now()
         WHERE id = ${id} RETURNING *`;
-      if (!p) throw notFound('Producto');
+      if (!p) throw notFound('Producto no encontrado.');
       await log(req, 'product.update', 'product', id, { fields: Object.keys(b) });
       return p;
     });
@@ -256,7 +256,7 @@ export function adminRoutes(deps: Deps) {
         UPDATE plans SET name = coalesce(${b.name ?? null}, name), status = coalesce(${b.status ?? null}, status),
           grace_days = coalesce(${b.graceDays ?? null}, grace_days), updated_at = now()
         WHERE id = ${id} RETURNING *`;
-      if (!p) throw notFound('Plan');
+      if (!p) throw notFound('Plan no encontrado.');
       if (p.status === 'active' && !p.paypal_plan_id) {
         await sql`UPDATE plans SET status = 'draft' WHERE id = ${id}`;
         throw badRequest('no_paypal_plan', 'Crea el plan en PayPal antes de activarlo.');
@@ -269,7 +269,7 @@ export function adminRoutes(deps: Deps) {
     app.post('/plans/:id/paypal', async (req) => {
       const { id } = Id.parse(req.params);
       const [plan] = await sql`SELECT p.*, pr.name AS product_name, pr.description FROM plans p JOIN products pr ON pr.id = p.product_id WHERE p.id = ${id}`;
-      if (!plan) throw notFound('Plan');
+      if (!plan) throw notFound('Plan no encontrado.');
       if (plan.paypal_plan_id) throw conflict('already_created', 'Este plan ya existe en PayPal.');
       const product = await paypal.createProduct({ name: plan.product_name, description: plan.description });
       const remote = await paypal.createPlan({
@@ -303,14 +303,14 @@ export function adminRoutes(deps: Deps) {
         SELECT s.*, u.email, pr.name AS product, p.name AS plan FROM subscriptions s
         JOIN users u ON u.id = s.user_id JOIN plans p ON p.id = s.plan_id JOIN products pr ON pr.id = s.product_id
         WHERE s.id = ${id}`;
-      if (!s) throw notFound('Suscripción');
+      if (!s) throw notFound('Suscripción no encontrada.');
       return s;
     });
 
     app.post('/subscriptions/:id/refresh', async (req) => {
       const { id } = Id.parse(req.params);
       const sub = await loadSubscription(sql, { id });
-      if (!sub?.paypal_subscription_id) throw notFound('Suscripción');
+      if (!sub?.paypal_subscription_id) throw notFound('Suscripción no encontrada.');
       const status = await applyRemote(sql, config, sub, await paypal.getSubscription(sub.paypal_subscription_id));
       await log(req, 'subscription.refresh', 'subscription', id);
       return { status };
@@ -323,7 +323,7 @@ export function adminRoutes(deps: Deps) {
       const [s] = await sql`
         UPDATE subscriptions SET access_until = greatest(coalesce(access_until, now()), now()) + make_interval(days => ${b.days}), updated_at = now()
         WHERE id = ${id} RETURNING id`;
-      if (!s) throw notFound('Suscripción');
+      if (!s) throw notFound('Suscripción no encontrada.');
       const status = await refreshSubscription(sql, config, id);
       await log(req, 'subscription.extend', 'subscription', id, b);
       return { status };
@@ -333,7 +333,7 @@ export function adminRoutes(deps: Deps) {
       const { id } = Id.parse(req.params);
       const { reason } = Reason.parse(req.body);
       const [s] = await sql`UPDATE subscriptions SET access_revoked_at = now(), revoke_reason = 'admin', updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!s) throw notFound('Suscripción');
+      if (!s) throw notFound('Suscripción no encontrada.');
       const status = await refreshSubscription(sql, config, id);
       await log(req, 'subscription.suspend_access', 'subscription', id, { reason });
       return { status };
@@ -343,7 +343,7 @@ export function adminRoutes(deps: Deps) {
       const { id } = Id.parse(req.params);
       const { reason } = Reason.parse(req.body);
       const [s] = await sql`UPDATE subscriptions SET access_revoked_at = NULL, revoke_reason = NULL, updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!s) throw notFound('Suscripción');
+      if (!s) throw notFound('Suscripción no encontrada.');
       const status = await refreshSubscription(sql, config, id);
       await log(req, 'subscription.reactivate_access', 'subscription', id, { reason });
       return { status };
@@ -394,7 +394,7 @@ export function adminRoutes(deps: Deps) {
     app.get('/licenses/:id', async (req) => {
       const { id } = Id.parse(req.params);
       const [m] = await sql`SELECT * FROM license_mappings WHERE id = ${id}`;
-      if (!m) throw notFound('Licencia');
+      if (!m) throw notFound('Licencia no encontrada.');
       const external = m.external_license_id ? await licenses.get(m.external_license_id) : null;
       const history = await sql`
         SELECT a.action, a.metadata, a.created_at, u.email AS actor FROM audit_logs a LEFT JOIN users u ON u.id = a.actor_user_id
@@ -408,7 +408,7 @@ export function adminRoutes(deps: Deps) {
       const b = z.object({ userId: z.uuid(), productId: z.uuid(), days: z.number().int().min(1).max(3660), reason: z.string().trim().min(3).max(300) }).parse(req.body);
       const [user] = await sql`SELECT id, name, email FROM users WHERE id = ${b.userId}`;
       const [product] = await sql`SELECT id, name, platform, license_product_ref FROM products WHERE id = ${b.productId}`;
-      if (!user || !product) throw notFound('Usuario o producto');
+      if (!user || !product) throw notFound('Usuario o producto no encontrado.');
       const [m] = await sql`
         INSERT INTO license_mappings (user_id, product_id) VALUES (${user.id}, ${product.id})
         ON CONFLICT DO NOTHING RETURNING id`;
@@ -431,7 +431,7 @@ export function adminRoutes(deps: Deps) {
     // la siguiente sincronización no deshaga el cambio. Las manuales se tocan directamente.
     async function manualMapping(id: string) {
       const [m] = await sql`SELECT * FROM license_mappings WHERE id = ${id}`;
-      if (!m) throw notFound('Licencia');
+      if (!m) throw notFound('Licencia no encontrada.');
       if (m.status === 'revoked') throw badRequest('revoked', 'La licencia está revocada.');
       if (m.subscription_id) throw badRequest('use_subscription', 'Esta licencia depende de una suscripción: usa las acciones de la suscripción.');
       if (!m.external_license_id) throw badRequest('not_issued', 'La licencia aún no se ha emitido.');
@@ -468,7 +468,7 @@ export function adminRoutes(deps: Deps) {
       const { id } = Id.parse(req.params);
       const { reason } = Reason.parse(req.body);
       const [m] = await sql`SELECT * FROM license_mappings WHERE id = ${id}`;
-      if (!m) throw notFound('Licencia');
+      if (!m) throw notFound('Licencia no encontrada.');
       if (m.external_license_id) await licenses.setActive(m.external_license_id, false);
       if (m.subscription_id) {
         await sql`UPDATE subscriptions SET access_revoked_at = coalesce(access_revoked_at, now()), revoke_reason = 'admin', updated_at = now() WHERE id = ${m.subscription_id}`;
@@ -518,7 +518,7 @@ export function adminRoutes(deps: Deps) {
     app.post('/webhooks/:id/reprocess', async (req) => {
       const { id } = Id.parse(req.params);
       const [row] = await sql`SELECT id, payload, processing_status FROM webhook_events WHERE id = ${id}`;
-      if (!row) throw notFound('Evento');
+      if (!row) throw notFound('Evento no encontrado.');
       if (row.processing_status !== 'failed') throw badRequest('not_failed', 'Solo se reprocesan eventos fallidos.');
       await log(req, 'webhook.reprocess', 'webhook_event', id);
       return handleStoredEvent(deps, id, row.payload);

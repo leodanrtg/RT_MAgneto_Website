@@ -136,5 +136,10 @@
 .auth .form .btn { justify-self: stretch; }
 @media (max-width: 40rem) {
   .app-user { display: none; }
+  .app-nav { gap: 0.5rem; }
+  .app-nav .brand span { display: none; }
+  .app-nav .nav-end { gap: 0.4rem; min-width: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .app-nav .btn-sm { padding: 0.45rem 0.75rem; white-space: nowrap; }
+  .app-nav .lang { padding-right: 1.6rem; }
   .table td > * { justify-self: start; }
 }

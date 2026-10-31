@@ -77,6 +77,15 @@ Con `MAIL_PROVIDER=console` los correos se guardan como archivos en `server/.out
 
 Para ver los paneles sin PayPal hay un servidor de demostración que **borra la base de datos indicada** y simula PayPal y licencias: `cd server && npx tsx test/demo-server.ts` (usuarios `admin@demo.local` y `cliente@demo.local`, contraseña `demo-password-123`), y en otra terminal `npm run build && npx vite preview --port 4173`.
 
+## Idiomas
+
+Los paneles (/entrar, /cuenta, /admin) usan los mismos seis idiomas que la landing (ES, EN, PT, FR, DE, IT) y comparten la preferencia: el idioma elegido en la landing se mantiene en los paneles y al revés. Cada panel tiene su selector.
+
+- Los textos se escriben en español en el código con `t('…')`; las traducciones están en `src/app/i18n/<idioma>.json`. `npm run check:i18n` (también se ejecuta en `npm run build`) falla si falta alguna.
+- La API responde sus mensajes en el idioma que la página envía en `Accept-Language`. Las traducciones están en `server/src/lib/i18n.ts`, y una prueba falla si un mensaje nuevo no tiene traducción.
+- Fechas e importes usan el formato del idioma elegido.
+- Pendiente: los correos automáticos siguen en español.
+
 ## Pruebas
 
 ```bash
@@ -85,7 +94,7 @@ cd server && TEST_DATABASE_URL=postgres://…/rt_comercial_test npm test
 npm run typecheck
 ```
 
-53 pruebas cubren el envío por Brevo, registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
+56 pruebas cubren los mensajes de la API en cada idioma, el envío por Brevo, registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
 
 ## PayPal
 

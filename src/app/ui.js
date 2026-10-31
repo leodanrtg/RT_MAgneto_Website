@@ -1,4 +1,5 @@
 // Utilidades de interfaz para los paneles. Todo el texto entra con textContent: nada de innerHTML con datos.
+import { lang, t } from './i18n.js';
 
 export function h(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
@@ -16,17 +17,23 @@ export function h(tag, attrs = {}, ...children) {
   return el;
 }
 
-const dateFmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium' });
-const dateTimeFmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-export const fmtDate = (v) => (v ? dateFmt.format(new Date(v)) : '—');
-export const fmtDateTime = (v) => (v ? dateTimeFmt.format(new Date(v)) : '—');
+// Formatos según el idioma elegido
+const fmtCache = new Map();
+const intl = (kind, opts) => {
+  const key = `${lang()}|${kind}|${JSON.stringify(opts)}`;
+  if (!fmtCache.has(key)) fmtCache.set(key, new Intl[kind](lang(), opts));
+  return fmtCache.get(key);
+};
+export const fmtDate = (v) => (v ? intl('DateTimeFormat', { dateStyle: 'medium' }).format(new Date(v)) : '—');
+export const fmtDateTime = (v) => (v ? intl('DateTimeFormat', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v)) : '—');
 export const fmtMoney = (cents, currency) =>
-  new Intl.NumberFormat('es-ES', { style: 'currency', currency: currency || 'USD' }).format((cents || 0) / 100);
+  intl('NumberFormat', { style: 'currency', currency: currency || 'USD' }).format((cents || 0) / 100);
 
-const INTERVAL = { day: ['día', 'días'], week: ['semana', 'semanas'], month: ['mes', 'meses'], year: ['año', 'años'] };
-export const fmtInterval = (unit, count = 1) => (count === 1 ? `cada ${INTERVAL[unit][0]}` : `cada ${count} ${INTERVAL[unit][1]}`);
+const EVERY = { day: 'cada día', week: 'cada semana', month: 'cada mes', year: 'cada año' };
+const EVERY_N = { day: 'cada {n} días', week: 'cada {n} semanas', month: 'cada {n} meses', year: 'cada {n} años' };
+export const fmtInterval = (unit, count = 1) => (count === 1 ? t(EVERY[unit]) : t(EVERY_N[unit], { n: count }));
 
-export const STATUS_LABEL = {
+const STATUS_LABEL = {
   approval_pending: 'Pendiente de aprobación', active: 'Activa', grace: 'En periodo de gracia', payment_pending: 'Pago pendiente',
   unpaid: 'Impagada', suspended: 'Suspendida', canceled: 'Cancelada', expired: 'Terminada',
   pending: 'Pendiente', completed: 'Completado', failed: 'Fallido', refunded: 'Reembolsado', partially_refunded: 'Reembolso parcial', reversed: 'Revertido',
@@ -39,7 +46,8 @@ const TONE = {
   grace: 'warn', payment_pending: 'warn', pending: 'warn', approval_pending: 'warn', queued: 'warn', partially_refunded: 'warn', canceled: 'warn',
   unpaid: 'bad', suspended: 'bad', failed: 'bad', refunded: 'bad', reversed: 'bad', revoked: 'bad', dead: 'bad',
 };
-export const badge = (status) => h('span', { class: `badge ${TONE[status] ? `badge-${TONE[status]}` : ''}` }, STATUS_LABEL[status] || status);
+export const statusLabel = (status) => (STATUS_LABEL[status] ? t(STATUS_LABEL[status]) : status);
+export const badge = (status) => h('span', { class: `badge ${TONE[status] ? `badge-${TONE[status]}` : ''}` }, statusLabel(status));
 
 let toastTimer;
 export function toast(message, tone = 'info') {
@@ -57,14 +65,14 @@ export function toast(message, tone = 'info') {
 
 // Diálogo modal accesible. fields: [{ name, label, type, required, value, options }]
 // Devuelve los valores o null si se cancela.
-export function dialog({ title, body, fields = [], confirmLabel = 'Confirmar', danger = false }) {
+export function dialog({ title, body, fields = [], confirmLabel = t('Confirmar'), danger = false }) {
   return new Promise((resolve) => {
     const form = h('form', { class: 'dialog-form', method: 'dialog' },
       h('h2', { class: 'dialog-title' }, title),
       body && h('p', { class: 'muted' }, body),
       ...fields.map((f) => field(f)),
       h('div', { class: 'dialog-actions' },
-        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', value: 'cancel', onclick: () => { dlg.close(); } }, 'Cancelar'),
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', value: 'cancel', onclick: () => { dlg.close(); } }, t('Cancelar')),
         h('button', { type: 'submit', class: `btn btn-sm ${danger ? 'btn-danger' : ''}` }, confirmLabel)),
     );
     const dlg = h('dialog', { class: 'dialog' }, form);
@@ -117,7 +125,7 @@ export async function busy(button, fn) {
 }
 
 // Tabla con estado vacío y paginación. columns: [{ label, cell: (row) => Node|string }]
-export function table(columns, rows, { empty = 'No hay resultados.', onRow } = {}) {
+export function table(columns, rows, { empty = t('No hay resultados.'), onRow } = {}) {
   if (!rows.length) return h('p', { class: 'empty' }, empty);
   return h('div', { class: 'table-wrap' },
     h('table', { class: 'table' },
@@ -128,14 +136,14 @@ export function table(columns, rows, { empty = 'No hay resultados.', onRow } = {
 
 export function pager({ page, total, pageSize }, go) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
-  if (pages === 1) return h('p', { class: 'note' }, `${total} resultado${total === 1 ? '' : 's'}`);
-  return h('nav', { class: 'pager', 'aria-label': 'Paginación' },
-    h('button', { class: 'btn btn-ghost btn-sm', disabled: page <= 1, onclick: () => go(page - 1) }, 'Anterior'),
-    h('span', { class: 'note' }, `Página ${page} de ${pages} · ${total} resultados`),
-    h('button', { class: 'btn btn-ghost btn-sm', disabled: page >= pages, onclick: () => go(page + 1) }, 'Siguiente'));
+  if (pages === 1) return h('p', { class: 'note' }, total === 1 ? t('1 resultado') : t('{n} resultados', { n: total }));
+  return h('nav', { class: 'pager', 'aria-label': t('Paginación') },
+    h('button', { class: 'btn btn-ghost btn-sm', disabled: page <= 1, onclick: () => go(page - 1) }, t('Anterior')),
+    h('span', { class: 'note' }, t('Página {page} de {pages} · {total} resultados', { page, pages, total })),
+    h('button', { class: 'btn btn-ghost btn-sm', disabled: page >= pages, onclick: () => go(page + 1) }, t('Siguiente')));
 }
 
-export const loading = () => h('p', { class: 'loading', role: 'status' }, 'Cargando…');
+export const loading = () => h('p', { class: 'loading', role: 'status' }, t('Cargando…'));
 
 export const brand = () => {
   const svg = new DOMParser().parseFromString(

@@ -22,7 +22,7 @@ export function checkoutRoutes({ sql, config, paypal }: Deps) {
       const [plan] = await sql`
         SELECT p.id, p.product_id, p.paypal_plan_id FROM plans p JOIN products pr ON pr.id = p.product_id
         WHERE p.id = ${planId} AND p.status = 'active' AND pr.status = 'active' AND p.paypal_plan_id IS NOT NULL`;
-      if (!plan) throw notFound('Plan');
+      if (!plan) throw notFound('Plan no encontrado.');
 
       const [live] = await sql`
         SELECT id, status FROM subscriptions
@@ -54,7 +54,7 @@ export function checkoutRoutes({ sql, config, paypal }: Deps) {
       const { user } = requireUser(req);
       const { id } = IdParams.parse(req.params);
       const sub = await loadSubscription(sql, { id });
-      if (!sub || sub.user_id !== user.id || !sub.paypal_subscription_id) throw notFound('Suscripción');
+      if (!sub || sub.user_id !== user.id || !sub.paypal_subscription_id) throw notFound('Suscripción no encontrada.');
       const remote = await paypal.getSubscription(sub.paypal_subscription_id);
       const status = await applyRemote(sql, config, sub, remote);
       return { status };

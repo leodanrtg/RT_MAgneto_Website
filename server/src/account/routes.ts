@@ -49,7 +49,7 @@ export function accountRoutes({ sql, config, paypal }: Deps) {
       const [row] = await sql`SELECT password_hash FROM users WHERE id = ${user.id}`;
       if (!(await verifyPassword(row.password_hash, password))) throw badRequest('invalid_password', 'La contraseña no es correcta.');
       const [m] = await sql`SELECT key_ciphertext, status FROM license_mappings WHERE id = ${id} AND user_id = ${user.id}`;
-      if (!m) throw notFound('Licencia');
+      if (!m) throw notFound('Licencia no encontrada.');
       if (!m.key_ciphertext) throw new HttpError(409, 'not_issued', 'La clave todavía se está generando.');
       if (m.status === 'revoked') throw new HttpError(403, 'revoked', 'Esta licencia fue revocada.');
       await audit(sql, { actorUserId: user.id, action: 'license.key_revealed', targetType: 'license_mapping', targetId: id, ip: clientIp(req) });
@@ -61,7 +61,7 @@ export function accountRoutes({ sql, config, paypal }: Deps) {
       const { user } = requireUser(req);
       const { id } = IdParams.parse(req.params);
       const sub = await loadSubscription(sql, { id });
-      if (!sub || sub.user_id !== user.id) throw notFound('Suscripción');
+      if (!sub || sub.user_id !== user.id) throw notFound('Suscripción no encontrada.');
       if (!sub.paypal_subscription_id || !['active', 'grace', 'payment_pending', 'unpaid', 'suspended'].includes(sub.status) || sub.cancel_at_period_end) {
         throw badRequest('not_cancelable', 'Esta suscripción no se puede cancelar.');
       }
