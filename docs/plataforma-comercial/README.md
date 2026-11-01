@@ -95,7 +95,7 @@ cd server && TEST_DATABASE_URL=postgres://…/rt_comercial_test npm test
 npm run typecheck
 ```
 
-56 pruebas cubren los mensajes de la API en cada idioma, el envío por Brevo, registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
+57 pruebas cubren los mensajes de la API en cada idioma, el envío por Brevo, registro, alta manual de usuarios y cambio de roles, inicio de sesión, bloqueo por intentos, recuperación y cambio de contraseña, CSRF, roles, checkout, verificación y rechazo de webhooks, duplicados, primera compra, renovación sin doble ampliación, cancelación con acceso hasta fin de periodo, impago con gracia y reactivación, reembolsos parciales y totales, contracargos, fallos de red del sistema de licencias, reintentos de correo, aislamiento entre clientes, resuscripción con la misma clave y acciones del panel admin.
 
 ## PayPal
 
@@ -172,7 +172,7 @@ Hay dos roles: Cliente (su panel /cuenta) y Administrador (acceso completo a /ad
 - Todas las consultas parametrizadas; validación con Zod; el frontend usa `textContent`, nunca HTML con datos.
 - Permisos comprobados en el servidor; un cliente solo ve sus datos.
 - Precio, plan y producto se leen de la base de datos, nunca del navegador.
-- Claves de licencia cifradas con AES-256-GCM; ver la clave exige la contraseña y queda registrado.
+- Claves de licencia cifradas con AES-256-GCM; ver la clave exige la contraseña y queda registrado. Los listados solo envían los 4 últimos caracteres. En /admin › Licencias, «Ver clave» muestra la clave completa (también las creadas con la app de escritorio) tras pedir la contraseña del administrador, y queda en la auditoría como `license.key_revealed`.
 - No se guardan datos de tarjeta (los gestiona PayPal). Los logs no incluyen cookies, tokens ni cuerpos.
 - Acciones administrativas registradas con motivo en `audit_logs`.
 

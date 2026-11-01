@@ -95,6 +95,7 @@
  "Error": "خطأ",
  "Error de conexión. Inténtalo de nuevo.": "خطأ في الاتصال. حاول مرة أخرى.",
  "Errores de integración": "أخطاء التكامل",
+ "Escribe tu contraseña de administrador. La consulta queda registrada en la auditoría.": "أدخل كلمة مرور المسؤول. تُسجَّل هذه العملية في سجل التدقيق.",
  "Esta sección es solo para administradores.": "هذا القسم للمسؤولين فقط.",
  "Estado": "الحالة",
  "Estado en PayPal": "الحالة في PayPal",

@@ -145,3 +145,5 @@
 }
 
 [dir="rtl"] .side a[aria-current="page"] { box-shadow: inset -2px 0 0 var(--zero); }
+.key-reveal { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.75rem; }
+.key-reveal .key { padding: 0.2rem 0.5rem; font-size: 0.9rem; word-break: break-all; user-select: all; }

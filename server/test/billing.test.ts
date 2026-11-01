@@ -369,6 +369,26 @@ describe('panel admin', () => {
     expect(after.status).toBe('revoked');
     expect((await ctx.licenses.get(m.external_license_id))!.active).toBe(false);
   });
+
+  it('muestra la clave completa al administrador solo con su contraseña y lo audita', async () => {
+    const admin = await createUser(ctx, { role: 'admin' });
+    const u = await createUser(ctx);
+    await purchase(ctx, u, planId);
+    await drainAll(ctx);
+    const [m] = await mappings(u.id);
+    const key = (await ctx.licenses.get(m.external_license_id))!.licenseKey;
+    expect((await admin.client.req('POST', `/api/admin/licenses/${m.id}/reveal`, { password: 'mala' })).status).toBe(400);
+    expect((await admin.client.req('POST', `/api/admin/licenses/${m.id}/reveal`, { password: admin.password })).body.licenseKey).toBe(key);
+    const ext = await admin.client.req('POST', `/api/admin/licenses/external/${m.external_license_id}/reveal`, { password: admin.password });
+    expect(ext.body.licenseKey).toBe(key);
+    // un cliente no puede usar la ruta del administrador
+    expect((await u.client.req('POST', `/api/admin/licenses/${m.id}/reveal`, { password: u.password })).status).toBe(403);
+    const logs = await ctx.sql`SELECT action FROM audit_logs WHERE actor_user_id = ${admin.id} AND action = 'license.key_revealed'`;
+    expect(logs).toHaveLength(2);
+    // el listado del sistema actual sigue sin enviar claves completas
+    const list = await admin.client.req('GET', '/api/admin/licenses/external?page=1');
+    expect(JSON.stringify(list.body)).not.toContain(key);
+  });
 });
 
 describe('resuscripción', () => {

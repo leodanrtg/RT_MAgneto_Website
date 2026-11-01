@@ -374,6 +374,34 @@ function pagos() {
 }
 
 // ---------- Licencias ----------
+// Botón «Ver clave»: pide la contraseña del administrador, muestra la clave completa y permite copiarla.
+// Cada consulta queda en la auditoría.
+function revealKey(path, hint) {
+  const box = h('span', { class: 'key-reveal' }, hint ? h('span', { class: 'mono' }, `•••• ${hint}`) : '');
+  const button = h('button', { class: 'btn-link', onclick: async (e) => {
+    e.stopPropagation();
+    const v = await dialog({
+      title: t('Ver clave de activación'),
+      body: t('Escribe tu contraseña de administrador. La consulta queda registrada en la auditoría.'),
+      fields: [{ name: 'password', label: t('Contraseña'), type: 'password', required: true, autocomplete: 'current-password' }],
+      confirmLabel: t('Ver clave'),
+    });
+    if (!v) return;
+    try {
+      const { licenseKey } = await api('POST', path, v);
+      box.replaceChildren(
+        h('span', { class: 'mono key' }, licenseKey),
+        h('button', { class: 'btn-link', onclick: async (ev) => {
+          ev.stopPropagation();
+          await navigator.clipboard.writeText(licenseKey);
+          toast(t('Clave copiada'), 'good');
+        } }, t('Copiar clave')));
+    } catch (err) { toast(err.message, 'bad'); }
+  } }, t('Ver clave'));
+  box.append(' ', button);
+  return box;
+}
+
 function licencias() {
   const external = h('div', {});
   const loadExternal = async () => {
@@ -385,7 +413,7 @@ function licencias() {
         table([
           { label: 'ID', cell: (l) => h('span', { class: 'mono' }, l.licenseId) },
           { label: t('Cliente'), cell: (l) => l.customerName },
-          { label: t('Clave'), cell: (l) => `•••• ${l.keyHint}` },
+          { label: t('Clave'), cell: (l) => revealKey(`/admin/licenses/external/${encodeURIComponent(l.licenseId)}/reveal`, l.keyHint) },
           { label: 'HWID', cell: (l) => h('span', { class: 'mono' }, l.hwid || t('Sin activar')) },
           { label: t('Vence'), cell: (l) => fmtDate(l.expiresAt) },
           { label: t('Activa'), cell: (l) => yesNo(l.active) },
@@ -430,7 +458,7 @@ async function licencia(id) {
     h('section', { class: 'card' },
       h('dl', { class: 'kv' },
         h('dt', {}, t('ID en el sistema de licencias')), h('dd', { class: 'mono' }, m.external_license_id || t('Aún no emitida')),
-        h('dt', {}, t('Clave')), h('dd', {}, m.key_hint ? `•••• ${m.key_hint}` : '—'),
+        h('dt', {}, t('Clave')), h('dd', {}, m.key_hint || m.external_license_id ? revealKey(`/admin/licenses/${id}/reveal`, m.key_hint) : '—'),
         h('dt', {}, t('Vence (web)')), h('dd', {}, fmtDateTime(m.expires_at)),
         h('dt', {}, t('Origen')), h('dd', {}, manual ? t('Manual') : h('a', { href: `#suscripciones/${m.subscription_id}` }, t('Suscripción'))),
         h('dt', {}, t('Última sincronización')), h('dd', {}, fmtDateTime(m.last_synced_at)),

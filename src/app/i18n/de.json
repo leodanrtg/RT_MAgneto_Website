@@ -95,6 +95,7 @@
  "Error": "Fehler",
  "Error de conexión. Inténtalo de nuevo.": "Verbindungsfehler. Bitte versuche es erneut.",
  "Errores de integración": "Integrationsfehler",
+ "Escribe tu contraseña de administrador. La consulta queda registrada en la auditoría.": "Gib dein Administratorpasswort ein. Der Abruf wird im Audit-Log festgehalten.",
  "Esta sección es solo para administradores.": "Dieser Bereich ist nur für Administratoren.",
  "Estado": "Status",
  "Estado en PayPal": "Status in PayPal",

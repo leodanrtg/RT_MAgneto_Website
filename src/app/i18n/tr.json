@@ -95,6 +95,7 @@
  "Error": "Hata",
  "Error de conexión. Inténtalo de nuevo.": "Bağlantı hatası. Lütfen tekrar deneyin.",
  "Errores de integración": "Entegrasyon hataları",
+ "Escribe tu contraseña de administrador. La consulta queda registrada en la auditoría.": "Yönetici şifrenizi girin. Bu görüntüleme denetim kaydına işlenir.",
  "Esta sección es solo para administradores.": "Bu bölüm yalnızca yöneticiler içindir.",
  "Estado": "Durum",
  "Estado en PayPal": "PayPal'daki durum",

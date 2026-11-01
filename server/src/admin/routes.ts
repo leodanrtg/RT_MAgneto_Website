@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { clientIp, requireAdmin, type Deps } from '../app.ts';
 import { audit } from '../audit.ts';
-import { hashPassword } from '../auth/passwords.ts';
+import { hashPassword, verifyPassword } from '../auth/passwords.ts';
 import { deleteUserSessions } from '../auth/sessions.ts';
 import { issueToken } from '../auth/tokens.ts';
 import { applyRemote, formatDate, loadSubscription, refreshSubscription } from '../billing/entitlements.ts';
@@ -69,6 +69,15 @@ export function adminRoutes(deps: Deps) {
       userId: user.id, to: user.email, type: 'account_invite', key: `invite:${user.id}:${token.slice(0, 12)}`,
       data: { name: user.name, link: `${config.APP_URL}/entrar/?restablecer=${token}` },
     });
+  }
+
+  // Ver una clave completa exige repetir la contraseña del administrador y queda en la auditoría.
+  const RevealBody = z.object({ password: z.string().min(1).max(200) });
+  const revealLimit = { config: { rateLimit: { max: config.AUTH_RATE_LIMIT_PER_MINUTE, timeWindow: '1 minute' } } };
+  async function checkAdminPassword(req: FastifyRequest) {
+    const { password } = RevealBody.parse(req.body);
+    const [row] = await sql`SELECT password_hash FROM users WHERE id = ${req.session!.user.id}`;
+    if (!row || !(await verifyPassword(row.password_hash, password))) throw badRequest('invalid_password', 'La contraseña no es correcta.');
   }
 
   return async (app: FastifyInstance) => {
@@ -389,6 +398,29 @@ export function adminRoutes(deps: Deps) {
         items: result.items.map(({ licenseKey, ...l }) => ({ ...l, keyHint: licenseKey.slice(-4) })),
         total: result.total, pageSize: PAGE_SIZE,
       };
+    });
+
+    // Clave completa de una licencia del sistema actual, aunque se creara con la app de escritorio.
+    app.post('/licenses/external/:licenseId/reveal', revealLimit, async (req) => {
+      const { licenseId } = z.object({ licenseId: z.string().min(1).max(200) }).parse(req.params);
+      await checkAdminPassword(req);
+      const lic = await licenses.get(licenseId);
+      if (!lic) throw notFound('Licencia no encontrada.');
+      await log(req, 'license.key_revealed', 'external_license', licenseId);
+      return { licenseKey: lic.licenseKey };
+    });
+
+    app.post('/licenses/:id/reveal', revealLimit, async (req) => {
+      const { id } = Id.parse(req.params);
+      await checkAdminPassword(req);
+      const [m] = await sql`SELECT key_ciphertext, external_license_id FROM license_mappings WHERE id = ${id}`;
+      if (!m) throw notFound('Licencia no encontrada.');
+      const licenseKey = m.key_ciphertext
+        ? decrypt(m.key_ciphertext, config.DATA_ENCRYPTION_KEY)
+        : m.external_license_id ? (await licenses.get(m.external_license_id))?.licenseKey : null;
+      if (!licenseKey) throw badRequest('not_issued', 'La licencia aún no se ha emitido.');
+      await log(req, 'license.key_revealed', 'license_mapping', id);
+      return { licenseKey };
     });
 
     app.get('/licenses/:id', async (req) => {
