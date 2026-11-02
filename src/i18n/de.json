@@ -160,7 +160,7 @@
  "js.emailOk": "Erledigt. Wir melden uns, sobald der Zugang öffnet.",
  "js.emailError": "Senden fehlgeschlagen. Versuche es in ein paar Minuten erneut.",
  "captura.1": "So sieht es in NinjaTrader aus.",
- "captura.2": "Der echte RT-Magneto-Screenshot auf einem Futures-Markt.",
+ "captura.2": "Eine RT-Magneto-Session im NQ: Jede Kerze entsteht live, und die Levels leuchten auf, sobald der Kurs sie berührt.",
  "captura.3": "Vollständigen Screenshot ansehen",
  "label.zg": "ZG Pivot",
  "label.buy": "Kaufflow",

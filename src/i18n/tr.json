@@ -160,7 +160,7 @@
  "js.emailOk": "Tamam. Erişim açıldığında size yazacağız.",
  "js.emailError": "Gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
  "captura.1": "NinjaTrader'da böyle görünüyor.",
- "captura.2": "Bir vadeli işlem piyasasında gerçek RT Magneto ekran görüntüsü.",
+ "captura.2": "NQ üzerinde bir RT Magneto seansı: her mum canlı oluşur ve fiyat seviyelere dokunduğunda seviyeler yanar.",
  "captura.3": "Ekran görüntüsünün tamamını görün",
  "label.zg": "ZG Pivot",
  "label.buy": "Alım akışı",
