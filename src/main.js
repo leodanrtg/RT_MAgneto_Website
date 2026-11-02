@@ -193,6 +193,7 @@ function bindIndicator() {
       },
     });
   });
+  bindSessionVideo();
   const frame = document.querySelector('[data-tilt] .shot-frame');
   if (frame && !reduced) {
     // Entra inclinada y lejos, se endereza en el centro y se despide hacia atrás
@@ -214,6 +215,19 @@ function bindIndicator() {
       frame.addEventListener('pointerleave', () => { px(0); py(0); });
     }
   }
+}
+
+// Video de la sesión simulada: sin sonido y en bucle, solo se reproduce mientras se ve.
+// Con movimiento reducido se queda en el póster (la sesión ya terminada).
+function bindSessionVideo() {
+  const video = document.querySelector('[data-session-video]');
+  if (!video) return;
+  video.muted = true;
+  if (reduced) return;
+  const play = () => { const p = video.play(); if (p) p.catch(() => {}); };
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (video.preload === 'none') { video.preload = 'auto'; } play(); } else video.pause();
+  }, { rootMargin: '200px 0px', threshold: 0.01 }).observe(video);
 }
 
 // ---------- Sentimiento ----------

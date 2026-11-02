@@ -160,7 +160,7 @@
  "js.emailOk": "Listo. Te escribiremos cuando abra el acceso.",
  "js.emailError": "No se pudo enviar. Vuelve a intentarlo en unos minutos.",
  "captura.1": "Así se ve en NinjaTrader.",
- "captura.2": "La captura real de RT Magneto sobre un mercado de futuros.",
+ "captura.2": "Una sesión de RT Magneto en el NQ: cada vela se forma en vivo y los niveles se encienden cuando el precio los toca.",
  "captura.3": "Ver captura completa",
  "label.zg": "ZG Pivote",
  "label.buy": "Flujo de compra",

@@ -160,7 +160,7 @@
  "js.emailOk": "C'est fait. Nous vous écrirons à l'ouverture de l'accès.",
  "js.emailError": "L'envoi a échoué. Réessayez dans quelques minutes.",
  "captura.1": "Voici ce que ça donne dans NinjaTrader.",
- "captura.2": "La vraie capture de RT Magneto sur un marché de futures.",
+ "captura.2": "Une séance RT Magneto sur le NQ : chaque bougie se forme en direct et les niveaux s’allument quand le prix les touche.",
  "captura.3": "Voir la capture complète",
  "label.zg": "ZG Pivot",
  "label.buy": "Flux acheteur",

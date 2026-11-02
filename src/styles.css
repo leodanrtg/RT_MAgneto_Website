@@ -345,7 +345,7 @@ strong { font-weight: 650; color: #fff; }
   background-position: var(--glare, 120%) 0;
   opacity: var(--glare-o, 0);
 }
-.shot-real img { width: 100%; height: auto; }
+.shot-real img, .shot-real video { display: block; width: 100%; height: auto; aspect-ratio: 1920 / 1092; object-fit: cover; }
 .shot-real figcaption { margin-top: 0.75rem; font-size: 0.875rem; color: var(--faint); }
 
 /* Sentimiento */

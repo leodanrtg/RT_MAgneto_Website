@@ -18,6 +18,7 @@
     "build": "node scripts/check-panel-i18n.mjs && vite build",
     "check:i18n": "node scripts/check-panel-i18n.mjs",
     "preview": "vite preview",
-    "capturas": "node scripts/capturas.mjs"
+    "capturas": "node scripts/capturas.mjs",
+    "video:sesion": "node scripts/video-sesion.mjs"
   }
 }
