@@ -69,7 +69,13 @@
         <option value="fr">FR</option>
         <option value="de">DE</option>
         <option value="it">IT</option>
+        <option value="tr">TR</option>
+        <option value="fa">FA</option>
+        <option value="ar">AR</option>
       </select>
+      <a data-i18n-aria-label="attr.7" data-i18n-title="attr.7" class="nav-account" href="entrar/" aria-label="Mi cuenta" title="Mi cuenta">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="M4.8 19.5c1.3-3.3 4-5 7.2-5s5.9 1.7 7.2 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+      </a>
       <a data-i18n="nav.6" class="btn btn-sm" href="#acceso">Obtener acceso</a>
     </div>
   </header>
@@ -376,11 +382,14 @@
     <section class="chapter flow capture" id="captura" data-scene="capture">
       <div class="wrap">
         <h2 data-i18n="captura.1" class="h2 narrow">Así se ve en NinjaTrader.</h2>
-        <p data-i18n="captura.2" class="narrow muted">La captura real de RT Magneto sobre un mercado de futuros.</p>
+        <p data-i18n="captura.2" class="narrow muted">Una sesión de RT Magneto en el NQ: cada vela se forma en vivo y los niveles se encienden cuando el precio los toca.</p>
         <figure class="shot-real" data-tilt>
           <div class="shot-frame">
             <span class="shot-glare" aria-hidden="true"></span>
-            <img data-i18n-alt="attr.4" src="img/rt-magneto-nq.webp" srcset="img/rt-magneto-nq-1280.webp 1280w, img/rt-magneto-nq.webp 2560w" sizes="(max-width: 1240px) 100vw, 1200px" width="2560" height="1456" alt="Captura de RT Magneto en NinjaTrader sobre el futuro NQ: escalera GEX+ y GEX−, pivote Zero Gamma 0DTE, puntos de convexidad, spikes de flujo de opciones y el subgráfico de sentimiento con sus zonas positiva y negativa." loading="lazy" decoding="async" />
+            <video class="shot-video" data-session-video muted loop playsinline preload="none" width="1920" height="1092" poster="video/rt-magneto-sesion-1920-poster.webp" role="img" data-i18n-aria-label="attr.4" aria-label="Captura de RT Magneto en NinjaTrader sobre el futuro NQ: escalera GEX+ y GEX−, pivote Zero Gamma 0DTE, puntos de convexidad, spikes de flujo de opciones y el subgráfico de sentimiento con sus zonas positiva y negativa.">
+              <source src="video/rt-magneto-sesion-1920.mp4" type="video/mp4" />
+              <source src="video/rt-magneto-sesion-1920.webm" type="video/webm" />
+            </video>
           </div>
           <figcaption><a data-i18n="captura.3" href="img/rt-magneto-nq.webp" target="_blank" rel="noopener">Ver captura completa</a></figcaption>
         </figure>
@@ -504,7 +513,8 @@
           <h2 data-i18n="acceso.1" class="h2">Pon la estructura en tu gráfico.</h2>
           <p data-i18n="acceso.2">Licencia de RT Magneto para NinjaTrader o ATAS.</p>
           <p data-i18n="acceso.3" class="price" data-placeholder>Precio por anunciar</p>
-          <a data-i18n="acceso.4" class="btn" href="#comunidad">Avísame cuando abra</a>
+          <a data-i18n="acceso.4" class="btn" href="entrar/?registro=1">Crear cuenta y suscribirme</a>
+          <a data-i18n="acceso.6" class="access-login" href="entrar/">¿Ya tienes cuenta? Entrar</a>
           <div class="pay">
             <span data-i18n="acceso.5">Pagos con</span>
             <ul><li>PayPal</li><li>USDT</li><li>USDC</li></ul>

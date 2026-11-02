@@ -48,5 +48,9 @@ Cada texto traducible lleva `data-i18n="clave"` (o `data-i18n-alt`, `data-i18n-a
 
 - Enlaces reales de YouTube, TikTok y Telegram (`data-channel` en `index.html`).
 - Servicio de correo para el formulario: poner su URL en `data-endpoint` del `<form data-signup>`.
-- Precio, licencia y checkout (PayPal, USDT, USDC).
+- Precio y planes definitivos (se gestionan en `/admin`). Pagos con USDT y USDC.
 - Texto definitivo del aviso de riesgo.
+
+## Plataforma comercial
+
+Cuentas de cliente (`/entrar/`, `/cuenta/`), panel de administración (`/admin/`), suscripciones con PayPal y entrega de licencias. El backend está en `server/` y necesita Node 22 y PostgreSQL. Instalación, configuración, despliegue y estado en [`docs/plataforma-comercial/`](docs/plataforma-comercial/README.md).
